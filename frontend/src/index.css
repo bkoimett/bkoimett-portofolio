@@ -1,18 +1,15 @@
-/* Import Inter font */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+/* Import Tailwind */
 @import "tailwindcss";
 
-/* Custom theme variables */
-@theme {
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-}
+/* Import Inter font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* Dark mode class - Tailwind v4 handles this automatically with dark: variant */
+/* Custom styles that don't interfere with Tailwind's theme system */
 :root {
   color-scheme: light;
 }
 
-:root.dark {
+.dark {
   color-scheme: dark;
 }
 
@@ -23,3 +20,7 @@
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Apply Inter font */
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
