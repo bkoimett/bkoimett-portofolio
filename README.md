@@ -1,5 +1,3 @@
-I'll help you build a modern portfolio from scratch using the latest Tailwind CSS v4 with Vite. Let's create a clean, minimalistic portfolio with theme switching and backend connection.
-
 ## Step 1: Project Setup with Vite
 
 ```bash
@@ -710,4 +708,3 @@ Visit `http://localhost:5173` to see your portfolio!
 5. **Add database** (MongoDB/PostgreSQL)
 6. **Deploy** to Vercel (frontend) and Render (backend)
 
-The portfolio is now functional and ready for you to customize with your own content! Would you like me to guide you through implementing any specific feature next?
