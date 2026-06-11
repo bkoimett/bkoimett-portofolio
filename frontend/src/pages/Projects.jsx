@@ -11,7 +11,7 @@ const Projects = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get('https://bkoimett-portofolio.onrender.com/api/projects');
+        const response = await axios.get('/api/projects');
         setProjects(response.data);
       } catch (error) {
         console.error('Error fetching projects:', error);
@@ -94,10 +94,10 @@ const Projects = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {filteredProjects.map((project) => (
-              <div
-                key={project.id}
-                className="group bg-gray-50 dark:bg-gray-800 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300"
-              >
+               <div
+                 key={project._id || project.id}
+                 className="group bg-gray-50 dark:bg-gray-800 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300"
+               >
                 <div className="aspect-w-16 aspect-h-9 overflow-hidden">
                   <img
                     src={project.image}
