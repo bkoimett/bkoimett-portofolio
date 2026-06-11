@@ -26,6 +26,21 @@ app.get('/api/projects', async (req, res) => {
   }
 });
 
+// GET - Single project by SLUG (for blog posts)
+app.get('/api/projects/slug/:slug', async (req, res) => {
+  try {
+    const project = await Project.findOne({ slug: req.params.slug });
+    
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+    
+    res.json(project);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Get single project
 app.get('/api/projects/:id', async (req, res) => {
   try {
@@ -35,6 +50,76 @@ app.get('/api/projects/:id', async (req, res) => {
     } else {
       res.status(404).json({ message: 'Project not found' });
     }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST - Create new project
+app.post('/api/projects', async (req, res) => {
+  try {
+    const { title, slug, description, category, image, technologies, github, demo, highlights, content, publishDate, tags, readTime, status } = req.body;
+    
+    // Validate required fields
+    if (!title || !slug) {
+      return res.status(400).json({ error: 'title and slug are required' });
+    }
+    
+    const newProject = new Project({
+      title,
+      slug,
+      description,
+      category,
+      image,
+      technologies,
+      github,
+      demo,
+      highlights,
+      content,
+      publishDate,
+      tags,
+      readTime,
+      status: status || 'published'
+    });
+    
+    const savedProject = await newProject.save();
+    res.status(201).json(savedProject);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// PUT - Update project
+app.put('/api/projects/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedData = req.body;
+    updatedData.updatedAt = new Date();
+    
+    const updatedProject = await Project.findByIdAndUpdate(id, updatedData, { new: true });
+    
+    if (!updatedProject) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+    
+    res.json(updatedProject);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// DELETE - Delete project
+app.delete('/api/projects/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const deletedProject = await Project.findByIdAndDelete(id);
+    
+    if (!deletedProject) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+    
+    res.json({ message: 'Project deleted successfully', project: deletedProject });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
