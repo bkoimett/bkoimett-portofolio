@@ -1,16 +1,32 @@
-const express = require('express');
-const cors = require('cors');
+const mongoose = require('mongoose');
 require('dotenv').config();
 
-const app = express();
-const PORT = process.env.PORT || 3001;
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI).then(() => console.log('MongoDB connected'))
+  .catch(err => console.log(err));
 
-app.use(cors());
-app.use(express.json());
+// Project schema
+const projectSchema = new mongoose.Schema({
+  title: String,
+  slug: String,
+  description: String,
+  content: String,
+  category: String,
+  image: String,
+  technologies: [String],
+  tags: [String],
+  readTime: String,
+  publishDate: String,
+  github: String,
+  demo: String,
+  highlights: [String],
+  status: String
+});
+
+const Project = mongoose.model('Project', projectSchema);
 
 const projects = [
   {
-    id: 1,
     slug: 'cloud-infrastructure-automation',
     title: 'Cloud Infrastructure Automation',
     description: 'Scalable AWS infrastructure using Terraform and Kubernetes. Implemented multi-region architecture with auto-scaling and disaster recovery.',
@@ -27,10 +43,10 @@ const projects = [
       'Reduced infrastructure costs by 40% through optimization',
       'Implemented GitOps workflow with ArgoCD',
       'Achieved 99.99% uptime with multi-region setup'
-    ]
+    ],
+    status: 'published'
   },
   {
-    id: 2,
     slug: 'cicd-pipeline-platform',
     title: 'CI/CD Pipeline Platform',
     description: 'Automated deployment pipeline with Jenkins and ArgoCD. Features include automated testing, security scanning, and rollback capabilities.',
@@ -46,10 +62,10 @@ const projects = [
       'Reduced deployment time from 2 hours to 15 minutes',
       'Implemented automated security scanning',
       'Zero-downtime deployments with blue-green strategy'
-    ]
+    ],
+    status: 'published'
   },
   {
-    id: 3,
     slug: 'real-time-dashboard',
     title: 'Real-time Dashboard',
     description: 'Modern React dashboard with real-time metrics and alerts. Built for monitoring cloud infrastructure and application performance.',
@@ -66,10 +82,10 @@ const projects = [
       'Real-time updates with WebSocket connection',
       'Custom data visualizations with D3.js',
       'Dark mode support and responsive design'
-    ]
+    ],
+    status: 'published'
   },
   {
-    id: 4,
     slug: 'iot-sensor-network',
     title: 'IoT Sensor Network',
     description: 'ESP32-based environmental monitoring system with MQTT and cloud integration. Monitors temperature, humidity, and air quality.',
@@ -85,43 +101,26 @@ const projects = [
       'Low-power design with 6 months battery life',
       'Real-time alerts via MQTT and SMS',
       'Over-the-air firmware updates'
-    ]
+    ],
+    status: 'published'
   }
 ];
 
-// Get all projects
-app.get('/api/projects', (req, res) => {
-  res.json(projects);
-});
-
-// Get single project by ID
-app.get('/api/projects/:id', (req, res) => {
-  const project = projects.find(p => p.id === parseInt(req.params.id));
-  if (project) {
-    res.json(project);
-  } else {
-    res.status(404).json({ message: 'Project not found' });
+async function seed() {
+  try {
+    // Clear existing projects
+    await Project.deleteMany({});
+    console.log('Deleted existing projects');
+    
+    // Insert new projects
+    await Project.insertMany(projects);
+    console.log('Seeded projects');
+    
+    process.exit(0);
+  } catch (error) {
+    console.error('Error seeding:', error);
+    process.exit(1);
   }
-});
+}
 
-// Get single project by slug
-app.get('/api/projects/slug/:slug', (req, res) => {
-  const project = projects.find(p => p.slug === req.params.slug);
-  if (project) {
-    res.json(project);
-  } else {
-    res.status(404).json({ error: 'Project not found' });
-  }
-});
-
-// Contact form endpoint
-app.post('/api/contact', (req, res) => {
-  const { name, email, message } = req.body;
-  // Here you would typically send an email or save to database
-  console.log('Contact form submission:', { name, email, message });
-  res.json({ success: true, message: 'Message received!' });
-});
-
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+seed();
