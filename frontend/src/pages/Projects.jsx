@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 const Projects = () => {
@@ -11,7 +12,11 @@ const Projects = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get('/api/projects');
+        // Use local backend for development, fallback to production
+        const apiUrl = window.location.hostname === 'localhost' 
+          ? 'http://localhost:3001/api/projects'
+          : 'https://bkoimett-portofolio.onrender.com/api/projects';
+        const response = await axios.get(apiUrl);
         setProjects(response.data);
       } catch (error) {
         console.error('Error fetching projects:', error);
@@ -19,6 +24,7 @@ const Projects = () => {
         setProjects([
           {
             id: 1,
+            slug: 'cloud-infrastructure-automation',
             title: 'Cloud Infrastructure Automation',
             description: 'Scalable AWS infrastructure using Terraform and Kubernetes',
             category: 'Cloud',
@@ -27,6 +33,7 @@ const Projects = () => {
           },
           {
             id: 2,
+            slug: 'cicd-pipeline-platform',
             title: 'CI/CD Pipeline Platform',
             description: 'Automated deployment pipeline with Jenkins and ArgoCD',
             category: 'DevOps',
@@ -35,6 +42,7 @@ const Projects = () => {
           },
           {
             id: 3,
+            slug: 'real-time-dashboard',
             title: 'Real-time Dashboard',
             description: 'Modern dashboard with real-time metrics and alerts',
             category: 'Web Dev',
@@ -43,6 +51,7 @@ const Projects = () => {
           },
           {
             id: 4,
+            slug: 'iot-sensor-network',
             title: 'IoT Sensor Network',
             description: 'ESP32-based environmental monitoring system',
             category: 'Embedded',
@@ -94,10 +103,11 @@ const Projects = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {filteredProjects.map((project) => (
-               <div
-                 key={project._id || project.id}
-                 className="group bg-gray-50 dark:bg-gray-800 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300"
-               >
+              <Link
+                to={`/projects/${project.slug}`}
+                key={project.id}
+                className="group bg-gray-50 dark:bg-gray-800 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 block"
+              >
                 <div className="aspect-w-16 aspect-h-9 overflow-hidden">
                   <img
                     src={project.image}
@@ -127,11 +137,11 @@ const Projects = () => {
                   <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
                     {project.description}
                   </p>
-                  <button className="text-sm font-medium text-gray-900 dark:text-white hover:underline">
+                  <span className="text-sm font-medium text-gray-900 dark:text-white hover:underline">
                     View Case Study →
-                  </button>
+                  </span>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}

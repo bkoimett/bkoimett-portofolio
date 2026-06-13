@@ -1,16 +1,28 @@
-/* Import Tailwind */
-@import "tailwindcss";
-
 /* Import Inter font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Import Tailwind */
+@import "tailwindcss";
 
 /* Custom styles that don't interfere with Tailwind's theme system */
 :root {
   color-scheme: light;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --bg-tertiary: #e5e7eb;
+  --border-color: #d1d5db;
 }
 
 .dark {
   color-scheme: dark;
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --bg-primary: #111827;
+  --bg-secondary: #1f2937;
+  --bg-tertiary: #374151;
+  --border-color: #4b5563;
 }
 
 /* Smooth transitions for theme switching */
