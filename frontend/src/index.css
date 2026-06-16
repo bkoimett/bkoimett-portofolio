@@ -1,5 +1,8 @@
 /* Import Inter font */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* Import JetBrains Mono for code */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&display=swap');
 
 /* Import Tailwind */
 @import "tailwindcss";
@@ -35,4 +38,39 @@
 /* Apply Inter font */
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Lumina Tech Design System Utilities */
+@layer components {
+  .glass-panel {
+    @apply bg-black/40 backdrop-blur-xl border border-white/5 rounded-lg;
+  }
+
+  .glass-card {
+    @apply glass-panel transition-all duration-300 ease-out;
+  }
+
+  .glass-card:hover {
+    @apply border-primary shadow-lg -translate-y-1;
+  }
+
+  .container-max {
+    @apply max-w-5xl mx-auto;
+  }
+
+  .btn-primary {
+    @apply px-6 py-3 bg-primary text-black rounded-lg font-semibold hover:opacity-90 active:scale-95 transition-all duration-300;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 border border-primary text-primary rounded-lg font-semibold hover:bg-primary/10 transition-all duration-300;
+  }
+
+  .input-base {
+    @apply w-full px-4 py-3 bg-surface-container border border-on-surface-variant rounded-lg text-on-surface focus:border-primary focus:outline-none transition-colors duration-200;
+  }
+
+  .gradient-stats {
+    @apply bg-gradient-to-br from-primary/10 via-transparent to-transparent;
+  }
 }
