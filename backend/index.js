@@ -1,114 +1,80 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
+
+const Project = require('./models/Project');
+const { ADMIN_USERNAME, ADMIN_PASSWORD } = require('./config/admin');
+const authMiddleware = require('./middleware/auth');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('✅ Connected to MongoDB'))
-  .catch(err => console.error('❌ MongoDB connection error:', err));
+// Generate slug from title if not provided.
+function generateSlug(title) {
+  return title
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+function startServer() {
+  if (!process.env.MONGODB_URI || !process.env.MONGODB_URI.startsWith('mongodb')) {
+    throw new Error('MONGODB_URI must be set to a valid mongodb:// or mongodb+srv:// connection string');
+  }
+
+  mongoose.connect(process.env.MONGODB_URI)
+    .then(() => console.log('✅ Connected to MongoDB'))
+    .catch(err => {
+      console.error('❌ MongoDB connection error:', err);
+      process.exit(1);
+    });
+}
 
 app.use(cors());
 app.use(express.json());
 
-const projects = [
-  {
-    id: 1,
-    slug: 'cloud-infrastructure-automation',
-    title: 'Cloud Infrastructure Automation',
-    description: 'Scalable AWS infrastructure using Terraform and Kubernetes. Implemented multi-region architecture with auto-scaling and disaster recovery.',
-    content: '## Project Overview\n\nThis project involved designing and implementing a scalable cloud infrastructure on AWS using Infrastructure as Code (IaC) principles with Terraform. The solution features a multi-region architecture with auto-scaling capabilities and comprehensive disaster recovery mechanisms.\n\n### Key Features\n\n- **Multi-region deployment** for high availability\n- **Auto-scaling groups** that adjust to traffic demands\n- **Terraform modules** for reusable infrastructure\n- **Kubernetes clusters** for container orchestration\n- **CI/CD integration** with automated deployments\n\n### Technical Implementation\n\nThe infrastructure was built using Terraform with a modular approach, allowing for easy maintenance and scalability. Each module represents a specific component of the infrastructure, such as VPC, EC2 instances, or Kubernetes clusters.',
-    category: 'Cloud',
-    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&auto=format',
-    technologies: ['Terraform', 'AWS', 'Kubernetes', 'Docker'],
-    tags: ['cloud', 'infrastructure', 'terraform', 'kubernetes'],
-    readTime: '8 min read',
-    publishDate: '2024-01-15',
-    github: 'https://github.com/username/cloud-infra',
-    demo: 'https://demo.example.com',
-    highlights: [
-      'Reduced infrastructure costs by 40% through optimization',
-      'Implemented GitOps workflow with ArgoCD',
-      'Achieved 99.99% uptime with multi-region setup'
-    ]
-  },
-  {
-    id: 2,
-    slug: 'cicd-pipeline-platform',
-    title: 'CI/CD Pipeline Platform',
-    description: 'Automated deployment pipeline with Jenkins and ArgoCD. Features include automated testing, security scanning, and rollback capabilities.',
-    content: '## CI/CD Pipeline Implementation\n\nBuilt a robust CI/CD pipeline using Jenkins for continuous integration and ArgoCD for continuous deployment. The pipeline includes automated testing, security scanning, and automated rollback capabilities.\n\n### Pipeline Features\n\n- **Automated testing** on every commit\n- **Security scanning** with SonarQube integration\n- **Blue-green deployments** for zero downtime\n- **Automated rollbacks** on failed deployments\n\n### Architecture\n\nThe pipeline is designed to be flexible and scalable, supporting multiple environments and providing comprehensive monitoring and alerting capabilities.',
-    category: 'DevOps',
-    image: 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=600&auto=format',
-    technologies: ['Jenkins', 'ArgoCD', 'Docker', 'SonarQube'],
-    tags: ['devops', 'cicd', 'jenkins', 'argocd'],
-    readTime: '6 min read',
-    publishDate: '2024-02-20',
-    github: 'https://github.com/username/cicd-pipeline',
-    highlights: [
-      'Reduced deployment time from 2 hours to 15 minutes',
-      'Implemented automated security scanning',
-      'Zero-downtime deployments with blue-green strategy'
-    ]
-  },
-  {
-    id: 3,
-    slug: 'real-time-dashboard',
-    title: 'Real-time Dashboard',
-    description: 'Modern React dashboard with real-time metrics and alerts. Built for monitoring cloud infrastructure and application performance.',
-    content: '## Real-time Monitoring Dashboard\n\nDeveloped a modern React-based dashboard that provides real-time monitoring of cloud infrastructure and application performance metrics. The dashboard uses WebSocket connections for live updates and D3.js for data visualization.\n\n### Key Components\n\n- **Real-time WebSocket** connection for live updates\n- **Interactive charts** built with D3.js\n- **Alert system** for threshold monitoring\n- **Dark mode** support for better UX\n\n### Performance\n\nThe dashboard is optimized for performance with efficient data handling and smooth animations, providing a seamless user experience even with large datasets.',
-    category: 'Web Dev',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&auto=format',
-    technologies: ['React', 'WebSocket', 'D3.js', 'Express'],
-    tags: ['react', 'dashboard', 'websocket', 'd3'],
-    readTime: '5 min read',
-    publishDate: '2024-03-10',
-    github: 'https://github.com/username/dashboard',
-    demo: 'https://dashboard.demo.com',
-    highlights: [
-      'Real-time updates with WebSocket connection',
-      'Custom data visualizations with D3.js',
-      'Dark mode support and responsive design'
-    ]
-  },
-  {
-    id: 4,
-    slug: 'iot-sensor-network',
-    title: 'IoT Sensor Network',
-    description: 'ESP32-based environmental monitoring system with MQTT and cloud integration. Monitors temperature, humidity, and air quality.',
-    content: '## IoT Environmental Monitoring System\n\nDesigned and implemented an ESP32-based environmental monitoring system that tracks temperature, humidity, and air quality. The system uses MQTT for communication and integrates with AWS IoT for cloud data storage and processing.\n\n### System Architecture\n\n- **ESP32 microcontrollers** for sensor data collection\n- **MQTT protocol** for lightweight messaging\n- **AWS IoT Core** for cloud integration\n- **Low-power design** for extended battery life\n\n### Features\n\nThe system provides real-time alerts via MQTT and SMS, with over-the-air firmware updates for easy maintenance and feature additions.',
-    category: 'Embedded',
-    image: 'https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?w=600&auto=format',
-    technologies: ['ESP32', 'C++', 'MQTT', 'AWS IoT'],
-    tags: ['iot', 'embedded', 'esp32', 'mqtt'],
-    readTime: '7 min read',
-    publishDate: '2024-04-05',
-    github: 'https://github.com/username/iot-system',
-    highlights: [
-      'Low-power design with 6 months battery life',
-      'Real-time alerts via MQTT and SMS',
-      'Over-the-air firmware updates'
-    ]
-  }
-];
+// POST - Admin login.
+app.post('/api/admin/login', (req, res) => {
+  try {
+    const { username, password } = req.body;
 
-// Get all projects
+    if (username !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    const token = jwt.sign(
+      { username },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.json({ token, message: 'Login successful' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get all published projects for public pages, or all projects for authenticated admins.
 app.get('/api/projects', async (req, res) => {
   try {
-    const projects = await Project.find({ status: 'published' });
+    const token = req.headers.authorization?.split(' ')[1];
+    const isAdmin = token && jwt.verify(token, process.env.JWT_SECRET);
+    const filter = isAdmin ? {} : { status: 'published' };
+    const projects = await Project.find(filter);
     res.json(projects);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// GET - Single project by SLUG (for blog posts)
+// GET - Single project by SLUG for public blog/project detail pages.
 app.get('/api/projects/slug/:slug', async (req, res) => {
   try {
-    const project = await Project.findOne({ slug: req.params.slug });
+    const project = await Project.findOne({ slug: req.params.slug, status: 'published' });
     
     if (!project) {
       return res.status(404).json({ error: 'Project not found' });
@@ -120,34 +86,151 @@ app.get('/api/projects/slug/:slug', async (req, res) => {
   }
 });
 
-// Get single project by ID
-app.get('/api/projects/:id', (req, res) => {
-  const project = projects.find(p => p.id === parseInt(req.params.id));
-  if (project) {
+// GET - Single project by ID for admin dashboard editing.
+app.get('/api/projects/:id', async (req, res) => {
+  try {
+    const project = await Project.findById(req.params.id);
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
     res.json(project);
-  } else {
-    res.status(404).json({ message: 'Project not found' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
-// Get single project by slug
-app.get('/api/projects/slug/:slug', (req, res) => {
-  const project = projects.find(p => p.slug === req.params.slug);
-  if (project) {
-    res.json(project);
-  } else {
-    res.status(404).json({ error: 'Project not found' });
-  }
-});
-
-// Contact form endpoint
+// Contact form endpoint.
 app.post('/api/contact', (req, res) => {
   const { name, email, message } = req.body;
-  // Here you would typically send an email or save to database
   console.log('Contact form submission:', { name, email, message });
   res.json({ success: true, message: 'Message received!' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+// POST - Create new project (admin only).
+app.post('/api/projects', authMiddleware, async (req, res) => {
+  try {
+    const { 
+      title, 
+      slug, 
+      description, 
+      category, 
+      image, 
+      technologies, 
+      github, 
+      demo, 
+      highlights, 
+      content, 
+      publishDate, 
+      tags, 
+      readTime, 
+      status 
+    } = req.body;
+
+    if (!title || !description) {
+      return res.status(400).json({ 
+        error: 'title and description are required' 
+      });
+    }
+
+    const finalSlug = slug || generateSlug(title);
+
+    const existingProject = await Project.findOne({ slug: finalSlug });
+    if (existingProject) {
+      return res.status(400).json({ 
+        error: 'A project with this slug already exists' 
+      });
+    }
+
+    const newProject = new Project({
+      title,
+      slug: finalSlug,
+      description,
+      category: category || 'General',
+      image: image || 'https://via.placeholder.com/400',
+      technologies: technologies || [],
+      github,
+      demo,
+      highlights: highlights || [],
+      content: content || '',
+      publishDate: publishDate || new Date(),
+      tags: tags || [],
+      readTime: readTime || '5 min read',
+      status: status || 'draft'
+    });
+
+    const savedProject = await newProject.save();
+    res.status(201).json({
+      message: 'Project created successfully',
+      project: savedProject
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
+
+// PUT - Update project (admin only).
+app.put('/api/projects/:id', authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = { ...req.body, updatedAt: new Date() };
+
+    if (updateData.title && !updateData.slug) {
+      updateData.slug = generateSlug(updateData.title);
+    }
+
+    if (updateData.slug) {
+      const existingProject = await Project.findOne({ 
+        slug: updateData.slug,
+        _id: { $ne: id }
+      });
+      if (existingProject) {
+        return res.status(400).json({ 
+          error: 'A project with this slug already exists' 
+        });
+      }
+    }
+
+    const updatedProject = await Project.findByIdAndUpdate(id, updateData, { new: true });
+
+    if (!updatedProject) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    res.json({
+      message: 'Project updated successfully',
+      project: updatedProject
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// DELETE - Delete project (admin only).
+app.delete('/api/projects/:id', authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedProject = await Project.findByIdAndDelete(id);
+
+    if (!deletedProject) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    res.json({ 
+      message: 'Project deleted successfully',
+      project: deletedProject 
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+if (require.main === module) {
+  startServer();
+
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
+module.exports.startServer = startServer;
