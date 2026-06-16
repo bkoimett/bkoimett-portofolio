@@ -5,7 +5,12 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const Project = require('./models/Project');
-const { ADMIN_USERNAME, ADMIN_PASSWORD } = require('./config/admin');
+const {
+  getUsername,
+  setUsername,
+  setPassword,
+  verifyPassword
+} = require('./config/admin');
 const authMiddleware = require('./middleware/auth');
 
 const app = express();
@@ -38,11 +43,16 @@ app.use(cors());
 app.use(express.json());
 
 // POST - Admin login.
-app.post('/api/admin/login', (req, res) => {
+app.post('/api/admin/login', async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    if (username !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
+    if (
+      !username ||
+      !password ||
+      username !== getUsername() ||
+      !(await verifyPassword(password))
+    ) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
@@ -53,6 +63,41 @@ app.post('/api/admin/login', (req, res) => {
     );
 
     res.json({ token, message: 'Login successful' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// PUT - Update admin settings (admin only).
+app.put('/api/admin/settings', authMiddleware, async (req, res) => {
+  try {
+    const { newUsername, newPassword } = req.body;
+    const trimmedUsername = typeof newUsername === 'string' ? newUsername.trim() : '';
+
+    if (!trimmedUsername && !newPassword) {
+      return res.status(400).json({ error: 'No settings provided' });
+    }
+
+    if (trimmedUsername && trimmedUsername.length < 3) {
+      return res.status(400).json({ error: 'Username must be at least 3 characters long' });
+    }
+
+    if (newPassword && newPassword.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters long' });
+    }
+
+    if (trimmedUsername) {
+      setUsername(trimmedUsername);
+    }
+
+    if (newPassword) {
+      await setPassword(newPassword);
+    }
+
+    res.json({
+      message: 'Settings updated successfully',
+      username: getUsername()
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
