@@ -7,7 +7,7 @@ import '../styles/AdminDashboard.css';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('posts');
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [projects, setProjects] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -158,56 +158,157 @@ export default function AdminDashboard() {
   if (loading) return <div className="admin-container"><p>Loading...</p></div>;
 
   return (
-    <div className="admin-container">
-      <header className="admin-header">
-        <h1>Admin Dashboard</h1>
-        <button onClick={handleLogout} className="logout-btn">Logout</button>
-      </header>
-
-      <div className="admin-content">
-        <div className="admin-sidebar">
-          <button 
-            onClick={() => {
-              setShowForm(!showForm);
-              setEditingId(null);
-              setFormData({
-                title: '',
-                description: '',
-                content: '',
-                category: 'General',
-                technologies: [],
-                tags: [],
-                readTime: '5 min read',
-                status: 'draft'
-              });
-            }}
-            className="new-post-btn"
-          >
-            + New Post
-          </button>
+    <div className="flex min-h-screen overflow-hidden">
+      {/* SideNavBar (Authority: JSON & Contextual Logic) */}
+      <aside className="fixed left-0 top-0 h-full w-64 bg-surface-container-low border-r border-outline-variant flex flex-col p-stack-md z-40">
+        {/* Brand Header */}
+        <div className="mb-stack-lg px-2">
+          <h1 className="font-headline-sm text-headline-sm text-primary font-bold">B. Koimett</h1>
+          <p className="font-label-md text-label-md text-on-surface-variant">Admin Console</p>
         </div>
 
-        <div className="admin-main">
-          <div className="admin-tabs">
-            <button
-              onClick={() => setActiveTab('posts')}
-              className={`tab-btn ${activeTab === 'posts' ? 'active' : ''}`}
-            >
-              📝 Posts
-            </button>
-            <button
-              onClick={() => setActiveTab('settings')}
-              className={`tab-btn ${activeTab === 'settings' ? 'active' : ''}`}
-            >
-              ⚙️ Settings
-            </button>
-          </div>
+        {/* Navigation Links */}
+        <nav className="flex-1 space-y-2">
+          {/* Dashboard (Active) */}
+          <button
+            onClick={() => setActiveTab('dashboard')}
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 text-left w-full ${
+              activeTab === 'dashboard' 
+                ? 'text-primary bg-primary/10 border-r-4 border-primary' 
+                : 'text-on-surface-variant hover:bg-surface-container-high'
+            }`}
+          >
+            <span className="material-symbols-outlined">dashboard</span>
+            <span className="font-label-md text-label-md">Dashboard</span>
+          </button>
+          {/* Projects */}
+          <button
+            onClick={() => setActiveTab('projects')}
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 text-left w-full ${
+              activeTab === 'projects' 
+                ? 'text-primary bg-primary/10 border-r-4 border-primary' 
+                : 'text-on-surface-variant hover:bg-surface-container-high'
+            }`}
+          >
+            <span className="material-symbols-outlined">folder_open</span>
+            <span className="font-label-md text-label-md">Projects</span>
+          </button>
+          {/* Settings */}
+          <button
+            onClick={() => setActiveTab('settings')}
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 text-left w-full ${
+              activeTab === 'settings' 
+                ? 'text-primary bg-primary/10 border-r-4 border-primary' 
+                : 'text-on-surface-variant hover:bg-surface-container-high'
+            }`}
+          >
+            <span className="material-symbols-outlined">settings</span>
+            <span className="font-label-md text-label-md">Settings</span>
+          </button>
+        </nav>
 
-          {activeTab === 'posts' && (
-            <>
+        {/* Footer Actions */}
+        <div className="mt-auto pt-stack-md border-t border-outline-variant/30">
+          <button className="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-on-surface transition-all duration-300 text-left w-full">
+            <span className="material-symbols-outlined">help</span>
+            <span className="font-label-md text-label-md">Support</span>
+          </button>
+          <button 
+            onClick={handleLogout}
+            className="w-full mt-4 flex items-center justify-between px-4 py-3 bg-surface-container-highest rounded-lg text-on-surface hover:bg-primary hover:text-on-primary transition-all duration-300 group"
+          >
+            <span className="font-label-md text-label-md">Logout</span>
+            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">logout</span>
+          </button>
+        </div>
+      </aside>
+
+      {/* Main Content Canvas */}
+      <main className="flex-1 ml-64 overflow-y-auto h-screen custom-scrollbar relative">
+        <div className="max-w-container-max mx-auto px-gutter py-stack-lg space-y-section-gap">
+          {/* Dashboard Overview Section */}
+          {activeTab === 'dashboard' && (
+            <section className="space-y-stack-lg" id="dashboard">
+              <div className="flex flex-col gap-2">
+                <h2 className="font-headline-lg text-headline-lg text-on-surface">System Overview</h2>
+                <p className="font-body-md text-body-md text-on-surface-variant">Real-time performance metrics and project lifecycle status.</p>
+              </div>
+
+              {/* Stat Cards Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-stack-md">
+                {/* Stat Card 1 */}
+                <div className="glass-card rim-light p-stack-lg rounded-xl flex flex-col gap-2 hover:bg-surface-container-highest transition-colors duration-300 cursor-default">
+                  <div className="flex items-center justify-between">
+                    <span className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Total Projects</span>
+                    <span className="material-symbols-outlined text-primary">analytics</span>
+                  </div>
+                  <div className="text-[48px] font-bold text-primary leading-tight">{projects.length}</div>
+                  <div className="flex items-center gap-1 text-primary-container font-label-md text-xs">
+                    <span className="material-symbols-outlined text-sm">trending_up</span>
+                    <span>+3 from last month</span>
+                  </div>
+                </div>
+
+                {/* Stat Card 2 */}
+                <div className="glass-card rim-light p-stack-lg rounded-xl flex flex-col gap-2 hover:bg-surface-container-highest transition-colors duration-300 cursor-default">
+                  <div className="flex items-center justify-between">
+                    <span className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Portfolio Views</span>
+                    <span className="material-symbols-outlined text-primary">visibility</span>
+                  </div>
+                  <div className="text-[48px] font-bold text-primary leading-tight">1.2k</div>
+                  <div className="flex items-center gap-1 text-primary-container font-label-md text-xs">
+                    <span className="material-symbols-outlined text-sm">trending_up</span>
+                    <span>+12% vs last week</span>
+                  </div>
+                </div>
+
+                {/* Stat Card 3 */}
+                <div className="glass-card rim-light p-stack-lg rounded-xl flex flex-col gap-2 hover:bg-surface-container-highest transition-colors duration-300 cursor-default">
+                  <div className="flex items-center justify-between">
+                    <span className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Last Updated</span>
+                    <span className="material-symbols-outlined text-primary">history</span>
+                  </div>
+                  <div className="text-[48px] font-bold text-primary leading-tight">2h</div>
+                  <div className="font-label-md text-xs text-on-surface-variant">ago: Refactored Go backend</div>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Projects Management Section */}
+          {activeTab === 'projects' && (
+            <section className="space-y-stack-md" id="projects">
+              <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-1">
+                  <h2 className="font-headline-md text-headline-md text-on-surface">Manage Projects</h2>
+                  <p className="font-body-md text-body-md text-on-surface-variant">Update, edit, or remove entries from the public portfolio.</p>
+                </div>
+                <button 
+                  onClick={() => {
+                    setShowForm(!showForm);
+                    setEditingId(null);
+                    setFormData({
+                      title: '',
+                      description: '',
+                      content: '',
+                      category: 'General',
+                      technologies: [],
+                      tags: [],
+                      readTime: '5 min read',
+                      status: 'draft'
+                    });
+                  }}
+                  className="flex items-center gap-2 px-6 py-3 bg-primary text-on-primary rounded-lg font-label-md text-label-md font-bold hover:brightness-110 active:scale-95 transition-all"
+                >
+                  <span className="material-symbols-outlined">add</span>
+                  Add Project
+                </button>
+              </div>
+
+              {/* Projects Form */}
               {showForm && (
                 <form onSubmit={handleSubmit} className="post-form">
-                  <h2>{editingId ? 'Edit Post' : 'Create New Post'}</h2>
+                  <h2>{editingId ? 'Edit Project' : 'Create New Project'}</h2>
 
                   {error && <div className="error-message">{error}</div>}
 
@@ -296,7 +397,7 @@ export default function AdminDashboard() {
 
                   <div className="form-buttons">
                     <button type="submit" className="submit-btn">
-                      {editingId ? 'Update Post' : 'Create Post'}
+                      {editingId ? 'Update Project' : 'Create Project'}
                     </button>
                     <button
                       type="button"
@@ -312,58 +413,97 @@ export default function AdminDashboard() {
                 </form>
               )}
 
-              <div className="projects-list">
-                <h2>All Posts ({projects.length})</h2>
-                {projects.length === 0 ? (
-                  <p className="no-projects">No posts yet. Create your first one!</p>
-                ) : (
-                  <table className="projects-table">
-                    <thead>
+              {/* Projects Table (Bento Container) */}
+              <div className="glass-card rim-light rounded-xl overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead className="bg-surface-container-high border-b border-outline-variant">
                       <tr>
-                        <th>Title</th>
-                        <th>Status</th>
-                        <th>Category</th>
-                        <th>Actions</th>
+                        <th className="px-gutter py-4 font-label-md text-label-md text-on-surface">Title</th>
+                        <th className="px-gutter py-4 font-label-md text-label-md text-on-surface">Category</th>
+                        <th className="px-gutter py-4 font-label-md text-label-md text-on-surface">Tech Stack</th>
+                        <th className="px-gutter py-4 font-label-md text-label-md text-on-surface">Status</th>
+                        <th className="px-gutter py-4 font-label-md text-label-md text-on-surface text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      {projects.map(project => (
-                        <tr key={project._id}>
-                          <td className="title-cell">{project.title}</td>
-                          <td>
-                            <span className={`status-badge ${project.status}`}>
-                              {project.status}
-                            </span>
-                          </td>
-                          <td>{project.category}</td>
-                          <td className="actions">
-                            <button
-                              onClick={() => handleEdit(project)}
-                              className="edit-btn"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => handleDelete(project._id)}
-                              className="delete-btn"
-                            >
-                              Delete
-                            </button>
+                    <tbody className="divide-y divide-outline-variant/30">
+                      {projects.length === 0 ? (
+                        <tr>
+                          <td colSpan="5" className="px-gutter py-5 text-center text-on-surface-variant">
+                            No projects yet. Create your first one!
                           </td>
                         </tr>
-                      ))}
+                      ) : (
+                        projects.map(project => (
+                          <tr key={project._id} className="hover:bg-white/5 transition-colors group">
+                            <td className="px-gutter py-5">
+                              <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded bg-surface-container-highest overflow-hidden">
+                                  {project.image && (
+                                    <img className="w-full h-full object-cover" src={project.image} alt={project.title} />
+                                  )}
+                                </div>
+                                <span className="font-body-md text-body-md font-semibold">{project.title}</span>
+                              </div>
+                            </td>
+                            <td className="px-gutter py-5">
+                              <span className="font-code-sm text-code-sm text-on-surface-variant">{project.category}</span>
+                            </td>
+                            <td className="px-gutter py-5">
+                              <div className="flex flex-wrap gap-2">
+                                {project.technologies.map((tech, index) => (
+                                  <span key={index} className="px-2 py-0.5 bg-primary/10 text-primary font-label-md text-[10px] rounded border border-primary/20">
+                                    {tech}
+                                  </span>
+                                ))}
+                              </div>
+                            </td>
+                            <td className="px-gutter py-5">
+                              <div className="flex items-center gap-2">
+                                <span className={`w-2 h-2 rounded-full ${project.status === 'published' ? 'bg-primary' : 'bg-tertiary'}`}></span>
+                                <span className="font-label-md text-xs capitalize">{project.status}</span>
+                              </div>
+                            </td>
+                            <td className="px-gutter py-5">
+                              <div className="flex items-center justify-end gap-2">
+                                <button
+                                  onClick={() => handleEdit(project)}
+                                  className="p-2 text-on-surface-variant hover:text-primary transition-colors"
+                                >
+                                  <span className="material-symbols-outlined text-xl">edit</span>
+                                </button>
+                                <button
+                                  onClick={() => handleDelete(project._id)}
+                                  className="p-2 text-on-surface-variant hover:text-error transition-colors"
+                                >
+                                  <span className="material-symbols-outlined text-xl">delete</span>
+                                </button>
+                                <button className="p-2 text-on-surface-variant hover:text-secondary transition-colors">
+                                  <span className="material-symbols-outlined text-xl">visibility</span>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
-                )}
+                </div>
               </div>
-            </>
+            </section>
           )}
 
+          {/* Settings Section */}
           {activeTab === 'settings' && (
-            <AdminSettings />
+            <section className="space-y-stack-md" id="settings">
+              <AdminSettings />
+            </section>
           )}
+
+          {/* Bottom Spacer */}
+          <div className="h-20"></div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

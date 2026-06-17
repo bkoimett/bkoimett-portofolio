@@ -23,6 +23,7 @@ export default {
         outline: '#86948a',
         'outline-variant': '#3c4a42',
         error: '#ffb4ab',
+        'error-container': '#7f1d1d',
         secondary: '#bec6e0',
         'secondary-container': '#3e465c',
       },

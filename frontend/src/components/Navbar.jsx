@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 const navItems = [
@@ -16,11 +15,7 @@ const getActivePath = (pathname) => {
 
 const Navbar = () => {
   const location = useLocation();
-  const [activePath, setActivePath] = useState(getActivePath(location.pathname));
-
-  useEffect(() => {
-    setActivePath(getActivePath(location.pathname));
-  }, [location.pathname]);
+  const activePath = getActivePath(location.pathname);
 
   return (
     <nav className="fixed inset-x-0 top-0 z-50 h-16 bg-black/40 backdrop-blur-xl border-b border-white/5">
