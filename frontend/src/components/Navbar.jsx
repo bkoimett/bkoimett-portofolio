@@ -26,7 +26,7 @@ const Navbar = () => {
             className="whitespace-nowrap font-headline-md text-headline-md font-bold text-on-surface hover:opacity-90 transition-opacity duration-200"
             aria-label="ExpertMinimalist home"
           >
-            ExpertMinimalist
+            benjieDev
           </Link>
 
           <div className="hidden items-center gap-8 md:flex" aria-label="Primary navigation">
