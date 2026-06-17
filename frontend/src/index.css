@@ -36,7 +36,7 @@
    --font-size-body-lg: 18px / 1.6 / 400;
    --font-size-body-md: 16px / 1.6 / 400;
    --font-size-label-md: 14px / 1.2 / 500 / 0.02em;
-   
+  
   --spacing-stack-sm: 8px;
   --spacing-stack-md: 16px;
   --spacing-stack-lg: 32px;
@@ -138,4 +138,39 @@ body {
   .emerald-glow {
     background: radial-gradient(circle at center, rgba(78, 222, 163, 0.15) 0%, transparent 70%);
   }
+
+  .font-display-xl-mobile {
+    font-size: 48px;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+  }
+
+  .font-display-xl {
+    font-size: 72px;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.04em;
+  }
+
+  .font-display-lg {
+    font-size: 64px;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+  }
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #4edea3 0%, #006c49 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glass-panel {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
 }
