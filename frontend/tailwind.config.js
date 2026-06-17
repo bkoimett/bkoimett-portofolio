@@ -28,9 +28,11 @@ export default {
       },
       fontSize: {
         'display-xl': ['72px', { fontWeight: '800', lineHeight: '1.1', letterSpacing: '-0.04em' }],
+        'display-xl-mobile': ['48px', { fontWeight: '800', lineHeight: '1.1', letterSpacing: '-0.03em' }],
         'display-lg': ['64px', { fontWeight: '700', lineHeight: '1.1', letterSpacing: '-0.03em' }],
         'headline-lg': ['32px', { fontWeight: '700', lineHeight: '1.3' }],
         'headline-md': ['24px', { fontWeight: '600', lineHeight: '1.4' }],
+        'headline-sm': ['18px', { fontWeight: '600', lineHeight: '1.4' }],
         'body-lg': ['18px', { fontWeight: '400', lineHeight: '1.6' }],
         'body-md': ['16px', { fontWeight: '400', lineHeight: '1.6' }],
         'label-md': ['14px', { fontWeight: '500', lineHeight: '1.2', letterSpacing: '0.02em' }],

@@ -28,12 +28,14 @@
   --color-secondary-container: #3e465c;
   
   --font-size-display-xl: 72px / 1.1 / 800 / -0.04em;
-  --font-size-display-lg: 64px / 1.1 / 700 / -0.03em;
-  --font-size-headline-lg: 32px / 1.3 / 700;
-  --font-size-headline-md: 24px / 1.4 / 600;
-  --font-size-body-lg: 18px / 1.6 / 400;
-  --font-size-body-md: 16px / 1.6 / 400;
-  --font-size-label-md: 14px / 1.2 / 500 / 0.02em;
+   --font-size-display-xl-mobile: 48px / 1.1 / 800 / -0.03em;
+   --font-size-display-lg: 64px / 1.1 / 700 / -0.03em;
+   --font-size-headline-lg: 32px / 1.3 / 700;
+   --font-size-headline-md: 24px / 1.4 / 600;
+   --font-size-headline-sm: 18px / 1.4 / 600;
+   --font-size-body-lg: 18px / 1.6 / 400;
+   --font-size-body-md: 16px / 1.6 / 400;
+   --font-size-label-md: 14px / 1.2 / 500 / 0.02em;
   
   --spacing-stack-sm: 8px;
   --spacing-stack-md: 16px;
@@ -117,5 +119,9 @@ body {
   
   .tech-pill {
     @apply px-3 py-1 bg-primary/10 border border-primary/20 text-primary rounded-full text-[14px];
+  }
+  
+  .emerald-glow {
+    background: radial-gradient(circle at center, rgba(78, 222, 163, 0.15) 0%, transparent 70%);
   }
 }
