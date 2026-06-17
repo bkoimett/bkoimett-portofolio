@@ -36,7 +36,7 @@
    --font-size-body-lg: 18px / 1.6 / 400;
    --font-size-body-md: 16px / 1.6 / 400;
    --font-size-label-md: 14px / 1.2 / 500 / 0.02em;
-  
+   
   --spacing-stack-sm: 8px;
   --spacing-stack-md: 16px;
   --spacing-stack-lg: 32px;
@@ -120,7 +120,21 @@ body {
   .tech-pill {
     @apply px-3 py-1 bg-primary/10 border border-primary/20 text-primary rounded-full text-[14px];
   }
-  
+
+  .active-filter {
+    @apply bg-primary text-on-primary;
+  }
+
+  .font-code-sm {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .text-code-sm {
+    font-size: 12px;
+  }
+
   .emerald-glow {
     background: radial-gradient(circle at center, rgba(78, 222, 163, 0.15) 0%, transparent 70%);
   }
