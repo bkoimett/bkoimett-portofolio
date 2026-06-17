@@ -16,14 +16,30 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
-      const response = await axios.post('/api/admin/login', {
-        username,
-        password
+      const loginPayload = {
+        username: username.trim(),
+        password: password.trim()
+      };
+
+      console.log('[admin-login] Sending credentials:', {
+        ...loginPayload,
+        password: '[redacted]',
+        passwordLength: loginPayload.password.length,
+        endpoint: '/api/admin/login'
       });
+
+      const response = await axios.post('/api/admin/login', loginPayload);
+
+      console.log('[admin-login] Login response:', response.data);
 
       localStorage.setItem('adminToken', response.data.token);
       navigate('/admin/dashboard');
     } catch (err) {
+      console.log('[admin-login] Login error:', {
+        status: err.response?.status,
+        data: err.response?.data,
+        message: err.message
+      });
       setError(err.response?.data?.error || 'Login failed');
     } finally {
       setLoading(false);

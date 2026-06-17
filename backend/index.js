@@ -46,14 +46,43 @@ app.use(express.json());
 app.post('/api/admin/login', async (req, res) => {
   try {
     const { username, password } = req.body;
+    const expectedUsername = getUsername();
 
-    if (
-      !username ||
-      !password ||
-      username !== getUsername() ||
-      !(await verifyPassword(password))
-    ) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+    console.log('[admin-login] Received credentials:', {
+      username,
+      passwordProvided: Boolean(password),
+      expectedUsername,
+      payloadKeys: Object.keys(req.body || {})
+    });
+
+    if (!username || !password) {
+      console.log('[admin-login] Missing credentials:', {
+        usernameProvided: Boolean(username),
+        passwordProvided: Boolean(password)
+      });
+      return res.status(401).json({ error: 'Username and password are required' });
+    }
+
+    if (username !== expectedUsername) {
+      console.log('[admin-login] Username mismatch:', {
+        username,
+        expectedUsername
+      });
+      return res.status(401).json({ error: 'Invalid username' });
+    }
+
+    const passwordMatches = await verifyPassword(password);
+    console.log('[admin-login] Password comparison:', {
+      passwordMatches,
+      passwordLength: String(password).length
+    });
+
+    if (!passwordMatches) {
+      console.log('[admin-login] Password mismatch:', {
+        username,
+        passwordLength: String(password).length
+      });
+      return res.status(401).json({ error: 'Invalid password' });
     }
 
     const token = jwt.sign(
@@ -62,8 +91,11 @@ app.post('/api/admin/login', async (req, res) => {
       { expiresIn: '7d' }
     );
 
+    console.log('[admin-login] Login successful:', { username });
+
     res.json({ token, message: 'Login successful' });
   } catch (error) {
+    console.error('[admin-login] Login error:', error);
     res.status(500).json({ error: error.message });
   }
 });
