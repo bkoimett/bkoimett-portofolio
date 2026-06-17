@@ -11,25 +11,38 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 bg-white/70 dark:bg-gray-900/70 backdrop-blur-md z-40 border-b border-gray-200 dark:border-gray-800">
-      <div className="max-w-5xl mx-auto px-6 py-4">
-        <div className="flex justify-center items-center space-x-12">
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            return (
-              <Link
-                key={item.name}
-                to={item.path}
-                className={`text-sm font-medium transition-colors ${
-                  isActive 
-                    ? 'text-gray-900 dark:text-white' 
-                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-                }`}
-              >
-                {item.name}
-              </Link>
-            );
-          })}
+    <nav className="fixed top-0 left-0 right-0 glass-panel border-b border-on-surface-variant h-20 z-40">
+      <div className="max-w-5xl mx-auto px-6 py-4 h-full">
+        <div className="flex justify-between items-center h-full">
+          {/* Brand / Logo */}
+          <Link to="/" className="text-headline-sm text-primary font-bold tracking-tight hover:opacity-80 transition-opacity duration-300">
+            ExpertMinimalist
+          </Link>
+
+          {/* Navigation Links */}
+          <div className="flex items-center space-x-8">
+            {navItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <Link
+                  key={item.name}
+                  to={item.path}
+                  className={`text-body-md transition-colors duration-300 relative pb-1 ${
+                    isActive 
+                      ? 'text-primary border-b-2 border-primary' 
+                      : 'text-on-surface-variant hover:text-on-surface'
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* Right side - Theme toggle placeholder */}
+          <div className="flex items-center">
+            {/* ThemeToggle is rendered separately in App.jsx */}
+          </div>
         </div>
       </div>
     </nav>
