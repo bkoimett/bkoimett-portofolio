@@ -1,36 +1,47 @@
-import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+
+const navItems = [
+  { name: 'Home', path: '/' },
+  { name: 'Projects', path: '/projects' },
+  { name: 'About', path: '/about' },
+];
+
+const getActivePath = (pathname) => {
+  if (pathname === '/') return '/';
+  if (pathname.startsWith('/projects')) return '/projects';
+  if (pathname === '/about') return '/about';
+  return pathname;
+};
 
 const Navbar = () => {
   const location = useLocation();
-  
-  const navItems = [
-    { name: 'Home', path: '/' },
-    { name: 'Work', path: '/projects' },
-    { name: 'About', path: '/about' },
-  ];
+  const activePath = getActivePath(location.pathname);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 glass-panel border-b border-on-surface-variant h-20 z-40">
-      <div className="max-w-5xl mx-auto px-6 py-4 h-full">
-        <div className="flex justify-between items-center h-full">
-          {/* Brand / Logo */}
-          <Link to="/" className="text-headline-sm text-primary font-bold tracking-tight hover:opacity-80 transition-opacity duration-300">
+    <nav className="fixed inset-x-0 top-0 z-50 h-16 bg-black/40 backdrop-blur-xl border-b border-white/5">
+      <div className="max-w-container-max mx-auto h-full px-gutter">
+        <div className="flex h-full items-center justify-between gap-6">
+          <Link
+            to="/"
+            className="whitespace-nowrap font-headline-md text-headline-md font-bold text-on-surface hover:opacity-90 transition-opacity duration-200"
+            aria-label="ExpertMinimalist home"
+          >
             ExpertMinimalist
           </Link>
 
-          {/* Navigation Links */}
-          <div className="flex items-center space-x-8">
+          <div className="hidden items-center gap-8 md:flex" aria-label="Primary navigation">
             {navItems.map((item) => {
-              const isActive = location.pathname === item.path;
+              const isActive = item.path === activePath;
+
               return (
                 <Link
                   key={item.name}
                   to={item.path}
-                  className={`text-body-md transition-colors duration-300 relative pb-1 ${
-                    isActive 
-                      ? 'text-primary border-b-2 border-primary' 
-                      : 'text-on-surface-variant hover:text-on-surface'
+                  aria-current={isActive ? 'page' : undefined}
+                  className={`text-body-md transition-colors duration-200 ${
+                    isActive
+                      ? 'border-b-2 border-primary pb-1 text-primary'
+                      : 'text-on-surface-variant hover:text-primary'
                   }`}
                 >
                   {item.name}
@@ -39,10 +50,12 @@ const Navbar = () => {
             })}
           </div>
 
-          {/* Right side - Theme toggle placeholder */}
-          <div className="flex items-center">
-            {/* ThemeToggle is rendered separately in App.jsx */}
-          </div>
+          <a
+            href="#contact"
+            className="rounded-full bg-primary px-6 py-2 text-on-primary font-label-md hover:scale-95 transition-all duration-200"
+          >
+            Hire Me
+          </a>
         </div>
       </div>
     </nav>
