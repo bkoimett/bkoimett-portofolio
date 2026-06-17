@@ -14,11 +14,8 @@ export default function ProjectDetail() {
   useEffect(() => {
     const fetchProject = async () => {
       try {
-        // Use local backend for development, fallback to production
-        const apiUrl = window.location.hostname === 'localhost' 
-          ? `http://localhost:3001/api/projects/slug/${slug}`
-          : `https://bkoimett-portofolio.onrender.com/api/projects/slug/${slug}`;
-        const response = await axios.get(apiUrl);
+        const apiUrl = import.meta.env.VITE_API_URL || '/api';
+        const response = await axios.get(`${apiUrl}/api/projects/slug/${slug}`);
         setProject(response.data);
       } catch (err) {
         setError(err.response?.data?.error || 'Project not found');

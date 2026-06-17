@@ -22,6 +22,8 @@ export default function AdminSettings() {
     }));
   };
 
+  const apiUrl = import.meta.env.VITE_API_URL || '/api';
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -52,7 +54,7 @@ export default function AdminSettings() {
 
     try {
       await axios.put(
-        '/api/admin/settings',
+        `${apiUrl}/api/admin/settings`,
         {
           newUsername: trimmedUsername || undefined,
           newPassword: newPassword || undefined

@@ -25,9 +25,11 @@ export default function AdminDashboard() {
     status: 'draft'
   });
 
+  const apiUrl = import.meta.env.VITE_API_URL || '/api';
+
   const fetchProjects = async () => {
     try {
-      const response = await axios.get('/api/projects');
+      const response = await axios.get(`${apiUrl}/api/projects`);
       setProjects(response.data);
       setLoading(false);
     } catch {
@@ -76,7 +78,7 @@ export default function AdminDashboard() {
 
       if (editingId) {
         await axios.put(
-          `/api/projects/${editingId}`,
+          `${apiUrl}/api/projects/${editingId}`,
           formData,
           {
             headers: { Authorization: `Bearer ${token}` }
@@ -85,7 +87,7 @@ export default function AdminDashboard() {
         alert('Project updated successfully');
       } else {
         await axios.post(
-          '/api/projects',
+          `${apiUrl}/api/projects`,
           formData,
           {
             headers: { Authorization: `Bearer ${token}` }
@@ -136,7 +138,7 @@ export default function AdminDashboard() {
       const token = getAdminToken();
 
       await axios.delete(
-        `/api/projects/${id}`,
+        `${apiUrl}/api/projects/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }

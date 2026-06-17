@@ -21,14 +21,16 @@ export default function AdminLogin() {
         password: password.trim()
       };
 
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+
       console.log('[admin-login] Sending credentials:', {
         ...loginPayload,
         password: '[redacted]',
         passwordLength: loginPayload.password.length,
-        endpoint: '/api/admin/login'
+        endpoint: `${apiUrl}/api/admin/login`
       });
 
-      const response = await axios.post('/api/admin/login', loginPayload);
+      const response = await axios.post(`${apiUrl}/api/admin/login`, loginPayload);
 
       console.log('[admin-login] Login response:', response.data);
 

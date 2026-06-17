@@ -12,11 +12,8 @@ const Projects = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        // Use local backend for development, fallback to production
-        const apiUrl = window.location.hostname === 'localhost' 
-          ? 'http://localhost:3001/api/projects'
-          : 'https://bkoimett-portofolio.onrender.com/api/projects';
-        const response = await axios.get(apiUrl);
+        const apiUrl = import.meta.env.VITE_API_URL || '/api';
+        const response = await axios.get(`${apiUrl}/api/projects`);
         setProjects(response.data);
       } catch (error) {
         console.error('Error fetching projects:', error);
