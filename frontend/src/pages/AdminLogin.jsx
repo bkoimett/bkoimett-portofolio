@@ -94,8 +94,8 @@ export default function AdminLogin() {
           <div className="mt-stack-lg pt-stack-lg border-t border-outline-variant/30 flex flex-col items-center gap-2">
             <span className="font-label-md text-label-md text-outline">System v2.4.0 (MERN & Go)</span>
             <div className="flex gap-4">
-              <a className="text-outline hover:text-on-surface transition-colors font-label-md text-label-md" href="#">Privacy</a>
-              <a className="text-outline hover:text-on-surface transition-colors font-label-md text-label-md" href="#">Security</a>
+              <a className="text-outline hover:text-on-surface transition-colors font-label-md text-label-md" href="/about">About</a>
+              <a className="text-outline hover:text-on-surface transition-colors font-label-md text-label-md" href="/projects">Projects</a>
             </div>
           </div>
         </div>
