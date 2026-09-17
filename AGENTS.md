@@ -13,10 +13,11 @@
 - `backend/seedAdmin.js` — Script to create initial admin user
 - `backend/eslint.config.js` — ESLint flat config
 - `backend/tests/` — API tests (node:test + supertest, models mocked)
-- `frontend/src/pages/` — Page components (Home, Projects, About, AdminLogin, AdminDashboard, AdminSettings, ProjectDetail)
-- `frontend/src/components/Navbar.jsx` — Shared navigation
-- `frontend/src/utils/auth.js` — localStorage token helpers
-- `frontend/src/context/ThemeContext.jsx` — Theme provider
+- `frontend/src/pages/` — Page components (Home, Projects, About, AdminLogin, AdminDashboard, AdminSettings, ProjectDetail, NotFound)
+- `frontend/src/components/` — Shared primitives (Layout, Container, Section, SectionHeading, Button, Card, StatusBadge, StatCard, ProjectCard, Footer, ScrollToTop, NotFound, ProtectedRoute, ThemeToggle)
+- `frontend/src/components/admin/` — Admin components (AdminLayout, Sidebar, StatCards, TelemetryChart, ProjectsTable, ProjectFormDrawer, ConfigViewer, SessionBadge)
+- `frontend/src/context/` — AuthContext.jsx, ThemeContext.jsx
+- `frontend/src/utils/` — api.js, auth.js
 
 ## ENVIRONMENT
 
@@ -37,7 +38,7 @@ Frontend (optional .env):
 
 ## PLANNING MODE
 
-- Always ask clarifying questions before assuming design, content, or scope
+- Always ask clarifying questions before assuming design, scope, or tech stack
 - Never assume tech stack or add new dependencies without asking
 - Use deep-dive sub-agents only for genuinely non-trivial research (new feature areas, security review) — skip them for small, well-scoped changes to save tokens
 - For small fixes (bug fixes, copy changes, styling tweaks), skip planning ceremony and just implement
@@ -75,3 +76,33 @@ Frontend (optional .env):
 - Always follow the UI design system when creating or reviewing components or pages
 - Design System: @DESIGN.md
 - Keep this file and @DESIGN.md in sync with the actual codebase — update them as part of any change that alters stack, structure, or conventions, don't let them drift
+
+## FILE INVENTORY (as-built)
+
+### New — frontend components
+`Layout`, `Container`, `Section`, `SectionHeading`, `Button`, `Card`, `StatusBadge`,
+`StatCard`, `ProjectCard`, `Terminal`, `FeaturedSystems`, `MarkdownContent`, `ThemeToggle`,
+`NotFound`, `ProtectedRoute`, `ScrollToTop`
+
+### New — frontend admin components
+`admin/AdminLayout`, `admin/Sidebar`, `admin/StatCards`, `admin/TelemetryChart`,
+`admin/ProjectsTable`, `admin/ProjectFormDrawer`, `admin/ConfigViewer`, `admin/SessionBadge`
+
+### New — frontend lib/data/context
+`data/profile.js`, `data/techStack.js`, `data/stats.js`, `data/terminalCommands.js`,
+`lib/telemetry.js`, `context/AuthContext.jsx` (+ `context/authContext.js`)
+
+### Modified — frontend
+`App.jsx`, `index.css`, `index.html`, `pages/Home.jsx`, `pages/Projects.jsx`,
+`pages/ProjectDetail.jsx`, `pages/About.jsx`, `pages/AdminLogin.jsx`,
+`pages/AdminDashboard.jsx`, `pages/AdminSettings.jsx`, `utils/api.js`
+
+### Deleted — frontend
+`styles/ProjectDetail.css`, `styles/AdminSettings.css`, `styles/AdminDashboard.css`,
+`styles/AdminLogin.css`
+
+### Modified — backend
+`models/Project.js`, `index.js`, `tests/api.test.js`
+
+### Modified — docs
+`UISPECS.md`, `DESIGN.md`, `AGENTS.md`, `README.md`

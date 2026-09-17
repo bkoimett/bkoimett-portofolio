@@ -1,14 +1,10 @@
 # UI Specs (As-Built)
 
-Inventory of the current user interface: pages, shared components, sections, naming
-conventions, and known gaps. This is a **structural** reference for the upcoming UI
-revamp — it describes what exists today, not what it should become.
+Inventory of the user interface: pages, shared components, sections, naming conventions,
+and design tokens. This is the **as-built** reference for the completed UI revamp —
+documenting what has been implemented per the PRD and design system.
 
-- **Design tokens** (colors, type scale, spacing, icon sizing): see `@DESIGN.md`.
-- **Project conventions** (stack, API, security): see `@AGENTS.md`.
-- **Content source of truth**: see `DETAILS.md`.
-
-Status: current as of the pre-revamp codebase. Update this file whenever pages,
+Status: current as of the completed revamp. Update this file whenever pages,
 sections, or shared components are added, renamed, or removed.
 
 ---
@@ -25,52 +21,143 @@ Routing is defined in `frontend/src/App.jsx` using React Router.
 | `/about` | `About` | `pages/About.jsx` | Public | Yes |
 | `/admin/login` | `AdminLogin` | `pages/AdminLogin.jsx` | Public form | No |
 | `/admin/dashboard` | `AdminDashboard` | `pages/AdminDashboard.jsx` | Auth (client-side token check) | No |
+| `*` | `NotFound` | `pages/NotFound.jsx` | Public | No |
 
 Notes:
 
 - `AdminSettings` (`pages/AdminSettings.jsx`) is **not routed**. It is rendered as a
   tab inside `AdminDashboard`.
-- There is **no 404 / catch-all route**; unknown paths render an empty shell.
-- `ThemeProvider` wraps the whole app, but no component consumes `useTheme`, so there
-  is no theme toggle in the UI (see §5).
+- Theme toggle is available in the Navbar; system preference + localStorage persists
+  the choice; `@theme inline` with class-based `.dark` override.
+- `NotFound` renders for any unmatched path — catches 404s gracefully.
 
 ---
 
 ## 2. Shared Components
 
-Only one shared component exists in `frontend/src/components/`.
+Shared components live in `frontend/src/components/`. These eliminate the duplication
+that existed in the pre-revamp codebase (duplicated footers, scattered button classes,
+inconsistent card patterns).
 
-### 2.1 `Navbar` — `components/Navbar.jsx`
+### 2.1 `Layout` — `components/Layout.jsx`
 
-Fixed top bar, rendered once in `App.jsx` for every route.
+Root layout wrapper used by all pages.
 
-| Region | Name | Contents |
-|---|---|---|
-| Brand | Brand (`benjieDev`) | `Link` to `/`, `font-headline-md` bold |
-| Desktop nav | Primary navigation | `Home`, `Projects`, `About` — active item gets `border-b-2 border-primary text-primary` |
-| Desktop CTA | `Hire Me` | `mailto:koimettb@gmail.com`, pill button |
-| Mobile trigger | Hamburger / Close button | Toggles the mobile panel, `aria-expanded`/`aria-controls` |
-| Mobile panel | `mobile-navigation` | Same nav items + `Hire Me`; auto-closes on route change |
+- `<Navbar />` — fixed top, z-50, h-16, glass background
+- `<main>` — `pt-32` for public pages (offset for fixed nav)
+- `<Footer />` — single source of truth, fixes branding
+- Container/Screen padding
 
-Active-route logic lives in `getActivePath()` (treats any `/projects*` path as
-`/projects`).
+### 2.2 `Container` — `components/Container.jsx`
 
-### 2.2 Missing shared components
+```html
+<div className="max-w-container-max mx-auto px-gutter">
+```
 
-There is **no shared** `Layout`, `Footer`, `Section`, `Button`, `Card`, or `Container`
-component. Consequences:
+Used across all pages for consistent max-width + horizontal padding.
 
-- The **footer is duplicated** inline in `Home`, `Projects`, and `About`, with
-  different markup and inconsistent branding (`Benjamin Koimett` vs `benjieDev`).
-- `ProjectDetail`, `AdminLogin`, and `AdminDashboard` render **no footer**.
-- Buttons/cards/pills are repeated as raw utility strings or per-page CSS classes.
+### 2.3 `Section` — `components/Section.jsx`
+
+Standard section wrapper with consistent internals:
+
+```html
+<section className="py-stack-lg">
+  {content}
+</section>
+```
+
+### 2.4 `SectionHeading` — `components/SectionHeading.jsx`
+
+```html
+<h2 className="headline-md font-semibold tracking-tight">
+  {children}
+</h2>
+```
+
+### 2.5 `Button` — `components/Button.jsx`
+
+Primary/secondary/ghost variants in sm/md/lg sizes, token-colored.
+
+| Variant | Class Pattern |
+|---|---|
+| `primary` | `px-6 py-3 bg-primary text-on-primary rounded-lg font-semibold hover:brightness-110 active:scale-95 transition-all duration-200` |
+| `secondary` | `px-6 py-3 border border-outline text-on-surface rounded-lg font-semibold hover:bg-white/5 transition-all duration-200` |
+| `ghost` | `px-4 py-2 text-on-surfacerounded-lg font-semibold hover:bg-surface-container-low/5 transition-all duration-200` |
+
+### 2.6 `Card` — `components/Card.jsx`
+
+Glass-morphic card with token-driven styling:
+
+```css
+bg-surface-container-low/70 backdrop-blur-xl border border-outline-variant/30 rounded-lg
+```
+
+Hover: `border-primary shadow-lg -translate-y-1`
+
+### 2.7 `StatusBadge` — `components/StatusBadge.jsx`
+
+Pill-styled status indicator using `tech-pill` pattern with primary border.
+
+### 2.8 `StatCard` — `components/StatCard.jsx`
+
+Card displaying a stat (number + label + icon), token-styled.
+
+### 2.9 `ProjectCard` — `components/ProjectCard.jsx`
+
+Thumbnail, category pill, title, description, tech pills, Code/Demo links, console latency tag.
+
+### 2.10 `Footer` — `components/Footer.jsx`
+
+Single shared footer used across Home, Projects, and About:
+
+```
+benjieDev © 2026 All rights reserved. GitHub LinkedIn Dev.to
+```
+
+Replaces the three duplicated footer variants from the pre-revamp codebase.
+
+### 2.11 `ScrollToTop` — `components/ScrollToTop.jsx`
+
+### 2.12 `NotFound` — `pages/NotFound.jsx`
+
+404 page rendered for unknown routes.
+
+### 2.13 `AdminLayout` — `components/admin/AdminLayout.jsx`
+
+Admin shell with responsive Sidebar + Main Content Canvas.
+
+### 2.14 `Sidebar` — `components/admin/Sidebar.jsx`
+
+Responsive drawer on mobile; brand header (`B. Koimett` / `Admin Console`);
+nav links (Dashboard, Projects, Settings); session badge; Support → mailto; Logout.
+
+### 2.15 `TelemetryChart` — `components/admin/TelemetryChart.jsx`
+
+Inline SVG: views-per-project bars + throughput trend from real data.
+
+### 2.16 `ProjectsTable` — `components/admin/ProjectsTable.jsx`
+
+Functional visibility toggle (PUT /projects/:id) + confirm-delete.
+
+### 2.17 `ProjectFormDrawer` — `components/admin/ProjectFormDrawer.jsx`
+
+Slide-over form (title, slug, category, tech/tags pills, readTime, status, markdown body + preview),
+focus trap, Esc/backdrop close.
+
+### 2.18 `ConfigViewer` — `components/admin/ConfigViewer.jsx`
+
+Read-only raw config viewer (derived values only — no JWT_SECRET/MONGODB_URI) +
+simulated SSH key status.
+
+### 2.19 `SessionBadge` — `components/admin/SessionBadge.jsx`
+
+Session badge indicating active administrative session with instant logout.
 
 ---
 
 ## 3. Page-by-Page Section Inventory
 
-Section names below are taken verbatim from code comments or `id` attributes where
-present.
+Section names are taken from code comments or `id` attributes where present.
 
 ### 3.1 Home — `pages/Home.jsx`
 
@@ -79,90 +166,94 @@ Named sections:
 1. `SECTION 1: HERO`
 2. `SECTION 2: QUICK STATS`
 3. `SECTION 3: TECHNICAL STACK`
-4. `SECTION 4: LATEST WORK (Bento Grid)` — **unimplemented** (comment: `SKIP FOR NOW` / `TODO`)
-5. `SECTION 5: FINAL CTA`
-6. `SECTION 6: FOOTER`
+4. `SECTION 4: FEATURED SYSTEMS BENTO` (built — CareFacility/LandLedger/Kijiji)
+5. `SECTION 5: INTERACTIVE TERMINAL` (macros `$help $projects $stack $uptime $contact` +
+   typed input, `role="log"`, reduced-motion safe, real data from `DETAILS.md`)
+6. `SECTION 6: FINAL CTA`
+7. `SECTION 7: FOOTER` (shared `<Footer />`)
 
 Sub-parts:
 
 - **Hero:** Status Badge (`Available Immediately · Remote-Ready`), Headline
   (`Benjamin Kiprotich Koimett`), Subheading, Description, Buttons (`View My Work`,
-  `Contact Me`).
+  `Contact Me`) — all `<Link>`/`Button` components.
 - **Quick Stats:** 3 Stat Cards — `8+ Projects Shipped`, `4+ Years Experience`,
   `24/7 Production Uptime`.
 - **Technical Stack:** heading `Core Infrastructure & Tooling` + 6 tech cards
   (React, Node.js, MongoDB, TypeScript, Docker, Golang).
+- **Featured Systems Bento:** Grid showing top 3 verified deployments with benchmark
+  telemetry (response time in ms, status indicators).
+- **Interactive Terminal:** Simulated shell environment in `JetBrains Mono` responding
+  to macro buttons (`$help`, `$projects`, `$stack`, `$uptime`, `$contact`).
 - **Final CTA:** heading `Let's Build Something Great` + buttons
   (`Start a Conversation` → `/about`, `Get In Touch` → mailto).
-- **Footer:** brand + copyright + `GitHub` / `LinkedIn` / `Dev.to`.
+- **Footer:** shared `<Footer />` component with brand + copyright + `GitHub`
+  / `LinkedIn` / `Dev.to`.
 
-#### ASCII wireframe
+ASCII wireframe (excerpt):
 
 ```
 ┌───────────────────────────── NAVBAR (fixed) ─────────────────────────────┐
 │ benjieDev                 Home   Projects   About              [Hire Me] │
 └──────────────────────────────────────────────────────────────────────────┘
 
-                    · · · · · · emerald glow (absolute) · · · · · ·
+· · · · · · emerald glow (absolute) · · · · · ·
 
-                    ┌────────────────────────────────────┐
-                    │ ⌨  Available Immediately · Remote-Ready │   ← Status Badge
-                    └────────────────────────────────────┘
-                      Benjamin Kiprotich Koimett            ← Headline (display-xl)
-                    Full-Stack Software Engineer | MERN + Go + TypeScript
-              I ship production applications across healthcare, agriculture, ...
-                    ┌───────────────┐   ┌───────────────┐
-                    │ View My Work  │   │  Contact Me   │
-                    └───────────────┘   └───────────────┘
-                        SECTION 1: HERO
+┌────────────────────────────────────┐
+│ ⌨ Available Immediately · Remote-Ready │   ← Status Badge
+└────────────────────────────────────┘
+  Benjamin Kiprotich Koimett            ← Headline (display-xl)
+Full-Stack Software Engineer | MERN + Go + TypeScript
+I ship production applications across healthcare, agriculture...
+
+┌───────────────┐   ┌───────────────┐
+│ View My Work  │   │  Contact Me   │
+└───────────────┘   └───────────────┘
+  SECTION 1: HERO
 
 ╔═══════════════╗   ╔═══════════════╗   ╔═══════════════╗
 ║      8+       ║   ║      4+       ║   ║     24/7      ║
 ║ PROJECTS      ║   ║ YEARS EXP.    ║   ║ UPTIME        ║
 ╚═══════════════╝   ╚═══════════════╝   ╚═══════════════╝
-                        SECTION 2: QUICK STATS
+  SECTION 2: QUICK STATS
 
-                  Core Infrastructure & Tooling
-                          ▔▔▔▔▔▔▔▔  (primary underline)
-   ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐
-   │ React  │ │ Node.js│ │MongoDB │ │  TS    │
-   └────────┘ └────────┘ └────────┘ └────────┘
-   ┌────────┐ ┌────────┐
-   │ Docker │ │ Golang │
-   └────────┘ └────────┘
-                        SECTION 3: TECHNICAL STACK
+Core Infrastructure & Tooling
+    ▔▔▔▔▔▔▔▔  (primary underline)
+ ████████ ████████ ████████ ████████ ████████ ████████
+    React  Node.js MongoDB  TS  Docker  Golang
+                         SECTION 3: TECHNICAL STACK
 
-        ~~~ SECTION 4: LATEST WORK (Bento Grid) — TODO, not built ~~~
+╔═════════════════════════════════════════════════════════════════════════════╗
+║            Let's Build Something Great               ║
+║   Currently open to freelance opportunities...       ║
+║   ┌────────────────────┐  ┌────────────────┐         ║
+║   │ Start a Conversation│  │  Get In Touch  │         ║
+║   └────────────────────┘  └────────────────┘         ║
+╚═════════════════════════════════════════════════════════════════════════════╝
+  SECTION 5: INTERACTIVE TERMINAL
 
-      ╔══════════════════════════════════════════════════════╗
-      ║            Let's Build Something Great               ║
-      ║   Currently open to freelance opportunities...       ║
-      ║   ┌────────────────────┐  ┌────────────────┐         ║
-      ║   │ Start a Conversation│  │  Get In Touch  │         ║
-      ║   └────────────────────┘  └────────────────┘         ║
-      ╚══════════════════════════════════════════════════════╝
-                        SECTION 5: FINAL CTA
+[ Bento grid of CareFacility / LandLedger / Kijiji — built, not TODO ]
 
-┌────────────────────────── SECTION 6: FOOTER ──────────────────────────────┐
-│ Benjamin Koimett  © 2026 All rights reserved.   GitHub  LinkedIn  Dev.to  │
-└───────────────────────────────────────────────────────────────────────────┘
+┌────────────────────────── FOOTER ──────────────────────────────┐
+│ benjieDev                        GitHub  LinkedIn  Dev.to          │
+│ © 2026 Benjamin Kiprotich Koimett. Built with MERN & Go.       │
+└───────────────────────────────────────────────────────────────────┘
 ```
 
 ### 3.2 Projects — `pages/Projects.jsx`
 
 Structure: `<main>` → Header Section, Filter Tabs, Projects Grid, Loading Spinner →
-`<footer>`.
+`<Footer />`.
 
 - **Header Section:** `Featured Projects` + description.
-- **Filter Tabs:** `All`, `Web Dev`, `Blockchain`, `PWA` (active uses `.active-filter`).
-- **Projects Grid:** `ProjectCard` (inline `<article>`), 2-up on `md:`;
-  image + category pill, title, description, tech pills, `GitHub` / `Live Demo` links.
+- **Filter Tabs:** `All`, `Web Dev`, `Blockchain`, `PWA` (active uses `active-filter`).
+- **Projects Grid:** `ProjectCard` (thumbnail + category pill, title, description,
+  tech pills, GitHub / Live Demo links), 2-up on `md:`.
 - **Loading Spinner:** shown while `loading` is true.
-- **Footer:** same family as Home but branded `benjieDev`.
 - **Fallback dataset:** 4 hardcoded projects shown when the API request fails
   (`CareFacility Platform`, `LandLedger`, `Kijiji Corporate Cuisine`, `AgriSync`).
 
-#### ASCII wireframe
+ASCII wireframe (excerpt):
 
 ```
 ┌───────────────────────────── NAVBAR (fixed) ─────────────────────────────┐
@@ -184,7 +275,7 @@ Production applications shipped across healthcare, ...
 ┌───────────────────────────┐  ┌───────────────────────────┐
 │ ...                       │  │ ...                       │
 └───────────────────────────┘  └───────────────────────────┘
-                        Projects Grid (1 / md:2 columns)
+  Projects Grid (1 / md:2 columns)
 
 ┌────────────────────────── FOOTER ──────────────────────────┐
 │ benjieDev                        GitHub  LinkedIn  Dev.to  │
@@ -194,32 +285,33 @@ Production applications shipped across healthcare, ...
 
 ### 3.3 ProjectDetail — `pages/ProjectDetail.jsx`
 
-Uses **legacy plain CSS** (`styles/ProjectDetail.css`), not the design tokens.
+Built on tokens, legacy CSS deleted. Elements/classes:
 
-Elements/classes: `.project-detail` → `.back-btn` (`← Back to Projects`),
-`.blog-post` → Hero (`.hero-image`), Header (`.post-header`: `<h1>`, `.description`),
-Metadata (`.post-meta`: date / read time / category, prefixed with emoji),
-Tags (`.tags` / `.tag`), Main Content (`.post-content`, rendered via `react-markdown`),
-Technologies (`.technologies` / `.tech-list` / `.tech-badge`), Links (`.project-links`
-with `.btn.btn-primary` and `.btn.btn-secondary`).
+- **Back button** (`← Back to Projects`) via `<Link>`.
+- **Metadata bar** with Material Symbols (no emoji); date / read time / category.
+- **MarkdownContent** — `react-markdown` rendered body with token-aligned styles.
+- **Technology badges** via `tech-pill` component.
+- **Skeleton** loading states.
+- **Not-found** state when project not found.
+- **View count** endpoint integration (from Phase 3 backend).
 
-#### ASCII wireframe
+ASCII wireframe (excerpt):
 
 ```
 ┌───────────────────────────── NAVBAR (fixed) ─────────────────────────────┐
 │ benjieDev                 Home   Projects   About              [Hire Me] │
 └──────────────────────────────────────────────────────────────────────────┘
 
-← Back to Projects                                        ← .back-btn
+← Back to Projects
 
-╔═══════════════════════════ .blog-post ═══════════════════════════════════╗
+╔═══════════════════════════════════════════════════════════════════════════════╗
 ║ ┌──────────────────────────────────────────────────────────────────────┐ ║
 ║ │                          HERO IMAGE                                  │ ║
 ║ └──────────────────────────────────────────────────────────────────────┘ ║
 ║ Project Title                                             ← .post-header ║
 ║ Description (italic)                                                     ║
-║ 📅 date      ⏱ read time      📁 category                 ← .post-meta    ║
-║ #tag  #tag  #tag                                          ← .tags         ║
+║ 📅 date      ⏱ read time      📁 category                 ← Metadata bar   ║
+║ #tag  #tag  #tag                                                         ← tech pills   ║
 ║ ────────────────────────────────────────────────────────────────────────║
 ║ Markdown body rendered by react-markdown                  ← .post-content║
 ║                                                                          ║
@@ -228,13 +320,13 @@ with `.btn.btn-primary` and `.btn.btn-secondary`).
 ║ └──────────────────────────────────────────────────────┘               ║
 ║ ────────────────────────────────────────────────────────────────────────║
 ║ [ View on GitHub ]  [ Live Demo ]                          ← .project-links║
-╚══════════════════════════════════════════════════════════════════════════╝
+╚══════════════════════════════════════════════════════════════════════════════╝
 ```
 
 ### 3.4 About — `pages/About.jsx`
 
 Sections: Hero Section, Bio Section, Experience Timeline, Skills Grid,
-Contact CTA Section, Footer.
+Contact CTA Section, `<Footer />`.
 
 - **Hero Section:** `md:grid-cols-12` → `md:col-span-7` text (heading
   `Engineering with Precision.` with `.text-gradient` on `Precision.`) and
@@ -247,9 +339,9 @@ Contact CTA Section, Footer.
   `Backend & APIs`, `Data & DevOps`, `Blockchain & Web3`.
 - **Contact CTA Section:** `.glass-panel` with `Let's build something great.`,
   Email / Phone links + GitHub / LinkedIn / Dev.to icons.
-- **Footer:** same family, branded `benjieDev`.
+- **Footer:** shared `<Footer />` component.
 
-#### ASCII wireframe
+ASCII wireframe (excerpt):
 
 ```
 ┌───────────────────────────── NAVBAR (fixed) ─────────────────────────────┐
@@ -261,11 +353,11 @@ Contact CTA Section, Footer.
   (col-span-7)                            │   PORTRAIT IMAGE  │  (col-span-5)
                                           │   grayscale→color │
                                           └───────────────────┘
-                        Hero Section (grid-cols-12)
+                                Hero Section (grid-cols-12)
 
-  About Me (sticky)   Full-stack engineer shipping production ...
-                      I leverage Go for its concurrency ...
-                        Bio Section
+  About Me (sticky)   Full-stack engineer shipping production...
+                        I leverage Go for its concurrency...
+                          Bio Section
 
 ░ Experience ░ The professional journey so far.                       ░
 ░              │ Software Engineer — Zone01 Kisumu        Jan 2026–  ░
@@ -276,7 +368,7 @@ Contact CTA Section, Footer.
 ░              │   01 ...  02 ...                                    ░
                         Experience Timeline (surface band)
 
-                     Technical Stack
+              Technical Stack
    ┌───────────────────────────────┐ ┌───────────────────────────────┐
    │ 🌐 Frontend                   │ │ ⌨ Backend & APIs              │
    │ (React)(Next)(TS)(Tailwind)   │ │ (Node)(Go)(Express)(JWT)      │
@@ -285,12 +377,12 @@ Contact CTA Section, Footer.
    │ ☁ Data & DevOps               │ │ 🗄 Blockchain & Web3          │
    │ (Mongo)(Postgres)(Docker)     │ │ (Solana)(Poly Amoy)(Contracts)│
    └───────────────────────────────┘ └───────────────────────────────┘
-                        Skills Grid (md:2 columns)
+               Skills Grid (md:2 columns)
 
-   ╔══════════════════════════════════════════════════════════════════╗
-   ║ Let's build something great.        ✉ Email   ☎ Phone  | ⌨ 🔗 ✎ ║
-   ╚══════════════════════════════════════════════════════════════════╝
-                        Contact CTA Section (glass-panel)
+╔═══════════════════════════════════════════════════════════════════╝
+║ Let's build something great.        ✉ Email   ☎ Phone  | ⌨ 🔗 ✎ ║
+╚═══════════════════════════════════════════════════════════════════╝
+  Contact CTA Section (glass-panel)
 
 ┌────────────────────────────── FOOTER ──────────────────────────────┐
 │ benjieDev   © 2026 ... Built with MERN & Go.  GitHub LinkedIn Dev.to│
@@ -308,14 +400,14 @@ Login Container → Back Link (`Home`) + Login Card (`.glass-panel`).
 - On success stores `adminToken` in `localStorage` and redirects to
   `/admin/dashboard`.
 
-#### ASCII wireframe
+ASCII wireframe (excerpt):
 
 ```
         ·  ·        atmospheric background blobs (blurred)         ·  ·
 
               ← Home                                     ← Back Link
 
-        ╔══════════════════════════════════════════════╗
+        ╔═════════════════════════════════════════════╗
         ║ Admin Login                                  ║
         ║ Access the technical console.                ║
         ║ ┌──────────────────────────────────────────┐ ║
@@ -328,37 +420,37 @@ Login Container → Back Link (`Home`) + Login Card (`.glass-panel`).
         ║ ──────────────────────────────────────────── ║
         ║   System v2.4.0 (MERN & Go)                  ║
         ║   About   Projects                           ║
-        ╚══════════════════════════════════════════════╝
-                    Login Card (.glass-panel)
+        ╚════════════════════════════════════════════════╝
+            Login Card (.glass-panel)
 ```
 
 ### 3.6 AdminDashboard — `pages/AdminDashboard.jsx`
 
-Two-column shell: `SideNavBar` (`<aside>`) + Main Content Canvas (`<main>`).
-Active view is driven by `activeTab` state (no routing).
+Two-column shell: `AdminLayout`/`Sidebar` + Main Content Canvas.
 
-**SideNavBar:**
+Active view is driven by `activeTab` state (no routing, but responsive sidebar).
+
+**Sidebar:**
 
 - **Brand Header** — `B. Koimett` / `Admin Console`.
 - **Navigation Links** — `Dashboard`, `Projects`, `Settings` (active item gets
   `bg-primary/10 border-r-4 border-primary`).
-- **Footer Actions** — `Support` (inert) and `Logout` (calls `logout()`).
+- **Session Badge** — indicates active admin session; instant logout.
+- **Support** → mailto.
 
 **Main Content Canvas** (`max-w-container-max`):
 
-- `success` banner (auto-dismiss after 3s).
+- **Success banner** (auto-dismiss after 3s).
 - **Dashboard Overview Section** (`id="dashboard"`) — `System Overview` + Stat Cards
-  Grid: `Total Projects` (live count), `Portfolio Views` (`1.2k`, hardcoded),
-  `Last Updated` (`2h`, hardcoded).
+  Grid: `Total Projects` (from API), `Portfolio Views` (summed views from API),
+  `Last Updated` (from API).
 - **Projects Management Section** (`id="projects"`) — header + `Add Project` button;
-  **Projects Form** (`Edit Project` / `Create New Project`: Title, Description,
-  Content (Markdown), Category + Read Time row, Technologies (comma-separated),
-  Tags (comma-separated), Status select, form buttons); **Projects Table**
-  (columns: Title, Category, Tech Stack, Status, Actions — edit, delete/confirm, view).
+  **`ProjectFormDrawer`** slide-over (title, slug, category, tech/tags pills,
+  readTime, status, markdown body + preview), focus trap, Esc/backdrop close.
 - **Settings Section** (`id="settings"`) — renders `<AdminSettings />`.
 - **Bottom Spacer** (`h-20`).
 
-#### ASCII wireframe
+ASCII wireframe (excerpt):
 
 ```
 ┌────────────────┬─────────────────────────────────────────────────────────────┐
@@ -389,20 +481,24 @@ Active view is driven by `activeTab` state (no routing).
 
 ### 3.7 AdminSettings — `pages/AdminSettings.jsx`
 
-Rendered as a tab inside `AdminDashboard`, **not a route**. Uses legacy CSS
-(`styles/AdminSettings.css`, imported twice).
+Rendered as a tab inside `AdminDashboard`, **not a route**. Restyled with design tokens;
+
+double import removed; add read-only **Raw Config** viewer (derived values only —
+no `JWT_SECRET`/`MONGODB_URI`) + simulated SSH key status; keep credential form.
 
 - `.settings-container` → `<h2>Settings</h2>`
 - `.settings-form` → **Change Username** (`.form-section`), **Change Password**
   (`.form-section`: New Password, Confirm Password), error/success messages,
   `.save-btn` (`Save Changes`).
+- **Raw Config Viewer:** code-styled JSON panel with derived values only (e.g.,
+  app version, feature flags, SSH key simulated status). Never renders env secrets.
 
-#### ASCII wireframe
+ASCII wireframe (excerpt):
 
 ```
 ┌─ settings-container ─────────────────────────────────┐
 │ Settings                                             │
-│ ╔═ settings-form ═══════════════════════════════════╗│
+│ ╔═ settings-form ════════════════════════════════════╗│
 │ ║ Change Username                                    ║│
 │ ║ New Username [ Enter new username              ]   ║│
 │ ║ Leave empty to keep current username               ║│
@@ -413,7 +509,9 @@ Rendered as a tab inside `AdminDashboard`, **not a route**. Uses legacy CSS
 │ ║ ─────────────────────────────────────────────────  ║│
 │ ║ [ error / success message ]                        ║│
 │ ║ [                Save Changes                 ]    ║│
-│ ╚════════════════════════════════════════════════════╝│
+│ ║ ─────────────────────────────────────────────────  ║│
+│ ║ [ Raw Config Viewer ]      [ Simulated SSH Key ]   ║│
+│ ╚═════════════════════════════════════════════════════╝│
 └──────────────────────────────────────────────────────┘
 ```
 
@@ -424,7 +522,8 @@ Rendered as a tab inside `AdminDashboard`, **not a route**. Uses legacy CSS
 ### Files & components
 
 - Pages: `pages/PascalCase.jsx`, default export (`Home`, `Projects`, `ProjectDetail`, …).
-- Shared component: `components/Navbar.jsx`; context: `context/ThemeContext.jsx`.
+- Shared component: `components/Navbar.jsx`; context: `context/ThemeContext.jsx`, `context/AuthContext.jsx`.
+- Admin components: `components/admin/AdminLayout.jsx`, `components/admin/Sidebar.jsx`, etc.
 - Section names are **code comments** in public pages (e.g. `SECTION 1: HERO`) and
   **`id` attributes** in admin sections (`dashboard`, `projects`, `settings`).
 
@@ -439,7 +538,7 @@ Rendered as a tab inside `AdminDashboard`, **not a route**. Uses legacy CSS
   `body-lg|md`, `label-md`; mono via `font-code-sm` / `text-code-sm`.
 - Custom component classes: `glass-card`, `glass-panel`, `btn-primary`,
   `btn-secondary`, `input-base`, `tech-pill`, `active-filter`, `emerald-glow`,
-  `gradient-stats`, `text-gradient`, `font-display-*`.
+  `text-gradient`, `font-display-*`.
 - Icons: Google **Material Symbols (Outlined)** loaded in `index.html`, used as
   `<span className="material-symbols-outlined">name</span>`.
 - Responsive: `md:` (768px) and `lg:` (1024px); content container
@@ -457,49 +556,43 @@ Rendered as a tab inside `AdminDashboard`, **not a route**. Uses legacy CSS
 
 ## 5. Known Gaps / Revamp Notes
 
-Collected from a read of the current source; useful starting points for the revamp.
+Collected from the code audit; these represent known knowns as of the as-built state.
 
-**Design system / theming**
+### Design system / theming
 
-- `ThemeContext` + `toggleTheme` exist but **nothing consumes `useTheme`** — no toggle
-  in the UI, so the app is effectively **dark-only**. The light-mode `:root`
-  variables in `index.css` are never reached by the `@theme` tokens.
-- The `.text-gradient` accent is only applied on the About hero heading; no other page
-  uses the gradient.
+- Theme toggle in Navbar persists choice to `localStorage`; system preference detection
+  on initial load.
+- Light mode `:root` variables in `index.css` are reached via `@theme inline { --color-surface: var(--surface); ... }`.
+- `.text-gradient` accent used on About hero and ProjectDetail metadata bar.
+- Global transition: `200ms cubic-bezier(0.4, 0, 0.2, 1)` on `background-color`, `border-color`, `color`, `fill`, `stroke`.
 
-**Duplicate / inconsistent UI**
+### Duplicate / inconsistent UI
 
-- Footer is **duplicated three times** (Home, Projects, About) with different markup
-  and branding (`Benjamin Koimett` vs `benjieDev`). No shared `Footer`/`Layout`.
-- No shared `Button`/`Card`/`Container`; the same patterns are re-typed per page.
-- `px-6` is used instead of the `px-gutter` token in several sections.
-- Internal links use raw `<a href>` (Home CTA → `/about`, `/projects`) instead of
-  React Router `<Link>`.
+- Footer is now a single shared `<Footer />` component — no more duplication.
+- Shared `Button`, `Card`, `Container`, `Section`, `SectionHeading` components eliminate
+  per-page CSS repetition.
+- Buttons use `<Link>` instead of raw `<a href>`.
+- `active-filter` class replaces duplicated `.active-filter` patterns.
 
-**Dead / orphaned styles & classes**
+### Dead / orphaned styles & classes (resolved)
 
-- `styles/AdminLogin.css` is **never imported** (orphaned).
-- `rim-light` and `custom-scrollbar` are referenced in `AdminDashboard.jsx` but
-  **never defined** anywhere.
-- `styles/AdminSettings.css` is imported **twice** in `AdminSettings.jsx`.
-- `ProjectDetail.css` defines `.btn-primary` / `.btn-secondary`, **colliding** with
-  the design-system classes of the same name; the page is not token-aligned and uses
-  emoji in metadata.
+- `styles/ProjectDetail.css`, `styles/AdminSettings.css`, `styles/AdminDashboard.css`,
+  `styles/AdminLogin.css` — **all deleted**; replaced by token-aligned component styles.
+- `rim-light` and `custom-scrollbar` — removed, never re-added.
+- `AdminSettings.css` double import — fixed; single import only.
 
-**Unimplemented / inert**
+### Unimplemented (remained as-is)
 
-- Home `SECTION 4: LATEST WORK (Bento Grid)` is a TODO — not built.
-- No 404 / catch-all route.
-- Admin stat cards show **hardcoded fake metrics** (`Portfolio Views = 1.2k`,
-  `+3 from last month`, `+12% vs last week`, `Last Updated = 2h`).
-- Admin `Support` button and the table row `visibility` (👁) button do nothing.
+- `AdminSettings` exists as a tab inside `AdminDashboard`, not a route — matches PRD route map.
+- No 404 page until Phase 5 add; now `*` route → `NotFound`.
 
-**Architecture**
+### Architecture
 
-- `AdminSettings` exists as a page file but is only reachable as a tab; it is not in
-  the route table. Consider whether it should be a route in the revamp.
-- `AdminDashboard` mixes Tailwind tokens with legacy `.post-form` / `.form-group` /
-  `.submit-btn` CSS.
+- `AdminLayout`/`Sidebar` responsive (drawer on mobile, session badge, instant logout).
+- `ProjectFormDrawer` with focus trap, Esc/backdrop close.
+- `ConfigViewer` never renders `JWT_SECRET`/`MONGODB_URI`.
+- Axios 401 interceptor excludes `/admin/login` to avoid redirect loops.
+- View endpoint uses `useRef` guard to prevent double-count under React StrictMode.
 
 ---
 
@@ -509,4 +602,5 @@ Collected from a read of the current source; useful starting points for the reva
 |---|---|
 | `@DESIGN.md` | Design tokens: colors, typography, spacing, radii, component classes, icon sizing |
 | `@AGENTS.md` | Project structure, stack, API conventions, security rules |
-| `DETAILS.md` | Source content (CV, projects, links) used across pages |
+| `benjiedev_project_brief_prd.md` | Source content (CV, projects, links) used across pages |
+| `DETAILS.md` | Supplemental content and deterministic telemetry helpers |
