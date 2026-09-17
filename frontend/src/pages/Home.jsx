@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { stats } from '../data/stats';
 import { techStack } from '../data/techStack';
 import { terminalResponse } from '../lib/telemetry';
@@ -37,12 +38,12 @@ const Home = () => {
 
           {/* Buttons */}
           <div className="flex flex-col md:flex-row justify-center gap-stack-md">
-            <a
-              href="/projects"
-              className="bg-primary-container text-on-primary-container px-10 py-4 rounded-lg font-headline-md hover:brightness-110 active:scale-95 transition-all duration-200"
-            >
-              View My Work
-            </a>
+<Link
+ to="/projects"
+ className="bg-primary-container text-on-primary-container px-10 py-4 rounded-lg font-headline-md hover:brightness-110 active:scale-95 transition-all duration-200"
+>
+ View My Work
+</Link>
             <a
               href="mailto:koimettb@gmail.com"
               className="border border-outline-variant text-on-surface px-10 py-4 rounded-lg font-headline-md hover:bg-white/5 transition-all duration-200"
@@ -116,12 +117,12 @@ const Home = () => {
                 Let's discuss your next project.
               </p>
               <div className="flex flex-col md:flex-row justify-center gap-stack-md">
-                <a
-                  href="/about"
-                  className="bg-primary-container text-on-primary-container px-12 py-5 rounded-xl font-headline-md hover:brightness-110 active:scale-95 transition-all duration-200"
-                >
-                  Start a Conversation
-                </a>
+<Link
+ to="/about"
+ className="bg-primary-container text-on-primary-container px-12 py-5 rounded-xl font-headline-md hover:brightness-110 active:scale-95 transition-all duration-200"
+>
+ Start a Conversation
+</Link>
                 <a
                   href="mailto:koimettb@gmail.com"
                   className="border border-outline-variant text-on-surface px-12 py-5 rounded-xl font-headline-md hover:bg-white/5 transition-all duration-200"

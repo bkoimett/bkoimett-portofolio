@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../utils/api';
+import ProjectCard from '../components/primitives/ProjectCard';
+import { Link } from 'react-router-dom';
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);
@@ -22,47 +24,47 @@ const Projects = () => {
           console.error('Error fetching projects:', error);
           // Fallback data while API is unreachable
           setProjects([
-          {
-            _id: '1',
-            slug: 'carefacility-platform',
-            title: 'CareFacility Platform',
-            description: 'Full-stack healthcare management system serving The Serenity Place rehabilitation center.',
-            category: 'Web Dev',
-            image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&auto=format',
-            technologies: ['React', 'Node.js', 'MongoDB', 'PostgreSQL', 'TypeScript'],
-            github: 'https://github.com/bkoimett/carefacility',
-            demo: 'https://theserenityplace.vercel.app',
-          },
-          {
-            _id: '2',
-            slug: 'landledger',
-            title: 'LandLedger — Blockchain Title Deed Verification',
-            description: 'Immutable title deed verification platform preventing land fraud across East Africa.',
-            category: 'Blockchain',
-            image: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=600&auto=format',
-            technologies: ['TypeScript', 'Golang', 'Solana', 'Smart Contracts'],
-            github: 'https://github.com/bkoimett/land-ledge',
-          },
-          {
-            _id: '3',
-            slug: 'kijiji-corporate-cuisine',
-            title: 'Kijiji Corporate Cuisine',
-            description: 'Responsive food blog platform with an admin dashboard for content publishing.',
-            category: 'Web Dev',
-            image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&auto=format',
-            technologies: ['React', 'Node.js'],
-            demo: 'https://www.kijijicorporatecuisine.co.ke',
-          },
-          {
-            _id: '4',
-            slug: 'agrisync',
-            title: 'AgriSync — Offline-First Farming PWA',
-            description: 'Offline-first farming PWA for low-connectivity regions with FAO data integration.',
-            category: 'PWA',
-            image: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=600&auto=format',
-            technologies: ['PWA', 'Offline-first'],
-          },
-        ]);
+            {
+              _id: '1',
+              slug: 'carefacility-platform',
+              title: 'CareFacility Platform',
+              description: 'Full-stack healthcare management system serving The Serenity Place rehabilitation center.',
+              category: 'Web Dev',
+              image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&auto=format',
+              technologies: ['React', 'Node.js', 'MongoDB', 'PostgreSQL', 'TypeScript'],
+              github: 'https://github.com/bkoimett/carefacility',
+              demo: 'https://theserenityplace.vercel.app',
+            },
+            {
+              _id: '2',
+              slug: 'landledger',
+              title: 'LandLedger — Blockchain Title Deed Verification',
+              description: 'Immutable title deed verification platform preventing land fraud across East Africa.',
+              category: 'Blockchain',
+              image: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=600&auto=format',
+              technologies: ['TypeScript', 'Golang', 'Solana', 'Smart Contracts'],
+              github: 'https://github.com/bkoimett/land-ledge',
+            },
+            {
+              _id: '3',
+              slug: 'kijiji-corporate-cuisine',
+              title: 'Kijiji Corporate Cuisine',
+              description: 'Responsive food blog platform with an admin dashboard for content publishing.',
+              category: 'Web Dev',
+              image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&auto=format',
+              technologies: ['React', 'Node.js'],
+              demo: 'https://www.kijijicorporatecuisine.co.ke',
+            },
+            {
+              _id: '4',
+              slug: 'agrisync',
+              title: 'AgriSync — Offline-First Farming PWA',
+              description: 'Offline-first farming PWA for low-connectivity regions with FAO data integration.',
+              category: 'PWA',
+              image: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=600&auto=format',
+              technologies: ['PWA', 'Offline-first'],
+            },
+          ]);
         }
       } finally {
         if (!controller.signal.aborted) {
@@ -75,8 +77,8 @@ const Projects = () => {
     return () => controller.abort();
   }, []);
 
-  const filteredProjects = filter === 'all' 
-    ? projects 
+  const filteredProjects = filter === 'all'
+    ? projects
     : projects.filter(p => p.category === filter);
 
   return (
@@ -112,6 +114,7 @@ const Projects = () => {
         {loading ? (
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-300 dark:border-gray-600 border-t-gray-900 dark:border-t-white"></div>
+            <p className="mt-2 text-on-surface-variant">Loading projects...</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-stack-lg">
