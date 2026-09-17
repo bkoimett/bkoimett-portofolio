@@ -13,4 +13,15 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401 && error.config?.url?.includes('/admin/login') === false) {
+      localStorage.removeItem('adminToken');
+      window.location.replace('/admin/login');
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api;

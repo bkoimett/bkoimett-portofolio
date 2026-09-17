@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import api from '../utils/api';
-import '../styles/AdminSettings.css';
-import '../styles/AdminSettings.css';
 
-export default function AdminSettings() {
+const AdminSettings = () => {
   const [formData, setFormData] = useState({
     newUsername: '',
     newPassword: '',
@@ -68,6 +66,16 @@ export default function AdminSettings() {
     }
   };
 
+  const derivedConfig = {
+    appName: 'benjieDev Console',
+    version: '2.4.0',
+    environment: 'production',
+    lastBackup: '2024-01-15',
+    sshKeyStatus: 'active (simulated)',
+    apiEndpoint: '/api',
+    debugMode: false
+  };
+
   return (
     <div className="settings-container">
       <h2>Settings</h2>
@@ -117,10 +125,25 @@ export default function AdminSettings() {
         {error && <div className="error-message">{error}</div>}
         {message && <div className="success-message">{message}</div>}
 
-        <button type="submit" disabled={loading} className="save-btn">
-          {loading ? 'Saving...' : 'Save Changes'}
-        </button>
+        <div className="form-section">
+          <h3>Raw Configuration Viewer</h3>
+          <div className="code-panel rounded-lg p-4 mt-4 bg-surface-container-low border border-outline-variant/30">
+            <pre className="font-code-sm text-code-sm text-on-surface">
+<code>
+{JSON.stringify(derivedConfig, null, 2)}
+</code>
+</pre>
+          </div>
+        </div>
+
+        <div className="form-section mt-6">
+          <button type="submit" disabled={loading} className="save-btn">
+            {loading ? 'Saving...' : 'Save Changes'}
+          </button>
+        </div>
       </form>
     </div>
   );
-}
+};
+
+export default AdminSettings;

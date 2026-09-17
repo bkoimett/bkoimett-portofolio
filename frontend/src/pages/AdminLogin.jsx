@@ -1,13 +1,21 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
+import { useAuth } from '../context/authContext';
 
 export default function AdminLogin() {
   const navigate = useNavigate();
+  const { login, isAuthenticated } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/admin/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,7 +33,7 @@ export default function AdminLogin() {
 
       const response = await api.post('/admin/login', loginPayload);
 
-      localStorage.setItem('adminToken', response.data.token);
+      login(response.data.token);
       navigate('/admin/dashboard');
     } catch (err) {
       setError(err.response?.data?.error || 'Login failed');
@@ -94,8 +102,8 @@ export default function AdminLogin() {
           <div className="mt-stack-lg pt-stack-lg border-t border-outline-variant/30 flex flex-col items-center gap-2">
             <span className="font-label-md text-label-md text-outline">System v2.4.0 (MERN & Go)</span>
             <div className="flex gap-4">
-              <a className="text-outline hover:text-on-surface transition-colors font-label-md text-label-md" href="/about">About</a>
-              <a className="text-outline hover:text-on-surface transition-colors font-label-md text-label-md" href="/projects">Projects</a>
+              <Link className="text-outline hover:text-on-surface transition-colors font-label-md text-label-md" to="/about">About</Link>
+              <Link className="text-outline hover:text-on-surface transition-colors font-label-md text-label-md" to="/projects">Projects</Link>
             </div>
           </div>
         </div>

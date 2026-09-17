@@ -6,7 +6,7 @@
 /* Import Tailwind */
 @import "tailwindcss";
 
-/* Define theme colors for Tailwind v4 CSS-first */
+/* Define theme for Tailwind v4 */
 @theme {
   --color-surface: #101415;
   --color-surface-dim: #0b0f10;
@@ -15,12 +15,10 @@
   --color-surface-container-high: #272b2c;
   --color-surface-container-highest: #313536;
   --color-surface-bright: #363a3b;
-  --color-primary: #4edea3;
+  --color-primary: #0f9d6b;
   --color-primary-container: #10b981;
   --color-on-surface: #e0e3e5;
   --color-on-surface-variant: #bbcabf;
-  --color-on-primary: #003824;
-  --color-on-primary-container: #00422b;
   --color-outline: #86948a;
   --color-outline-variant: #3c4a42;
   --color-error: #ffb4ab;
@@ -29,14 +27,14 @@
   --color-secondary-container: #3e465c;
   
   --font-size-display-xl: 72px / 1.1 / 800 / -0.04em;
-   --font-size-display-xl-mobile: 48px / 1.1 / 800 / -0.03em;
-   --font-size-display-lg: 64px / 1.1 / 700 / -0.03em;
-   --font-size-headline-lg: 32px / 1.3 / 700;
-   --font-size-headline-md: 24px / 1.4 / 600;
-   --font-size-headline-sm: 18px / 1.4 / 600;
-   --font-size-body-lg: 18px / 1.6 / 400;
-   --font-size-body-md: 16px / 1.6 / 400;
-   --font-size-label-md: 14px / 1.2 / 500 / 0.02em;
+  --font-size-display-xl-mobile: 48px / 1.1 / 800 / -0.03em;
+  --font-size-display-lg: 64px / 1.1 / 700 / -0.03em;
+  --font-size-headline-lg: 32px / 1.3 / 700;
+  --font-size-headline-md: 24px / 1.4 / 600;
+  --font-size-headline-sm: 18px / 1.4 / 600;
+  --font-size-body-lg: 18px / 1.6 / 400;
+  --font-size-body-md: 16px / 1.6 / 400;
+  --font-size-label-md: 14px / 1.2 / 500 / 0.02em;
   
   --spacing-stack-sm: 8px;
   --spacing-stack-md: 16px;
@@ -51,25 +49,51 @@
   --border-radius-xl: 24px;
 }
 
-/* Custom styles that don't interfere with Tailwind's theme system */
+/* Custom variant for dark mode */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Light mode: root level color vars */
 :root {
   color-scheme: light;
-  --text-primary: #111827;
-  --text-secondary: #6b7280;
-  --bg-primary: #ffffff;
-  --bg-secondary: #f9fafb;
-  --bg-tertiary: #e5e7eb;
-  --border-color: #d1d5db;
+  --color-surface: #101415;
+  --color-surface-dim: #0b0f10;
+  --color-surface-container-low: #181c1d;
+  --color-surface-container: #1c2021;
+  --color-surface-container-high: #272b2c;
+  --color-surface-container-highest: #313536;
+  --color-surface-bright: #363a3b;
+  --color-primary: #0f9d6b;
+  --color-primary-container: #10b981;
+  --color-on-surface: #e0e3e5;
+  --color-on-surface-variant: #bbcabf;
+  --color-outline: #86948a;
+  --color-outline-variant: #3c4a42;
+  --color-error: #ffb4ab;
+  --color-error-container: #7f1d1d;
+  --color-secondary: #bec6e0;
+  --color-secondary-container: #3e465c;
 }
 
+/* Dark mode */
 .dark {
   color-scheme: dark;
-  --text-primary: #f9fafb;
-  --text-secondary: #9ca3af;
-  --bg-primary: #111827;
-  --bg-secondary: #1f2937;
-  --bg-tertiary: #374151;
-  --border-color: #4b5563;
+  --color-surface: #101415;
+  --color-surface-dim: #0b0f10;
+  --color-surface-container-low: #181c1d;
+  --color-surface-container: #1c2021;
+  --color-surface-container-high: #272b2c;
+  --color-surface-container-highest: #313536;
+  --color-surface-bright: #363a3b;
+  --color-primary: #0f9d6b;
+  --color-primary-container: #10b981;
+  --color-on-surface: #e0e3e5;
+  --color-on-surface-variant: #bbcabf;
+  --color-outline: #86948a;
+  --color-outline-variant: #3c4a42;
+  --color-error: #ffb4ab;
+  --color-error-container: #7f1d1d;
+  --color-secondary: #bec6e0;
+  --color-secondary-container: #3e465c;
 }
 
 /* Smooth transitions for theme switching */
@@ -84,94 +108,103 @@ body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-/* Lumina Tech Design System Utilities */
+/* @layer components */
 @layer components {
+  /* glass-card: token-driven with surface variables */
   .glass-card {
-    @apply bg-black/40 backdrop-blur-xl border border-white/5 rounded-lg transition-all duration-300;
+    @apply bg-surface-container-low/70 backdrop-blur-xl border border-outline-variant/30 rounded-lg transition-all duration-300;
   }
   
   .glass-card:hover {
     @apply border-primary shadow-lg -translate-y-1;
   }
   
+  /* glass-panel: consolidated (removed duplicate) */
   .glass-panel {
-    @apply bg-black/40 backdrop-blur-xl border-t border-l border-white/5 rounded-lg;
+    @apply bg-surface-container-low/70 backdrop-blur-xl border-t border-l border-outline-variant/30 rounded-lg;
   }
   
+  /* btn-primary: uses theme tokens */
   .btn-primary {
-    @apply px-6 py-3 bg-primary text-on-primary rounded-lg font-semibold hover:brightness-110 active:scale-95 transition-all duration-200;
+    @apply px-6 py-3 bg-primary rounded-lg font-semibold hover:brightness-110 active:scale-95 transition-all duration-200;
   }
   
+  /* btn-secondary: uses theme tokens */
   .btn-secondary {
-    @apply px-6 py-3 border border-outline text-on-surface rounded-lg font-semibold hover:bg-white/5 transition-all duration-200;
+    @apply px-6 py-3 border border-outline-variant rounded-lg font-semibold hover:bg-surface-container-low/55 transition-all duration-200;
   }
   
+  /* input-base */
   .input-base {
     @apply w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-lg text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors duration-200;
   }
   
+  /* container-max */
   .container-max {
-    @apply max-w-container-max mx-auto;
+    @apply max-w-container-max mx-auto px-gutter;
   }
   
+  /* gradient-stats */
   .gradient-stats {
     @apply bg-gradient-to-br from-primary/10 via-transparent to-transparent;
   }
   
+  /* tech-pill */
   .tech-pill {
     @apply px-3 py-1 bg-primary/10 border border-primary/20 text-primary rounded-full text-[14px];
   }
-
+  
+  /* active-filter */
   .active-filter {
-    @apply bg-primary text-on-primary;
+    @apply bg-primary text-primary;
   }
-
+  
+  /* font-code-sm */
   .font-code-sm {
     font-family: 'JetBrains Mono', monospace;
     font-size: 12px;
     font-weight: 500;
   }
-
+  
+  /* text-code-sm */
   .text-code-sm {
     font-size: 12px;
   }
-
+  
+  /* emerald-glow */
   .emerald-glow {
     background: radial-gradient(circle at center, rgba(78, 222, 163, 0.15) 0%, transparent 70%);
   }
-
+  
+  /* font-display-xl-mobile */
   .font-display-xl-mobile {
     font-size: 48px;
     font-weight: 800;
     line-height: 1.1;
     letter-spacing: -0.03em;
   }
-
+  
+  /* font-display-xl */
   .font-display-xl {
     font-size: 72px;
     font-weight: 800;
     line-height: 1.1;
     letter-spacing: -0.04em;
   }
-
+  
+  /* font-display-lg */
   .font-display-lg {
     font-size: 64px;
     font-weight: 700;
     line-height: 1.1;
     letter-spacing: -0.03em;
   }
-}
-
-.text-gradient {
-  background: linear-gradient(135deg, #4edea3 0%, #006c49 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.glass-panel {
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(12px);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  border-left: 1px solid rgba(255, 255, 255, 0.05);
+  
+  /* text-gradient */
+  .text-gradient {
+    background: linear-gradient(135deg, #4edea3 0%, #006c49 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 }
