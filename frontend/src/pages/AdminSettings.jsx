@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import axios from 'axios';
-import { getAdminToken } from '../utils/auth';
+import api from '../utils/api';
+import '../styles/AdminSettings.css';
 import '../styles/AdminSettings.css';
 
 export default function AdminSettings() {
-  const token = getAdminToken();
   const [formData, setFormData] = useState({
     newUsername: '',
     newPassword: '',
@@ -21,8 +20,6 @@ export default function AdminSettings() {
       [name]: value
     }));
   };
-
-  const apiUrl = import.meta.env.VITE_API_URL || '/api';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,16 +50,10 @@ export default function AdminSettings() {
     }
 
     try {
-      await axios.put(
-        `${apiUrl}/api/admin/settings`,
-        {
-          newUsername: trimmedUsername || undefined,
-          newPassword: newPassword || undefined
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      await api.put('/admin/settings', {
+        newUsername: trimmedUsername || undefined,
+        newPassword: newPassword || undefined
+      });
 
       setMessage('Settings updated successfully');
       setFormData({

@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Link, NavLink } from 'react-router-dom';
-import axios from 'axios';
+import { useState, useEffect } from 'react';
+import api from '../utils/api';
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);
@@ -10,15 +9,18 @@ const Projects = () => {
   const categories = ['all', 'Cloud', 'DevOps', 'Web Dev', 'Embedded'];
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchProjects = async () => {
       try {
-        const apiUrl = import.meta.env.VITE_API_URL || '/api';
-        const response = await axios.get(`${apiUrl}/api/projects`);
+        const response = await api.get('/projects', {
+          signal: controller.signal
+        });
         setProjects(response.data);
       } catch (error) {
-        console.error('Error fetching projects:', error);
-        // Sample data while backend is being built
-        setProjects([
+        if (error.name !== 'CanceledError' && error.name !== 'AbortError') {
+          console.error('Error fetching projects:', error);
+          setProjects([
           {
             id: 1,
             slug: 'cloud-infrastructure-automation',
@@ -64,12 +66,16 @@ const Projects = () => {
             liveDemo: '#',
           },
         ]);
+        }
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchProjects();
+    return () => controller.abort();
   }, []);
 
   const filteredProjects = filter === 'all' 
@@ -78,40 +84,6 @@ const Projects = () => {
 
   return (
     <>
-      {/* TopNavBar */}
-      <nav className="fixed top-0 w-full z-50 bg-black/40 backdrop-blur-xl border-b border-white/5 shadow-sm">
-        <div className="max-w-container-max mx-auto px-gutter h-16 flex items-center justify-between">
-          <div className="font-headline-md text-headline-md font-bold text-on-surface">ExpertMinimalist</div>
-          <div className="hidden md:flex items-center gap-stack-lg font-body-md text-body-md">
-            <NavLink 
-              to="/" 
-              className={({ isActive }) => 
-                `text-on-surface-variant hover:text-primary transition-colors ${isActive ? 'text-primary font-bold border-b-2 border-primary pb-1' : ''}`
-              }
-            >
-              Home
-            </NavLink>
-            <NavLink 
-              to="/projects" 
-              className={({ isActive }) => 
-                `text-on-surface-variant hover:text-primary transition-colors ${isActive ? 'text-primary font-bold border-b-2 border-primary pb-1' : ''}`
-              }
-            >
-              Projects
-            </NavLink>
-            <NavLink 
-              to="/about" 
-              className={({ isActive }) => 
-                `text-on-surface-variant hover:text-primary transition-colors ${isActive ? 'text-primary font-bold border-b-2 border-primary pb-1' : ''}`
-              }
-            >
-              About
-            </NavLink>
-          </div>
-          <button className="bg-primary text-on-primary px-6 py-2 rounded-full font-label-md hover:opacity-90 transition-all active:scale-95 duration-200">Hire Me</button>
-        </div>
-      </nav>
-
       {/* Main Content */}
       <main className="pt-32 pb-section-gap max-w-container-max mx-auto px-gutter">
         {/* Header Section */}
@@ -147,9 +119,9 @@ const Projects = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-stack-lg">
             {filteredProjects.map((project) => (
-              <article key={project.id} className="glass-card rounded-xl overflow-hidden flex flex-col h-full">
+              <article key={project._id} className="glass-card rounded-xl overflow-hidden flex flex-col h-full">
                 <div className="relative aspect-video">
-                  <img alt="Project preview" className="w-full h-full object-cover" src={project.image} />
+                  <img alt={project.title} className="w-full h-full object-cover" src={project.image} />
                   <span className="absolute top-4 left-4 tech-pill px-3 py-1 rounded-full font-label-md text-[12px] uppercase">{project.category}</span>
                 </div>
                 <div className="p-stack-lg flex flex-col flex-grow">
@@ -179,7 +151,7 @@ const Projects = () => {
       <footer className="w-full py-stack-lg bg-surface-dim border-t border-outline-variant/30">
         <div className="max-w-container-max mx-auto px-gutter flex flex-col md:flex-row justify-between items-center gap-stack-md">
           <div className="flex flex-col items-center md:items-start gap-stack-sm">
-            <div className="font-headline-sm text-headline-sm text-on-surface font-bold">ExpertMinimalist</div>
+            <div className="font-headline-sm text-headline-sm text-on-surface font-bold">benjieDev</div>
             <p className="font-label-md text-label-md text-on-surface-variant">© 2024 Benjamin Kiprotich Koimett. Built with MERN & Go.</p>
           </div>
           <div className="flex gap-stack-lg">

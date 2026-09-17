@@ -2,21 +2,16 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const Project = require('./models/Project');
-const {
-  getUsername,
-  setUsername,
-  setPassword,
-  verifyPassword
-} = require('./config/admin');
+const Admin = require('./models/Admin');
 const authMiddleware = require('./middleware/auth');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Generate slug from title if not provided.
 function generateSlug(title) {
   return title
     .toLowerCase()
@@ -39,64 +34,49 @@ function startServer() {
     });
 }
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  credentials: true
+}));
 app.use(express.json());
 
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { error: 'Too many login attempts. Please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
 // POST - Admin login.
-app.post('/api/admin/login', async (req, res) => {
+app.post('/api/admin/login', loginLimiter, async (req, res) => {
   try {
     const { username, password } = req.body;
-    const expectedUsername = getUsername();
-
-    console.log('[admin-login] Received credentials:', {
-      username,
-      passwordProvided: Boolean(password),
-      expectedUsername,
-      payloadKeys: Object.keys(req.body || {})
-    });
 
     if (!username || !password) {
-      console.log('[admin-login] Missing credentials:', {
-        usernameProvided: Boolean(username),
-        passwordProvided: Boolean(password)
-      });
-      return res.status(401).json({ error: 'Username and password are required' });
+      return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    if (username !== expectedUsername) {
-      console.log('[admin-login] Username mismatch:', {
-        username,
-        expectedUsername
-      });
-      return res.status(401).json({ error: 'Invalid username' });
+    const admin = await Admin.findOne({ username });
+    if (!admin) {
+      return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const passwordMatches = await verifyPassword(password);
-    console.log('[admin-login] Password comparison:', {
-      passwordMatches,
-      passwordLength: String(password).length
-    });
-
+    const passwordMatches = await admin.verifyPassword(password);
     if (!passwordMatches) {
-      console.log('[admin-login] Password mismatch:', {
-        username,
-        passwordLength: String(password).length
-      });
-      return res.status(401).json({ error: 'Invalid password' });
+      return res.status(401).json({ error: 'Invalid credentials' });
     }
 
     const token = jwt.sign(
-      { username },
+      { id: admin._id, username: admin.username },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );
 
-    console.log('[admin-login] Login successful:', { username });
-
     res.json({ token, message: 'Login successful' });
   } catch (error) {
-    console.error('[admin-login] Login error:', error);
-    res.status(500).json({ error: error.message });
+    console.error('Login error:', error.message);
+    res.status(500).json({ error: 'An error occurred during login' });
   }
 });
 
@@ -118,33 +98,52 @@ app.put('/api/admin/settings', authMiddleware, async (req, res) => {
       return res.status(400).json({ error: 'Password must be at least 6 characters long' });
     }
 
-    if (trimmedUsername) {
-      setUsername(trimmedUsername);
+    const admin = await Admin.findById(req.user.id);
+    if (!admin) {
+      return res.status(404).json({ error: 'Admin not found' });
+    }
+
+    if (trimmedUsername && trimmedUsername !== admin.username) {
+      const existing = await Admin.findOne({ username: trimmedUsername });
+      if (existing) {
+        return res.status(400).json({ error: 'Username already taken' });
+      }
+      admin.username = trimmedUsername;
     }
 
     if (newPassword) {
-      await setPassword(newPassword);
+      admin.passwordHash = await require('bcryptjs').hash(newPassword, 10);
     }
+
+    await admin.save();
 
     res.json({
       message: 'Settings updated successfully',
-      username: getUsername()
+      username: admin.username
     });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch {
+    res.status(500).json({ error: 'Failed to update settings' });
   }
 });
 
 // Get all published projects for public pages, or all projects for authenticated admins.
 app.get('/api/projects', async (req, res) => {
   try {
+    let isAdmin = false;
     const token = req.headers.authorization?.split(' ')[1];
-    const isAdmin = token && jwt.verify(token, process.env.JWT_SECRET);
+    if (token) {
+      try {
+        jwt.verify(token, process.env.JWT_SECRET);
+        isAdmin = true;
+      } catch {
+        // Invalid token — treat as public visitor
+      }
+    }
     const filter = isAdmin ? {} : { status: 'published' };
     const projects = await Project.find(filter);
     res.json(projects);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch {
+    res.status(500).json({ error: 'Failed to fetch projects' });
   }
 });
 
@@ -158,29 +157,39 @@ app.get('/api/projects/slug/:slug', async (req, res) => {
     }
     
     res.json(project);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch {
+    res.status(500).json({ error: 'Failed to fetch project' });
   }
 });
 
 // GET - Single project by ID for admin dashboard editing.
-app.get('/api/projects/:id', async (req, res) => {
+app.get('/api/projects/:id', authMiddleware, async (req, res) => {
   try {
     const project = await Project.findById(req.params.id);
     if (!project) {
       return res.status(404).json({ error: 'Project not found' });
     }
     res.json(project);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch {
+    res.status(500).json({ error: 'Failed to fetch project' });
   }
 });
 
 // Contact form endpoint.
-app.post('/api/contact', (req, res) => {
-  const { name, email, message } = req.body;
-  console.log('Contact form submission:', { name, email, message });
-  res.json({ success: true, message: 'Message received!' });
+app.post('/api/contact', async (req, res) => {
+  try {
+    const { name, email, message } = req.body;
+
+    if (!name || !email || !message) {
+      return res.status(400).json({ error: 'Name, email, and message are required' });
+    }
+
+    // TODO: Send email with nodemailer (Phase 2)
+    // For now, acknowledge receipt without logging PII
+    res.json({ success: true, message: 'Message received!' });
+  } catch {
+    res.status(500).json({ error: 'Failed to process contact form' });
+  }
 });
 
 // POST - Create new project (admin only).
@@ -240,8 +249,8 @@ app.post('/api/projects', authMiddleware, async (req, res) => {
       message: 'Project created successfully',
       project: savedProject
     });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch {
+    res.status(500).json({ error: 'Failed to create project' });
   }
 });
 
@@ -277,8 +286,8 @@ app.put('/api/projects/:id', authMiddleware, async (req, res) => {
       message: 'Project updated successfully',
       project: updatedProject
     });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch {
+    res.status(500).json({ error: 'Failed to update project' });
   }
 });
 
@@ -296,8 +305,8 @@ app.delete('/api/projects/:id', authMiddleware, async (req, res) => {
       message: 'Project deleted successfully',
       project: deletedProject 
     });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch {
+    res.status(500).json({ error: 'Failed to delete project' });
   }
 });
 

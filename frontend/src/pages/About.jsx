@@ -1,22 +1,6 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-
 const About = () => {
   return (
     <>
-      {/* TopNavBar */}
-      <nav className="fixed top-0 w-full z-50 bg-black/40 backdrop-blur-xl border-b border-white/5 shadow-sm">
-        <div className="max-w-container-max mx-auto px-gutter h-16 flex items-center justify-between">
-          <div className="font-headline-md text-headline-md font-bold text-on-surface">ExpertMinimalist</div>
-          <div className="hidden md:flex items-center gap-stack-lg font-body-md text-body-md">
-            <NavLink to="/" className={({ isActive }) => `text-on-surface-variant hover:text-primary transition-colors ${isActive ? 'text-primary font-bold border-b-2 border-primary pb-1' : ''}`}>Home</NavLink>
-            <NavLink to="/projects" className={({ isActive }) => `text-on-surface-variant hover:text-primary transition-colors ${isActive ? 'text-primary font-bold border-b-2 border-primary pb-1' : ''}`}>Projects</NavLink>
-            <NavLink to="/about" className={({ isActive }) => `text-on-surface-variant hover:text-primary transition-colors ${isActive ? 'text-primary font-bold border-b-2 border-primary pb-1' : ''}`}>About</NavLink>
-          </div>
-          <button className="bg-primary-container text-on-primary-container px-stack-lg py-2 rounded-full font-label-md text-label-md hover:scale-95 duration-200 transition-all">Hire Me</button>
-        </div>
-      </nav>
-
       <main className="mt-24">
         {/* Hero Section */}
         <section className="max-w-container-max mx-auto px-gutter pt-stack-lg">
@@ -190,7 +174,7 @@ const About = () => {
       {/* Footer */}
       <footer className="bg-surface-dim border-t border-outline-variant/30 py-stack-lg">
         <div className="max-w-container-max mx-auto px-gutter flex flex-col md:flex-row justify-between items-center gap-stack-md">
-          <div className="font-headline-sm text-headline-sm text-on-surface">ExpertMinimalist</div>
+          <div className="font-headline-sm text-headline-sm text-on-surface">benjieDev</div>
           <div className="font-label-md text-label-md text-on-surface-variant">© 2024 Benjamin Kiprotich Koimett. Built with MERN & Go.</div>
           <div className="flex gap-stack-md">
             <a className="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#">Github</a>

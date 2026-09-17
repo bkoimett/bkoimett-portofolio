@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/api';
 import { getAdminToken, logout } from '../utils/auth';
 import AdminSettings from './AdminSettings';
 import '../styles/AdminDashboard.css';
@@ -13,6 +13,8 @@ export default function AdminDashboard() {
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -25,33 +27,42 @@ export default function AdminDashboard() {
     status: 'draft'
   });
 
-  const apiUrl = import.meta.env.VITE_API_URL || '/api';
-
-  const fetchProjects = async () => {
+  const loadProjects = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/api/projects`);
+      const response = await api.get('/projects');
       setProjects(response.data);
-      setLoading(false);
     } catch {
       setError('Failed to load projects');
-      setLoading(false);
     }
   };
 
   useEffect(() => {
     const token = getAdminToken();
-
     if (!token) {
       navigate('/admin/login');
       return;
     }
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchProjects().catch(() => {
-      setError('Failed to load projects');
-      setLoading(false);
-    });
+    const fetchProjects = async () => {
+      try {
+        const response = await api.get('/projects');
+        setProjects(response.data);
+      } catch {
+        setError('Failed to load projects');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
   }, [navigate]);
+
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => setSuccess(''), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -74,26 +85,12 @@ export default function AdminDashboard() {
     setError('');
 
     try {
-      const token = getAdminToken();
-
       if (editingId) {
-        await axios.put(
-          `${apiUrl}/api/projects/${editingId}`,
-          formData,
-          {
-            headers: { Authorization: `Bearer ${token}` }
-          }
-        );
-        alert('Project updated successfully');
+        await api.put(`/projects/${editingId}`, formData);
+        setSuccess('Project updated successfully');
       } else {
-        await axios.post(
-          `${apiUrl}/api/projects`,
-          formData,
-          {
-            headers: { Authorization: `Bearer ${token}` }
-          }
-        );
-        alert('Project created successfully');
+        await api.post('/projects', formData);
+        setSuccess('Project created successfully');
       }
 
       setFormData({
@@ -108,7 +105,7 @@ export default function AdminDashboard() {
       });
       setShowForm(false);
       setEditingId(null);
-      fetchProjects();
+      loadProjects();
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to save project');
     }
@@ -130,23 +127,14 @@ export default function AdminDashboard() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this project?')) {
-      return;
-    }
-
     try {
-      const token = getAdminToken();
-
-      await axios.delete(
-        `${apiUrl}/api/projects/${id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
-      alert('Project deleted successfully');
-      fetchProjects();
+      await api.delete(`/projects/${id}`);
+      setSuccess('Project deleted successfully');
+      setConfirmDeleteId(null);
+      loadProjects();
     } catch {
       setError('Failed to delete project');
+      setConfirmDeleteId(null);
     }
   };
 
@@ -226,6 +214,12 @@ export default function AdminDashboard() {
       {/* Main Content Canvas */}
       <main className="flex-1 ml-64 overflow-y-auto h-screen custom-scrollbar relative">
         <div className="max-w-container-max mx-auto px-gutter py-stack-lg space-y-section-gap">
+          {success && (
+            <div className="mb-4 p-4 bg-primary-container/20 border border-primary/30 rounded-lg flex items-center gap-2 text-primary">
+              <span className="material-symbols-outlined text-[20px]">check_circle</span>
+              <span className="font-label-md text-label-md">{success}</span>
+            </div>
+          )}
           {/* Dashboard Overview Section */}
           {activeTab === 'dashboard' && (
             <section className="space-y-stack-lg" id="dashboard">
@@ -472,12 +466,29 @@ export default function AdminDashboard() {
                                 >
                                   <span className="material-symbols-outlined text-xl">edit</span>
                                 </button>
-                                <button
-                                  onClick={() => handleDelete(project._id)}
-                                  className="p-2 text-on-surface-variant hover:text-error transition-colors"
-                                >
-                                  <span className="material-symbols-outlined text-xl">delete</span>
-                                </button>
+                                {confirmDeleteId === project._id ? (
+                                  <>
+                                    <button
+                                      onClick={() => handleDelete(project._id)}
+                                      className="px-3 py-1.5 text-xs font-label-md bg-error text-on-error rounded-lg hover:brightness-110 transition-all"
+                                    >
+                                      Confirm
+                                    </button>
+                                    <button
+                                      onClick={() => setConfirmDeleteId(null)}
+                                      className="px-3 py-1.5 text-xs font-label-md bg-surface-container-highest text-on-surface rounded-lg hover:bg-surface-container-high transition-colors"
+                                    >
+                                      Cancel
+                                    </button>
+                                  </>
+                                ) : (
+                                  <button
+                                    onClick={() => setConfirmDeleteId(project._id)}
+                                    className="p-2 text-on-surface-variant hover:text-error transition-colors"
+                                  >
+                                    <span className="material-symbols-outlined text-xl">delete</span>
+                                  </button>
+                                )}
                                 <button className="p-2 text-on-surface-variant hover:text-secondary transition-colors">
                                   <span className="material-symbols-outlined text-xl">visibility</span>
                                 </button>
