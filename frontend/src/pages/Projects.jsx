@@ -6,7 +6,7 @@ const Projects = () => {
   const [filter, setFilter] = useState('all');
   const [loading, setLoading] = useState(true);
 
-  const categories = ['all', 'Cloud', 'DevOps', 'Web Dev', 'Embedded'];
+  const categories = ['all', 'Web Dev', 'Blockchain', 'PWA'];
 
   useEffect(() => {
     const controller = new AbortController();
@@ -20,50 +20,47 @@ const Projects = () => {
       } catch (error) {
         if (error.name !== 'CanceledError' && error.name !== 'AbortError') {
           console.error('Error fetching projects:', error);
+          // Fallback data while API is unreachable
           setProjects([
           {
-            id: 1,
-            slug: 'cloud-infrastructure-automation',
-            title: 'Cloud Infrastructure Automation',
-            description: 'Scalable AWS infrastructure using Terraform and Kubernetes',
-            category: 'Cloud',
-            image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&auto=format',
-            technologies: ['Terraform', 'AWS', 'K8s'],
-            github: '#',
-            liveDemo: '#',
-          },
-          {
-            id: 2,
-            slug: 'cicd-pipeline-platform',
-            title: 'CI/CD Pipeline Platform',
-            description: 'Automated deployment pipeline with Jenkins and ArgoCD',
-            category: 'DevOps',
-            image: 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=600&auto=format',
-            technologies: ['Jenkins', 'Docker', 'ArgoCD'],
-            github: '#',
-            liveDemo: '#',
-          },
-          {
-            id: 3,
-            slug: 'real-time-dashboard',
-            title: 'Real-time Dashboard',
-            description: 'Modern dashboard with real-time metrics and alerts',
+            _id: '1',
+            slug: 'carefacility-platform',
+            title: 'CareFacility Platform',
+            description: 'Full-stack healthcare management system serving The Serenity Place rehabilitation center.',
             category: 'Web Dev',
-            image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&auto=format',
-            technologies: ['React', 'WebSocket', 'D3'],
-            github: '#',
-            liveDemo: '#',
+            image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&auto=format',
+            technologies: ['React', 'Node.js', 'MongoDB', 'PostgreSQL', 'TypeScript'],
+            github: 'https://github.com/bkoimett/carefacility',
+            demo: 'https://theserenityplace.vercel.app',
           },
           {
-            id: 4,
-            slug: 'iot-sensor-network',
-            title: 'IoT Sensor Network',
-            description: 'ESP32-based environmental monitoring system',
-            category: 'Embedded',
-            image: 'https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?w=600&auto=format',
-            technologies: ['ESP32', 'C++', 'MQTT'],
-            github: '#',
-            liveDemo: '#',
+            _id: '2',
+            slug: 'landledger',
+            title: 'LandLedger — Blockchain Title Deed Verification',
+            description: 'Immutable title deed verification platform preventing land fraud across East Africa.',
+            category: 'Blockchain',
+            image: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=600&auto=format',
+            technologies: ['TypeScript', 'Golang', 'Solana', 'Smart Contracts'],
+            github: 'https://github.com/bkoimett/land-ledge',
+          },
+          {
+            _id: '3',
+            slug: 'kijiji-corporate-cuisine',
+            title: 'Kijiji Corporate Cuisine',
+            description: 'Responsive food blog platform with an admin dashboard for content publishing.',
+            category: 'Web Dev',
+            image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&auto=format',
+            technologies: ['React', 'Node.js'],
+            demo: 'https://www.kijijicorporatecuisine.co.ke',
+          },
+          {
+            _id: '4',
+            slug: 'agrisync',
+            title: 'AgriSync — Offline-First Farming PWA',
+            description: 'Offline-first farming PWA for low-connectivity regions with FAO data integration.',
+            category: 'PWA',
+            image: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=600&auto=format',
+            technologies: ['PWA', 'Offline-first'],
           },
         ]);
         }
@@ -90,7 +87,7 @@ const Projects = () => {
         <header className="mb-stack-lg">
           <h1 className="font-display-lg text-display-lg text-on-surface mb-stack-sm">Featured Projects</h1>
           <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
-            Work I've shipped in production. A selection of full-stack applications, high-performance backends, and decentralized systems.
+            Production applications shipped across healthcare, land governance, agriculture, and Web3.
           </p>
         </header>
 
@@ -133,12 +130,16 @@ const Projects = () => {
                     ))}
                   </div>
                   <div className="flex gap-stack-md border-t border-white/5 pt-stack-md">
-                    <a className="flex items-center gap-2 font-label-md text-primary hover:underline" href={project.github}>
-                      <span className="material-symbols-outlined text-[20px]">code</span>GitHub
-                    </a>
-                    <a className="flex items-center gap-2 font-label-md text-primary hover:underline" href={project.liveDemo}>
-                      <span className="material-symbols-outlined text-[20px]">open_in_new</span>Live Demo
-                    </a>
+                    {project.github && (
+                      <a className="flex items-center gap-2 font-label-md text-primary hover:underline" href={project.github} target="_blank" rel="noopener noreferrer">
+                        <span className="material-symbols-outlined text-[20px]">code</span>GitHub
+                      </a>
+                    )}
+                    {project.demo && (
+                      <a className="flex items-center gap-2 font-label-md text-primary hover:underline" href={project.demo} target="_blank" rel="noopener noreferrer">
+                        <span className="material-symbols-outlined text-[20px]">open_in_new</span>Live Demo
+                      </a>
+                    )}
                   </div>
                 </div>
               </article>
@@ -152,12 +153,12 @@ const Projects = () => {
         <div className="max-w-container-max mx-auto px-gutter flex flex-col md:flex-row justify-between items-center gap-stack-md">
           <div className="flex flex-col items-center md:items-start gap-stack-sm">
             <div className="font-headline-sm text-headline-sm text-on-surface font-bold">benjieDev</div>
-            <p className="font-label-md text-label-md text-on-surface-variant">© 2024 Benjamin Kiprotich Koimett. Built with MERN & Go.</p>
+            <p className="font-label-md text-label-md text-on-surface-variant">© 2026 Benjamin Kiprotich Koimett. Built with MERN & Go.</p>
           </div>
           <div className="flex gap-stack-lg">
-            <a className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Github</a>
-            <a className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">LinkedIn</a>
-            <a className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Twitter</a>
+            <a className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="https://github.com/bkoimett" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="https://linkedin.com/in/benjaminkoimett" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <a className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="https://dev.to/bwanachairman" target="_blank" rel="noopener noreferrer">Dev.to</a>
           </div>
         </div>
       </footer>

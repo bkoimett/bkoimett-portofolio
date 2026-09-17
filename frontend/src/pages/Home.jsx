@@ -8,7 +8,7 @@ const Home = () => {
           {/* Status Badge */}
           <div className="inline-flex items-center gap-2 bg-primary/5 border border-primary/20 rounded-full px-4 py-2 mb-stack-md">
             <span className="material-symbols-outlined text-primary text-sm">terminal</span>
-            <span className="font-label-md text-label-md text-on-surface-variant">Available for New Projects</span>
+            <span className="font-label-md text-label-md text-on-surface-variant">Available Immediately · Remote-Ready</span>
           </div>
 
           {/* Headline */}
@@ -18,13 +18,14 @@ const Home = () => {
 
           {/* Subheading */}
           <p className="font-headline-md text-headline-md text-on-surface-variant max-w-3xl mx-auto mb-stack-md">
-            Full-Stack MERN Engineer | TypeScript | Golang
+            Full-Stack Software Engineer | MERN + Go + TypeScript
           </p>
 
           {/* Description */}
           <p className="font-body-lg text-body-lg text-on-surface-variant/80 max-w-2xl mx-auto mb-stack-lg">
-            I build production-grade applications that solve real problems with clean, maintainable code.
-            Specializing in the MERN stack with a focus on performance and user experience.
+            I ship production applications across healthcare, agriculture, land governance, and Web3 —
+            owning projects end-to-end from design through deployment. Based in Kenya, remote-ready,
+            and building with AI tools daily.
           </p>
 
           {/* Buttons */}
@@ -36,7 +37,7 @@ const Home = () => {
               View My Work
             </a>
             <a 
-              href="#contact" 
+              href="mailto:koimettb@gmail.com" 
               className="border border-outline-variant text-on-surface px-10 py-4 rounded-lg font-headline-md hover:bg-white/5 transition-all duration-200"
             >
               Contact Me
@@ -51,20 +52,20 @@ const Home = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-stack-lg">
             {/* Stat Card 1 */}
             <div className="glass-card p-stack-lg rounded-xl text-center">
-              <div className="font-display-lg text-display-lg text-primary mb-2">4</div>
+              <div className="font-display-lg text-display-lg text-primary mb-2">8+</div>
               <div className="font-label-md text-label-md text-on-surface-variant uppercase">Projects Shipped</div>
             </div>
 
             {/* Stat Card 2 */}
             <div className="glass-card p-stack-lg rounded-xl text-center">
-              <div className="font-display-lg text-display-lg text-primary mb-2">5+</div>
+              <div className="font-display-lg text-display-lg text-primary mb-2">4+</div>
               <div className="font-label-md text-label-md text-on-surface-variant uppercase">Years Experience</div>
             </div>
 
             {/* Stat Card 3 */}
             <div className="glass-card p-stack-lg rounded-xl text-center">
-              <div className="font-display-lg text-display-lg text-primary mb-2">50K+</div>
-              <div className="font-label-md text-label-md text-on-surface-variant uppercase">Lines of Code</div>
+              <div className="font-display-lg text-display-lg text-primary mb-2">24/7</div>
+              <div className="font-label-md text-label-md text-on-surface-variant uppercase">Production Uptime</div>
             </div>
           </div>
         </div>
@@ -158,13 +159,13 @@ const Home = () => {
               </p>
               <div className="flex flex-col md:flex-row justify-center gap-stack-md">
                 <a 
-                  href="#contact" 
+                  href="/about" 
                   className="bg-primary-container text-on-primary-container px-12 py-5 rounded-xl font-headline-md hover:brightness-110 active:scale-95 transition-all duration-200"
                 >
                   Start a Conversation
                 </a>
                 <a 
-                  href="#contact" 
+                  href="mailto:koimettb@gmail.com" 
                   className="border border-outline-variant text-on-surface px-12 py-5 rounded-xl font-headline-md hover:bg-white/5 transition-all duration-200"
                 >
                   Get In Touch
@@ -185,20 +186,20 @@ const Home = () => {
                 Benjamin Koimett
               </span>
               <span className="font-label-md text-label-md text-on-surface-variant">
-                © 2024 All rights reserved.
+                © 2026 All rights reserved.
               </span>
             </div>
 
             {/* Right side */}
             <div className="flex items-center gap-4">
-              <a href="https://github.com" className="text-on-surface-variant hover:text-primary transition-colors font-label-md">
-                Github
+              <a href="https://github.com/bkoimett" className="text-on-surface-variant hover:text-primary transition-colors font-label-md" target="_blank" rel="noopener noreferrer">
+                GitHub
               </a>
-              <a href="https://linkedin.com" className="text-on-surface-variant hover:text-primary transition-colors font-label-md">
+              <a href="https://linkedin.com/in/benjaminkoimett" className="text-on-surface-variant hover:text-primary transition-colors font-label-md" target="_blank" rel="noopener noreferrer">
                 LinkedIn
               </a>
-              <a href="https://twitter.com" className="text-on-surface-variant hover:text-primary transition-colors font-label-md">
-                Twitter
+              <a href="https://dev.to/bwanachairman" className="text-on-surface-variant hover:text-primary transition-colors font-label-md" target="_blank" rel="noopener noreferrer">
+                Dev.to
               </a>
             </div>
           </div>
