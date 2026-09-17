@@ -3,7 +3,32 @@
 ## PROJECT
 
 - Portfolio website. Frontend: Vite + React (JS). Backend: Express + MongoDB.
-- Auth: custom JWT (no BetterAuth). No ORM — use the Mongoose models directly.
+- Auth: custom JWT. No ORM — use the Mongoose models directly.
+
+## STRUCTURE
+
+- `backend/index.js` — Express server, all routes inline
+- `backend/models/` — Mongoose models (Project.js, Admin.js)
+- `backend/middleware/auth.js` — JWT bearer-token middleware
+- `backend/seedAdmin.js` — Script to create initial admin user
+- `backend/eslint.config.js` — ESLint flat config
+- `backend/tests/` — API tests (node:test + supertest, models mocked)
+- `frontend/src/pages/` — Page components (Home, Projects, About, AdminLogin, AdminDashboard, AdminSettings, ProjectDetail)
+- `frontend/src/components/Navbar.jsx` — Shared navigation
+- `frontend/src/utils/auth.js` — localStorage token helpers
+- `frontend/src/context/ThemeContext.jsx` — Theme provider
+
+## ENVIRONMENT
+
+Backend (.env):
+- `MONGODB_URI` — MongoDB connection string (required)
+- `JWT_SECRET` — Secret for signing JWTs (required)
+- `PORT` — Server port (default: 3001)
+- `CLIENT_URL` — Frontend origin for CORS (default: http://localhost:5173)
+- `ADMIN_USERNAME` / `ADMIN_PASSWORD` — Used by seedAdmin.js only
+
+Frontend (optional .env):
+- `VITE_API_URL` — API base URL (default: '/api', uses proxy in dev)
 
 ## RESPONSES
 
