@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import ReactMarkdown from 'react-markdown';
 import '../styles/ProjectDetail.css';
 
@@ -14,8 +14,7 @@ export default function ProjectDetail() {
   useEffect(() => {
     const fetchProject = async () => {
       try {
-        const apiUrl = import.meta.env.VITE_API_URL || '/api';
-        const response = await axios.get(`${apiUrl}/api/projects/slug/${slug}`);
+        const response = await api.get(`/projects/slug/${slug}`);
         setProject(response.data);
       } catch (err) {
         setError(err.response?.data?.error || 'Project not found');

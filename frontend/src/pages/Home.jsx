@@ -1,5 +1,3 @@
-import React from 'react';
-
 const Home = () => {
   return (
     <>
@@ -166,10 +164,10 @@ const Home = () => {
                   Start a Conversation
                 </a>
                 <a 
-                  href="/resume.pdf" 
+                  href="#contact" 
                   className="border border-outline-variant text-on-surface px-12 py-5 rounded-xl font-headline-md hover:bg-white/5 transition-all duration-200"
                 >
-                  Download Resume
+                  Get In Touch
                 </a>
               </div>
             </div>

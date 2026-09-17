@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/api';
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -23,27 +23,11 @@ export default function AdminLogin() {
         password: password.trim()
       };
 
-      const apiUrl = import.meta.env.VITE_API_URL || '/api';
-
-      console.log('[admin-login] Sending credentials:', {
-        ...loginPayload,
-        password: '[redacted]',
-        passwordLength: loginPayload.password.length,
-        endpoint: `${apiUrl}/api/admin/login`
-      });
-
-      const response = await axios.post(`${apiUrl}/api/admin/login`, loginPayload);
-
-      console.log('[admin-login] Login response:', response.data);
+      const response = await api.post('/admin/login', loginPayload);
 
       localStorage.setItem('adminToken', response.data.token);
       navigate('/admin/dashboard');
     } catch (err) {
-      console.log('[admin-login] Login error:', {
-        status: err.response?.status,
-        data: err.response?.data,
-        message: err.message
-      });
       setError(err.response?.data?.error || 'Login failed');
     } finally {
       setLoading(false);
@@ -97,12 +81,6 @@ export default function AdminLogin() {
                 <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px]">lock</span>
                 <input className="w-full h-12 bg-surface-container-low border border-outline-variant rounded-lg pl-12 pr-4 font-code-sm text-code-sm text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" id="password" placeholder="••••••••" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
               </div>
-            </div>
-
-            {/* Remember Me */}
-            <div className="flex items-center gap-stack-sm mt-1">
-              <input className="w-4 h-4 rounded border-outline-variant bg-surface-container-low text-primary focus:ring-primary focus:ring-offset-surface-container-low" id="remember" type="checkbox" />
-              <label className="font-label-md text-label-md text-on-surface-variant cursor-pointer select-none" htmlFor="remember">Remember me</label>
             </div>
 
             {/* Submit Button */}
