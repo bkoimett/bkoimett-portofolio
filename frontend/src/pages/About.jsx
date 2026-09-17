@@ -1,3 +1,7 @@
+import React from 'react';
+import { techStack } from '../data/techStack';
+import { Link } from 'react-router-dom';
+
 const About = () => {
   return (
     <>
@@ -117,97 +121,87 @@ const About = () => {
           </div>
         </section>
 
-        {/* Skills Grid */}
+        {/* Skills Grid - using centralized techStack data */}
         <section className="max-w-container-max mx-auto px-gutter py-section-gap">
           <h2 className="font-headline-lg text-headline-lg text-on-surface text-center mb-stack-lg">Technical Stack</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter">
-            {/* Frontend Card */}
-            <div className="bg-surface-container border border-outline-variant/30 p-stack-lg rounded-xl flex flex-col h-full">
-              <div className="flex items-center gap-stack-sm mb-stack-md">
-                <span className="material-symbols-outlined text-primary">web</span>
-                <h3 className="font-headline-md text-headline-md">Frontend</h3>
+            {techStack.map((tech) => (
+              <div
+                key={tech.name}
+                className="glass-card p-stack-lg rounded-xl flex flex-col h-full"
+              >
+                <div className="flex items-center gap-stack-sm mb-stack-md">
+                  <span className="material-symbols-outlined text-primary">{tech.icon}</span>
+                  <h3 className="font-headline-md text-headline-md">{tech.name}</h3>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {tech.extras?.map((extra) => (
+                    <span
+                      key={extra}
+                      className="px-3 py-1 bg-primary/10 border border-primary/20 text-primary rounded-full font-label-md text-label-md"
+                    >
+                      {extra}
+                    </span>
+                  ))}
+                </div>
               </div>
-              <div className="flex flex-wrap gap-2">
-                <span className="px-3 py-1 bg-primary/10 border border-primary/20 text-primary rounded-full font-label-md text-label-md">React.js</span>
-                <span className="px-3 py-1 bg-primary/10 border border-primary/20 text-primary rounded-full font-label-md text-label-md">Next.js</span>
-                <span className="px-3 py-1 bg-primary/10 border border-primary/20 text-primary rounded-full font-label-md text-label-md">TypeScript</span>
-                <span className="px-3 py-1 bg-primary/10 border border-primary/20 text-primary rounded-full font-label-md text-label-md">Tailwind CSS</span>
-                <span className="px-3 py-1 bg-primary/10 border border-primary/20 text-primary rounded-full font-label-md text-label-md">Progressive Web Apps</span>
-              </div>
-            </div>
-            {/* Backend Card */}
-            <div className="bg-surface-container-high border border-outline-variant/30 p-stack-lg rounded-xl flex flex-col h-full">
-              <div className="flex items-center gap-stack-sm mb-stack-md">
-                <span className="material-symbols-outlined text-primary">terminal</span>
-                <h3 className="font-headline-md text-headline-md">Backend & APIs</h3>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <span className="px-3 py-1 bg-primary/10 border border-primary/20 text-primary rounded-full font-label-md text-label-md">Node.js</span>
-                <span className="px-3 py-1 bg-primary/10 border border-primary/20 text-primary rounded-full font-label-md text-label-md">Go (Golang)</span>
-                <span className="px-3 py-1 bg-primary/10 border border-primary/20 text-primary rounded-full font-label-md text-label-md">Express.js</span>
-                <span className="px-3 py-1 bg-primary/10 border border-primary/20 text-primary rounded-full font-label-md text-label-md">REST API Design</span>
-                <span className="px-3 py-1 bg-primary/10 border border-primary/20 text-primary rounded-full font-label-md text-label-md">JWT Auth</span>
-                <span className="px-3 py-1 bg-primary/10 border border-primary/20 text-primary rounded-full font-label-md text-label-md">WebSocket</span>
-              </div>
-            </div>
-            {/* Data & DevOps Card */}
-            <div className="bg-surface-container border border-outline-variant/30 p-stack-lg rounded-xl flex flex-col h-full">
-              <div className="flex items-center gap-stack-sm mb-stack-md">
-                <span className="material-symbols-outlined text-primary">cloud</span>
-                <h3 className="font-headline-md text-headline-md">Data & DevOps</h3>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <span className="px-3 py-1 bg-primary/10 border border-primary/20 text-primary rounded-full font-label-md text-label-md">MongoDB</span>
-                <span className="px-3 py-1 bg-primary/10 border border-primary/20 text-primary rounded-full font-label-md text-label-md">PostgreSQL</span>
-                <span className="px-3 py-1 bg-primary/10 border border-primary/20 text-primary rounded-full font-label-md text-label-md">Docker</span>
-                <span className="px-3 py-1 bg-primary/10 border border-primary/20 text-primary rounded-full font-label-md text-label-md">GitHub Actions</span>
-                <span className="px-3 py-1 bg-primary/10 border border-primary/20 text-primary rounded-full font-label-md text-label-md">Vercel</span>
-                <span className="px-3 py-1 bg-primary/10 border border-primary/20 text-primary rounded-full font-label-md text-label-md">Render</span>
-              </div>
-            </div>
-            {/* Blockchain Card */}
-            <div className="bg-surface-container-high border border-outline-variant/30 p-stack-lg rounded-xl flex flex-col h-full">
-              <div className="flex items-center gap-stack-sm mb-stack-md">
-                <span className="material-symbols-outlined text-primary">database</span>
-                <h3 className="font-headline-md text-headline-md">Blockchain & Web3</h3>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <span className="px-3 py-1 bg-primary/10 border border-primary/20 text-primary rounded-full font-label-md text-label-md">Solana</span>
-                <span className="px-3 py-1 bg-primary/10 border border-primary/20 text-primary rounded-full font-label-md text-label-md">Poly Amoy</span>
-                <span className="px-3 py-1 bg-primary/10 border border-primary/20 text-primary rounded-full font-label-md text-label-md">Smart Contracts</span>
-                <span className="px-3 py-1 bg-primary/10 border border-primary/20 text-primary rounded-full font-label-md text-label-md">Title Deed Verification</span>
-              </div>
-            </div>
+            ))}
           </div>
         </section>
 
         {/* Contact CTA Section */}
         <section className="max-w-container-max mx-auto px-gutter pb-section-gap">
-          <div className="glass-panel p-stack-lg rounded-2xl border border-white/5 flex flex-col md:flex-row justify-between items-center gap-stack-lg">
+          <div className="glass-panel p-stack-lg rounded-2xl border border-outline-variant/30 flex flex-col md:flex-row justify-between items-center gap-stack-lg">
             <div>
               <h2 className="font-headline-lg text-headline-lg text-on-surface">Let's build something great.</h2>
               <p className="text-on-surface-variant font-body-md text-body-md mt-2">I'm currently available for freelance opportunities and full-time roles.</p>
             </div>
             <div className="flex flex-wrap justify-center gap-stack-md">
-              <a className="flex items-center gap-2 text-primary hover:text-white transition-colors" href="mailto:koimettb@gmail.com">
+              <a
+                href="mailto:koimettb@gmail.com"
+                className="flex items-center gap-2 text-primary hover:text-white transition-colors"
+              >
                 <span className="material-symbols-outlined">mail</span>
                 <span className="font-label-md text-label-md">Email</span>
               </a>
-              <a className="flex items-center gap-2 text-primary hover:text-white transition-colors" href="tel:+254722970951">
+              <a
+                href="tel:+254722970951"
+                className="flex items-center gap-2 text-primary hover:text-white transition-colors"
+              >
                 <span className="material-symbols-outlined">call</span>
                 <span className="font-label-md text-label-md">Phone</span>
               </a>
               <div className="flex gap-stack-md ml-stack-md border-l border-outline-variant/30 pl-stack-md">
-                <a className="text-primary hover:scale-110 transition-transform" href="https://github.com/bkoimett" target="_blank" rel="noopener noreferrer"><span className="material-symbols-outlined">code</span></a>
-                <a className="text-primary hover:scale-110 transition-transform" href="https://linkedin.com/in/benjaminkoimett" target="_blank" rel="noopener noreferrer"><span className="material-symbols-outlined">link</span></a>
-                <a className="text-primary hover:scale-110 transition-transform" href="https://dev.to/bwanachairman" target="_blank" rel="noopener noreferrer"><span className="material-symbols-outlined">article</span></a>
+                <a
+                  href="https://github.com/bkoimett"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:scale-110 transition-transform"
+                >
+                  <span className="material-symbols-outlined">code</span>
+                </a>
+                <a
+                  href="https://linkedin.com/in/benjaminkoimett"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:scale-110 transition-transform"
+                >
+                  <span className="material-symbols-outlined">link</span>
+                </a>
+                <a
+                  href="https://dev.to/bwanachairman"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:scale-110 transition-transform"
+                >
+                  <span className="material-symbols-outlined">article</span>
+                </a>
               </div>
             </div>
           </div>
         </section>
       </main>
-
-      </>
+    </>
   );
 };
 
