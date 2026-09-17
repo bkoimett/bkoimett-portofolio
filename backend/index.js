@@ -232,7 +232,7 @@ app.post('/api/projects', authMiddleware, async (req, res) => {
       slug: finalSlug,
       description,
       category: category || 'General',
-      image: image || 'https://via.placeholder.com/400',
+      image: image || 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&auto=format',
       technologies: technologies || [],
       github,
       demo,
