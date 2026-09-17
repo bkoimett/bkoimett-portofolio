@@ -148,21 +148,7 @@ const Projects = () => {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="w-full py-stack-lg bg-surface-dim border-t border-outline-variant/30">
-        <div className="max-w-container-max mx-auto px-gutter flex flex-col md:flex-row justify-between items-center gap-stack-md">
-          <div className="flex flex-col items-center md:items-start gap-stack-sm">
-            <div className="font-headline-sm text-headline-sm text-on-surface font-bold">benjieDev</div>
-            <p className="font-label-md text-label-md text-on-surface-variant">© 2026 Benjamin Kiprotich Koimett. Built with MERN & Go.</p>
-          </div>
-          <div className="flex gap-stack-lg">
-            <a className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="https://github.com/bkoimett" target="_blank" rel="noopener noreferrer">GitHub</a>
-            <a className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="https://linkedin.com/in/benjaminkoimett" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-            <a className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="https://dev.to/bwanachairman" target="_blank" rel="noopener noreferrer">Dev.to</a>
-          </div>
-        </div>
-      </footer>
-    </>
+      </>
   );
 };
 

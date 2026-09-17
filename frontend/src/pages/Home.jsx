@@ -176,36 +176,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* SECTION 6: FOOTER */}
-      <footer className="py-stack-lg bg-surface-dim border-t border-outline-variant/30">
-        <div className="max-w-container-max mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-stack-md">
-            {/* Left side */}
-            <div className="flex flex-col md:flex-row items-center gap-2">
-              <span className="font-headline-sm text-headline-sm text-on-surface font-bold">
-                Benjamin Koimett
-              </span>
-              <span className="font-label-md text-label-md text-on-surface-variant">
-                © 2026 All rights reserved.
-              </span>
-            </div>
-
-            {/* Right side */}
-            <div className="flex items-center gap-4">
-              <a href="https://github.com/bkoimett" className="text-on-surface-variant hover:text-primary transition-colors font-label-md" target="_blank" rel="noopener noreferrer">
-                GitHub
-              </a>
-              <a href="https://linkedin.com/in/benjaminkoimett" className="text-on-surface-variant hover:text-primary transition-colors font-label-md" target="_blank" rel="noopener noreferrer">
-                LinkedIn
-              </a>
-              <a href="https://dev.to/bwanachairman" className="text-on-surface-variant hover:text-primary transition-colors font-label-md" target="_blank" rel="noopener noreferrer">
-                Dev.to
-              </a>
-            </div>
-          </div>
-        </div>
-      </footer>
-    </>
+      </>
   );
 };
 

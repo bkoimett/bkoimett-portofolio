@@ -207,19 +207,7 @@ const About = () => {
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-surface-dim border-t border-outline-variant/30 py-stack-lg">
-        <div className="max-w-container-max mx-auto px-gutter flex flex-col md:flex-row justify-between items-center gap-stack-md">
-          <div className="font-headline-sm text-headline-sm text-on-surface">benjieDev</div>
-          <div className="font-label-md text-label-md text-on-surface-variant">© 2026 Benjamin Kiprotich Koimett. Built with MERN & Go.</div>
-          <div className="flex gap-stack-md">
-            <a className="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="https://github.com/bkoimett" target="_blank" rel="noopener noreferrer">GitHub</a>
-            <a className="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="https://linkedin.com/in/benjaminkoimett" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-            <a className="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="https://dev.to/bwanachairman" target="_blank" rel="noopener noreferrer">Dev.to</a>
-          </div>
-        </div>
-      </footer>
-    </>
+      </>
   );
 };
 
