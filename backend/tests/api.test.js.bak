@@ -51,6 +51,7 @@ beforeEach(() => {
   Project.findOne.mockReset();
   Project.findById.mockReset();
   Project.findByIdAndUpdate.mockReset();
+  Project.findByIdAndUpdate.mockResolvedValue({ _id: '654321abcdefghijklmnopqr', title: 'Test', views: 0 });
   Project.findByIdAndDelete.mockReset();
 });
 
@@ -116,11 +117,9 @@ describe('Projects API', () => {
     const res = await request(app).post('/api/projects').send({ title: 'X', description: 'Y' });
     assert.equal(res.status, 401);
   });
-});
 
-describe('Project View Tracking', () => {
-    test('POST /api/projects/:id/view with invalid ObjectId returns 400', async () => {
-      const res = await request(app).post('/api/projects/invalid-id/view');
-      assert.equal(res.status, 400);
+  describe('Project View Tracking', () => {
+  describe(Project
     });
   });
+});
