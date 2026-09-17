@@ -1,10 +1,28 @@
 # Benjamin Kiprotich Koimett | Full-Stack Portfolio
 
-> A production-grade MERN portfolio with a custom admin dashboard and an elegant design system.
+[![Tech Stack](https://shields.io)](https://react.dev)
+[![React Version](https://shields.io)](https://react.dev)
+[![Tailwind Version](https://shields.io)](https://tailwindcss.com)
+[![License](https://shields.io)](LICENSE)
+
+Welcome to the source code of my personal full-stack software engineering portfolio and content management system (CMS). This production-grade application showcases my professional engineering work, open-source projects, and technical skills while providing a secure administrative interface to manage content dynamically.
+
+> 🌐 **Live Demo:** [https://bkoimett-portofolio.vercel.app/]
+> 📊 **Admin Portal:** [https://bkoimett-portofolio.vercel.app/admin/login]
 
 ---
 
-## Table of Contents
+## 🚀 Key Highlights
+
+*   **Modern Frontend:** Built with **React 19** and compiled using **Vite** for near-instant loading speeds.
+*   **Next-Gen Styling:** Uses the brand new **Tailwind CSS v4** featuring a CSS-first custom theme config and a sleek, dark-mode glassmorphic design.
+*   **Robust Backend:** Powered by **Node.js** and **Express** with a modular REST API architecture.
+*   **Secure Administration:** Protected by JSON Web Tokens (**JWT**), **Bcrypt** password hashing, and login rate-limiting to prevent brute-force attacks.
+*   **Rich Content Editing:** Supports **Markdown rendering** for project case studies, allowing rich text formatting directly from the dashboard.
+
+---
+
+## 📋 Table of Contents
 
 - [Overview](#overview)
 - [Tech Stack](#tech-stack)
