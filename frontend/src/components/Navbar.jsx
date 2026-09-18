@@ -27,12 +27,12 @@ const Navbar = () => {
 
   return (
     <nav className="fixed inset-x-0 top-0 z-50">
-      <div className="h-16 bg-black/40 backdrop-blur-xl border-b border-white/5">
+      <div className="h-16 bg-border/10 backdrop-blur-xl border-b border-border/20">
         <div className="max-w-container-max mx-auto h-full px-gutter">
           <div className="flex h-full items-center justify-between gap-6">
             <Link
               to="/"
-              className="whitespace-nowrap font-headline-md text-headline-md font-bold text-on-surface hover:opacity-90 transition-opacity duration-200"
+              className="whitespace-nowrap font-headline-md text-headline-md font-bold text-ink hover:opacity-90 transition-opacity duration-200"
               aria-label="benjieDev home"
             >
               benjieDev
@@ -49,8 +49,8 @@ const Navbar = () => {
                     aria-current={isActive ? 'page' : undefined}
                     className={`text-body-md transition-colors duration-200 ${
                       isActive
-                        ? 'border-b-2 border-primary pb-1 text-primary'
-                        : 'text-on-surface-variant hover:text-primary'
+                        ? 'border-b-2 border-accent pb-1 text-accent'
+                        : 'text-muted hover:text-accent'
                     }`}
                   >
                     {item.name}
@@ -62,7 +62,7 @@ const Navbar = () => {
             <div className="flex items-center gap-4">
               <a
                 href="mailto:koimettb@gmail.com"
-                className="hidden md:block rounded-full bg-primary px-6 py-2 text-on-primary font-label-md hover:scale-95 transition-all duration-200"
+                className="hidden md:block rounded-full bg-accent px-6 py-2 text-on-accent font-label-md hover:scale-95 transition-all duration-200"
               >
                 Hire Me
               </a>
@@ -73,7 +73,7 @@ const Navbar = () => {
                 aria-expanded={menuOpen}
                 aria-controls="mobile-navigation"
                 aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
-                className="md:hidden flex h-10 w-10 items-center justify-center rounded-full bg-surface-container-low border border-outline-variant text-on-surface hover:bg-surface-container-high hover:text-primary transition-colors duration-200"
+                className="md:hidden flex h-10 w-10 items-center justify-center rounded-full bg-surface/50 border border-border/20 text-ink hover:bg-surface/70 hover:text-accent transition-colors duration-200"
               >
                 {menuOpen ? (
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -99,7 +99,7 @@ const Navbar = () => {
           menuOpen ? 'max-h-80' : 'max-h-0'
         }`}
       >
-        <div className="glass-panel bg-surface-container-low/80 border-b border-white/5 px-gutter py-stack-md">
+        <div className="rounded-xl bg-surface/50 border border-border/20 px-gutter py-stack-md">
           <div className="max-w-container-max mx-auto space-y-stack-sm" aria-label="Mobile navigation">
             {navItems.map((item) => {
               const isActive = item.path === activePath;
@@ -112,8 +112,8 @@ const Navbar = () => {
                   aria-current={isActive ? 'page' : undefined}
                   className={`block rounded-lg px-4 py-3 text-body-md transition-colors duration-200 ${
                     isActive
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface'
+                      ? 'bg-accent/10 text-accent'
+                      : 'text-muted hover:bg-surface/60 hover:text-accent'
                   }`}
                 >
                   {item.name}
@@ -123,7 +123,7 @@ const Navbar = () => {
             <a
               href="mailto:koimettb@gmail.com"
               onClick={() => setMenuOpen(false)}
-              className="block rounded-full bg-primary px-4 py-3 text-center text-on-primary font-label-md hover:brightness-110 transition-all duration-200"
+              className="block rounded-full bg-accent px-4 py-3 text-center text-on-accent font-label-md hover:brightness-110 transition-all duration-200"
             >
               Hire Me
             </a>

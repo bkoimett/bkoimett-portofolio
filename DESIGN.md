@@ -18,44 +18,32 @@ This document defines the visual design system for the project. All new componen
 
 All values are hex, defined as CSS custom properties in `index.css` via the Tailwind v4 `@theme` block.
 
-### Surface
+### Palette
 
 | Token | Hex | Usage |
 |---|---|---|
-| `surface` | `#101415` | Page background |
-| `surface-dim` | `#0b0f10` | Footer background |
-| `surface-container-low` | `#181c1d` | Cards, sidebar, form inputs |
-| `surface-container` | `#1c2021` | Subtle backgrounds |
-| `surface-container-high` | `#272b2c` | Hover states, table headers |
-| `surface-container-highest` | `#313536` | Active states, logout button |
-| `surface-bright` | `#363a3b` | Bright surface accents |
+| `background` | `#FAFAFF` | Page background — warm off-white with cool undertone, not cream, not pure white |
+| `surface` | `#FFFFFF` | Crisp white for cards, sections, used sparingly for hierarchy |
+| `accent` | `#0891B2` | Primary accent — clear cyan-teal, distinctive and intentional (not terracotta/cliché) |
+| `muted` | `#64748B` | Secondary/muted text, dividers, subtle accents |
+| `ink` | `#1E293B` | Primary body text in dark mode |
+| `border` | `#CAD3C9` | Default borders, structural separation |
 
-### Text
-
-| Token | Hex | Usage |
-|---|---|---|
-| `on-surface` | `#e0e3e5` | Primary text |
-| `on-surface-variant` | `#bbcabf` | Secondary/muted text |
-| `on-primary` | `#003824` | Text on primary buttons |
-| `on-primary-container` | `#00422b` | Text on primary container |
-
-### Brand
+### Light Mode
 
 | Token | Hex | Usage |
 |---|---|---|
-| `primary` | `#4edea3` | Links, icons, active states, accents |
-| `primary-container` | `#10b981` | Primary buttons, CTAs |
-| `secondary` | `#bec6e0` | Secondary accents |
-| `secondary-container` | `#3e465c` | Secondary backgrounds |
-| `error` | `#ffb4ab` | Error states, destructive actions |
-| `error-container` | `#7f1d1d` | Error backgrounds |
+| `on-surface` | `#1E293B` | Primary text |
+| `on-surface-variant` | `#64748B` | Secondary/muted text |
+| `border` | `#CAD3C9` | Default borders |
 
-### Borders
+### Dark Mode
 
 | Token | Hex | Usage |
 |---|---|---|
-| `outline` | `#86948a` | Default borders |
-| `outline-variant` | `#3c4a42` | Subtle borders, dividers |
+| `on-surface` | `#F8FAFC` | Primary text |
+| `on-surface-variant` | `#98A2B3` | Secondary/muted text |
+| `border` | `#3A3E4D` | Default borders |
 
 ---
 
@@ -78,9 +66,9 @@ All values are hex, defined as CSS custom properties in `index.css` via the Tail
 | `headline-lg` | 32px | 700 | 1.3 | - | Section headings |
 | `headline-md` | 24px | 600 | 1.4 | - | Card titles, sub-headings |
 | `headline-sm` | 18px | 600 | 1.4 | - | Navbar brand, small headings |
-| `body-lg` | 18px | 400 | 1.6 | - | Large body text |
-| `body-md` | 16px | 400 | 1.6 | - | Default body text |
-| `label-md` | 14px | 500 | 1.2 | 0.02em | Labels, buttons, nav items |
+| `body-lg` | 18px | 400 | 1.5 | - | Large body text |
+| `body-md` | 16px | 400 | 1.5 | - | Default body text |
+| `label-md` | 14px | 500 | 1.4 | 0.02em | Labels, buttons, nav items |
 
 ### Custom Typography Classes
 
@@ -101,7 +89,7 @@ All values are hex, defined as CSS custom properties in `index.css` via the Tail
 | `stack-md` | 16px | Standard gaps between elements |
 | `stack-lg` | 32px | Section internals, card padding |
 | `gutter` | 24px | Horizontal page padding |
-| `section-gap` | 120px | Vertical gap between page sections |
+| `section-gap` | 96px | Vertical gap between page sections |
 | `container-max` | 1280px | Max content width |
 
 ### Container Pattern
@@ -116,75 +104,99 @@ All values are hex, defined as CSS custom properties in `index.css` via the Tail
 
 | Token | Value | Usage |
 |---|---|---|
-| `border-radius` | 4px | Base radius |
+| `border-radius` | 6px | Base radius, cards |
 | `border-radius-md` | 8px | Buttons, inputs |
-| `border-radius-lg` | 16px | Cards, panels |
-| `border-radius-xl` | 24px | Modals, large cards |
+| `border-radius-lg` | 12px | Section corners, moderate rounding |
+| `border-radius-xl` | 16px | Large cards, modals |
 
 ---
 
 ## Component Classes
 
-### glass-card
+### card
 
 ```css
-bg-black/40 backdrop-blur-xl border border-white/5 rounded-lg
+bg-surface border border-border rounded-lg p-6 transition-colors duration-200 hover:bg-surface/80
 ```
 
-Hover state: `border-primary shadow-lg -translate-y-1`
+Subtle separation — no glass blur, avoiding the SaaS-card kit cliché.
 
-### glass-panel
+### card-hover
 
 ```css
-bg-black/40 backdrop-blur-xl border-t border-l border-white/5 rounded-lg
+card hover:bg-accent/5
 ```
+
+### panel
+
+```css
+bg-surface border-t border-2 border-accent rounded-t-lg py-4
+```
+
+Single accent border — structural, not decorative.
 
 ### btn-primary
 
 ```css
-px-6 py-3 bg-primary text-on-primary rounded-lg font-semibold
-hover:brightness-110 active:scale-95 transition-all duration-200
+px-6 py-3 bg-accent text-on-accent rounded-lg font-semibold hover:opacity-110 active:scale-95 transition-all duration-200
 ```
 
 ### btn-secondary
 
 ```css
-px-6 py-3 border border-outline text-on-surface rounded-lg font-semibold
-hover:bg-white/5 transition-all duration-200
+px-6 py-3 border border-muted text-on-surface rounded-lg font-semibold hover:bg-surface/5 transition-all duration-200
 ```
 
 ### input-base
 
 ```css
-w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-lg
-text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary
+w-full px-4 py-3 bg-surface/50 border border-border rounded-lg text-on-surface focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors duration-200
 ```
+
+### container-max
+
+```html
+<div className="max-w-container-max mx-auto px-gutter">
+```
+
+### section-divider
+
+```css
+border-t border-border/20 my-12
+```
+
+Horizontal structural divider — informs content hierarchy.
 
 ### tech-pill
 
 ```css
-px-3 py-1 bg-primary/10 border border-primary/20 text-primary rounded-full text-[14px]
+px-3 py-1 bg-accent/10 border border-accent/20 text-accent rounded-full text-sm font-medium
 ```
 
 ### active-filter
 
 ```css
-bg-primary text-on-primary
+bg-accent text-on-accent
 ```
 
-### emerald-glow
+### font-code-sm
 
-```css
-background: radial-gradient(circle at center, rgba(78, 222, 163, 0.15) 0%, transparent 70%)
-```
+JetBrains Mono, 12px, weight 500
+
+### text-code-sm
+
+font-size 12px
 
 ### text-gradient
 
 ```css
-background: linear-gradient(135deg, #4edea3 0%, #006c49 100%)
--webkit-background-clip: text
--webkit-text-fill-color: transparent
+background: linear-gradient(135deg, #0891B2 0%, #0E7490 100%);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
 ```
+
+Gradient accent using the primary accent color — not the default emerald gradient.
 
 ---
 
@@ -193,7 +205,7 @@ background: linear-gradient(135deg, #4edea3 0%, #006c49 100%)
 ### Page Structure
 
 ```
-<Navbar />           -- fixed top, z-50, h-16, glass background
+<Navbar />           -- fixed top, z-50, h-16, subtle accent border
 <main>               -- pt-32 for public pages (offset for fixed nav)
   {content}
 <footer>             -- bg-surface-dim, border-t
@@ -210,10 +222,15 @@ background: linear-gradient(135deg, #4edea3 0%, #006c49 100%)
 
 | Pattern | Usage |
 |---|---|
-| `grid grid-cols-1 md:grid-cols-2 gap-stack-lg` | Project cards |
-| `grid grid-cols-2 lg:grid-cols-4 gap-stack-md` | Tech stack grid |
-| `grid grid-cols-1 md:grid-cols-3 gap-stack-md` | Stat cards |
+| `grid grid-cols-1 md:grid-cols-3 gap-stack-lg` | Project cards (3 columns desktop) |
+| `grid grid-cols-2 lg:grid-cols-4 gap-stack-md` | Tech stack grid (4 columns desktop) |
+| `grid grid-cols-1 md:grid-cols-2 gap-stack-md` | Stat cards, feature grids |
 | `grid grid-cols-1 md:grid-cols-12 gap-gutter` | About page layout |
+
+### Line Length Guideline
+
+- Default body text: < 80 characters (Inter at 16px/1.5)
+- Accent/display type: controlled via letter-spacing and max-width
 
 ---
 
@@ -254,10 +271,31 @@ Loaded via `<link>` in `index.html`.
 
 Navbar brand: `benjieDev` in `font-headline-md` bold, `text-on-surface`.
 
-### Gradient Accent
+### Accent Usage
 
 ```css
-linear-gradient(135deg, #4edea3 0%, #006c49 100%)
+linear-gradient(135deg, #0891B2 0%, #0E7490 100%)
 ```
 
-Used for `.text-gradient` on About page heading.
+Used for `.text-gradient` on About page heading and intentional accent spots throughout. Not applied indiscriminately.
+
+---
+
+## Motion
+
+- **Page-load:** Single fade-in-up orchestrated entrance — one coordinated moment, not scattered effects
+- **Hover:** Subtle opacity/scale on interactive elements (buttons, links, cards)
+- **Reduced motion:** All transitions respect `prefers-reduced-motion`
+- **No micro-animations on every element** — motion answers a person's action or one page-load reveal
+
+---
+
+## Writing in Design
+
+- Words appear to make it easier to understand and use — design content, not decoration
+- Write from the end user's perspective: name things by what users will understand in simple language
+- Active voice as default: "Save changes," not "Submit"
+- Keep tone conversational: plain verbs, sentence case, no filler, matched to brand and audience
+- Treat failure and emptiness as moments for direction, not mood
+- Empty screen is an invitation to act
+- One written element = one job

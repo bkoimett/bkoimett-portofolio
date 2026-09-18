@@ -82,25 +82,25 @@ const Projects = () => {
   return (
     <>
       {/* Main Content */}
-      <main className="pt-32 pb-section-gap max-w-container-max mx-auto px-gutter">
+      <main className="pt-32 pb-24 max-w-container-max mx-auto px-gutter">
         {/* Header Section */}
-        <header className="mb-stack-lg">
-          <h1 className="font-display-lg text-display-lg text-on-surface mb-stack-sm">Featured Projects</h1>
-          <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+        <header className="mb-12">
+          <h1 className="font-display-lg text-ink mb-3">Featured Projects</h1>
+          <p className="text-muted max-w-2xl">
             Production applications shipped across healthcare, land governance, agriculture, and Web3.
           </p>
         </header>
 
         {/* Filter Tabs */}
-        <div className="flex flex-wrap gap-stack-sm mb-stack-lg">
+        <div className="flex flex-wrap gap-4 mb-12">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setFilter(cat)}
-              className={`px-5 py-2 rounded-full font-label-md transition-all ${
+              className={`px-4 py-2 rounded-full font-label-md transition-all ${
                 filter === cat
                   ? 'active-filter'
-                  : 'text-on-surface-variant bg-surface-container hover:bg-surface-container-high'
+                  : 'text-on-surface-variant hover:bg-surface/50'
               }`}
             >
               {cat === 'all' ? 'All' : cat}
@@ -111,33 +111,33 @@ const Projects = () => {
         {/* Projects Grid */}
         {loading ? (
           <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-300 dark:border-gray-600 border-t-gray-900 dark:border-t-white"></div>
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-2 border-border border-t-accent"></div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-stack-lg">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-stack-lg">
             {filteredProjects.map((project) => (
-              <article key={project._id} className="glass-card rounded-xl overflow-hidden flex flex-col h-full">
-                <div className="relative aspect-video">
+              <article key={project._id} className="card p-stack-lg overflow-hidden flex flex-col h-full">
+                <div className="relative aspect-[16/10] overflow-hidden mb-4">
                   <img alt={project.title} className="w-full h-full object-cover" src={project.image} />
-                  <span className="absolute top-4 left-4 tech-pill px-3 py-1 rounded-full font-label-md text-[12px] uppercase">{project.category}</span>
+                  <span className="absolute top-3 left-3 tech-pill px-2.5 py-1 rounded text-sm font-medium">{project.category}</span>
                 </div>
-                <div className="p-stack-lg flex flex-col flex-grow">
-                  <h3 className="font-headline-md text-headline-md text-on-surface mb-stack-sm">{project.title}</h3>
-                  <p className="font-body-md text-body-md text-on-surface-variant mb-stack-lg">{project.description}</p>
-                  <div className="flex flex-wrap gap-2 mb-stack-lg mt-auto">
+                <div className="flex flex-col flex-grow p-4">
+                  <h3 className="font-headline-md text-ink mb-2">{project.title}</h3>
+                  <p className="font-body-md text-muted mb-4 line-clamp-3">{project.description}</p>
+                  <div className="flex flex-wrap gap-2 mb-4">
                     {project.technologies.map((tech) => (
-                      <span key={tech} className="font-code-sm text-code-sm tech-pill px-3 py-1 rounded">{tech}</span>
+                      <span key={tech} className="tech-pill px-2.5 py-0.5 rounded text-sm font-medium">{tech}</span>
                     ))}
                   </div>
-                  <div className="flex gap-stack-md border-t border-white/5 pt-stack-md">
+                  <div className="flex gap-3 pt-4 border-t border-border/20 mt-4">
                     {project.github && (
-                      <a className="flex items-center gap-2 font-label-md text-primary hover:underline" href={project.github} target="_blank" rel="noopener noreferrer">
-                        <span className="material-symbols-outlined text-[20px]">code</span>GitHub
+                      <a className="flex items-center gap-1 font-label-md text-accent hover:underline" href={project.github} target="_blank" rel="noopener noreferrer">
+                        <span className="material-symbols-outlined text-[16px]">code</span>GitHub
                       </a>
                     )}
                     {project.demo && (
-                      <a className="flex items-center gap-2 font-label-md text-primary hover:underline" href={project.demo} target="_blank" rel="noopener noreferrer">
-                        <span className="material-symbols-outlined text-[20px]">open_in_new</span>Live Demo
+                      <a className="flex items-center gap-1 font-label-md text-accent hover:underline" href={project.demo} target="_blank" rel="noopener noreferrer">
+                        <span className="material-symbols-outlined text-[16px]">open_in_new</span>Live Demo
                       </a>
                     )}
                   </div>
@@ -149,16 +149,16 @@ const Projects = () => {
       </main>
 
       {/* Footer */}
-      <footer className="w-full py-stack-lg bg-surface-dim border-t border-outline-variant/30">
-        <div className="max-w-container-max mx-auto px-gutter flex flex-col md:flex-row justify-between items-center gap-stack-md">
-          <div className="flex flex-col items-center md:items-start gap-stack-sm">
-            <div className="font-headline-sm text-headline-sm text-on-surface font-bold">benjieDev</div>
-            <p className="font-label-md text-label-md text-on-surface-variant">© 2026 Benjamin Kiprotich Koimett. Built with MERN & Go.</p>
+      <footer className="w-full py-12 bg-surface border-t border-border/20">
+        <div className="max-w-container-max mx-auto px-gutter flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex flex-col items-center md:items-start gap-3">
+            <div className="font-headline-sm text-on-surface font-bold">benjieDev</div>
+            <p className="font-label-md text-on-surface-variant">© 2026 Benjamin Kiprotich Koimett. Built with MERN & Go.</p>
           </div>
-          <div className="flex gap-stack-lg">
-            <a className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="https://github.com/bkoimett" target="_blank" rel="noopener noreferrer">GitHub</a>
-            <a className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="https://linkedin.com/in/benjaminkoimett" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-            <a className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="https://dev.to/bwanachairman" target="_blank" rel="noopener noreferrer">Dev.to</a>
+          <div className="flex gap-6">
+            <a className="font-label-md text-on-surface-variant hover:text-accent transition-colors" href="https://github.com/bkoimett" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a className="font-label-md text-on-surface-variant hover:text-accent transition-colors" href="https://linkedin.com/in/benjaminkoimett" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <a className="font-label-md text-on-surface-variant hover:text-accent transition-colors" href="https://dev.to/bwanachairman" target="_blank" rel="noopener noreferrer">Dev.to</a>
           </div>
         </div>
       </footer>
