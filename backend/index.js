@@ -175,6 +175,33 @@ app.get('/api/projects/:id', authMiddleware, async (req, res) => {
   }
 });
 
+// POST - Increment project view count (public endpoint).
+app.post('/api/projects/:id/view', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate ObjectId format — return 400 not 500 for malformed ids
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'Invalid project ID' });
+    }
+
+    const project = await Project.findByIdAndUpdate(
+      id,
+      { $inc: { views: 1 } },
+      { new: true, runValidators: true }
+    );
+
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    res.json({ views: project.views });
+  } catch (error) {
+    console.error('View increment error:', error.message);
+    res.status(500).json({ error: 'Failed to increment view count' });
+  }
+});
+
 // Contact form endpoint.
 app.post('/api/contact', async (req, res) => {
   try {

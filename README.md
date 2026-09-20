@@ -1,28 +1,10 @@
-# Benjamin Kiprotich Koimett | Full-Stack Portfolio
+# Benjamin Kiprotich Koimett | Portfolio
 
-[![Tech Stack](https://shields.io)](https://react.dev)
-[![React Version](https://shields.io)](https://react.dev)
-[![Tailwind Version](https://shields.io)](https://tailwindcss.com)
-[![License](https://shields.io)](LICENSE)
-
-Welcome to the source code of my personal full-stack software engineering portfolio and content management system (CMS). This production-grade application showcases my professional engineering work, open-source projects, and technical skills while providing a secure administrative interface to manage content dynamically.
-
-> 🌐 **Live Demo:** [https://bkoimett-portofolio.vercel.app/]
-> 📊 **Admin Portal:** [https://bkoimett-portofolio.vercel.app/admin/login]
+> A Registry Office–styled portfolio with an admin console — a MERN stack, custom design system, and secured content management.
 
 ---
 
-## 🚀 Key Highlights
-
-*   **Modern Frontend:** Built with **React 19** and compiled using **Vite** for near-instant loading speeds.
-*   **Next-Gen Styling:** Uses the brand new **Tailwind CSS v4** featuring a CSS-first custom theme config and a sleek, dark-mode glassmorphic design.
-*   **Robust Backend:** Powered by **Node.js** and **Express** with a modular REST API architecture.
-*   **Secure Administration:** Protected by JSON Web Tokens (**JWT**), **Bcrypt** password hashing, and login rate-limiting to prevent brute-force attacks.
-*   **Rich Content Editing:** Supports **Markdown rendering** for project case studies, allowing rich text formatting directly from the dashboard.
-
----
-
-## 📋 Table of Contents
+## Table of Contents
 
 - [Overview](#overview)
 - [Tech Stack](#tech-stack)
@@ -35,118 +17,122 @@ Welcome to the source code of my personal full-stack software engineering portfo
 - [API Endpoints](#api-endpoints)
 - [Design System](#design-system)
 - [Admin Access](#admin-access)
-- [Contributing](#contributing)
 - [License](#license)
+- [Author](#author)
 
 ---
 
 ## Overview
 
-A full-stack portfolio and content management system built for **Benjamin Kiprotich Koimett** — Full-Stack MERN & Go Engineer. This project showcases professional work while providing an admin dashboard for managing projects and content dynamically.
+A full-stack portfolio and content management system for **Benjamin Kiprotich Koimett** — Full-Stack MERN & Go Engineer. Public pages showcase his work, and a separate admin console manages projects and settings.
 
-### Key Highlights
+The design language is **Registry Office**: near-white paper, hairline rules, mono reference numbers, editorial serif (Newsreader) with a mono index voice (IBM Plex Mono), a single forest-green authority accent, and one red stamp per page. No glass cards, icon fonts, or gradient washes.
 
-- **Expert Minimalist Design** — Clean, professional UI with glassmorphism effects
-- **Secure Admin Dashboard** — Manage projects, update settings
-- **High Performance** — Vite bundling + Express API
-- **Fully Responsive** — Mobile-first approach with seamless breakpoints
-- **Modular Architecture** — Clean separation of concerns
+**Key Highlights:**
+
+- **Design system-aligned UI** — CSS-first Tailwind v4 tokens in `index.css`; distinct light/dark palettes via `.dark` class; theme persisted with no FOUC.
+- **Unified component architecture** — Shared `Layout`, `Navbar`, `Footer`, and primitives (`Button`, `Card`, `Section`, `SectionHeading`, `ProjectCard`, …) eliminate duplication.
+- **Admin console** — JWT-secured dashboard, projects ledger with two-step delete, filing-form drawer, and settings with a derived-values-only config view.
+- **Fully responsive** — Mobile-first with `sm:` / `md:` / `lg:` breakpoints; mobile navigation drawer.
+- **Accessible** — Visible focus rings, `prefers-reduced-motion` support, AA contrast in both themes.
 
 ---
 
 ## Tech Stack
 
 ### Frontend
+
 | Technology | Purpose |
 |------------|---------|
-| **React 19** | UI Framework |
-| **Vite** | Build Tool & Dev Server |
-| **Tailwind CSS v4** | Styling & Utility Classes (CSS-first config via `@theme`) |
-| **React Router DOM v7** | Client-side Routing |
-| **Axios** | HTTP Client |
-| **React Markdown** | Rich Text Rendering |
-| **Material Symbols** | Icon Library |
-| **Inter + JetBrains Mono** | Typography (Google Fonts) |
+| **React 19** | UI framework |
+| **Vite** | Build tool & dev server |
+| **Tailwind CSS v4** | Styling (CSS-first config via `@theme inline`) |
+| **React Router DOM v7** | Client-side routing |
+| **Axios** | HTTP client (single shared instance in `utils/api.js`) |
+| **React Markdown** | Filed-document body rendering |
+| **Newsreader + IBM Plex Mono** | Typography (Google Fonts) |
 
 ### Backend
+
 | Technology | Purpose |
 |------------|---------|
-| **Node.js + Express** | REST API Server |
-| **MongoDB + Mongoose** | Database & ODM |
+| **Node.js + Express** | REST API server (routes inline in `index.js`) |
+| **MongoDB + Mongoose** | Database & ODM (no ORM) |
 | **JWT** | Authentication |
-| **Bcrypt** | Password Hashing |
+| **Bcrypt** | Password hashing |
 | **express-rate-limit** | Login attempt throttling |
-| **Nodemailer** | Contact form delivery (reserved for Phase 2) |
 
 ### DevOps
+
 | Technology | Purpose |
 |------------|---------|
-| **Git** | Version Control |
-| **npm** | Package Management |
-| **dotenv** | Environment Configuration |
-| **supertest** | Backend API testing |
+| Git | Version control |
+| npm | Package management |
+| dotenv | Environment configuration |
+| supertest + node:test | Backend API tests |
 
 ---
 
 ## Features
 
 ### Public Pages
-- **Home** — Hero section, tech stack, featured works
-- **Projects** — Filterable grid with tech badges and live demos
-- **About** — Bio, skills grid, contact CTA
-- **Project Detail** — Deep dive with markdown content, images, and links
 
-### Admin Dashboard
-- **Secure Login** — JWT-based authentication with rate limiting (5 attempts / 15 min)
-- **System Overview** — Published/draft project stats
-- **Project Management** — Create, edit, delete projects with published/draft status
-- **Settings** — Update username and password
+- **Home** — Masthead hero with availability stamp, ruled fact cells (stats), production records (project case files), technical index, and a correspondence (contact) file.
+- **Projects** — Filterable case-file index; `ProjectCard` ledger rows (reg. no., division, tech index, Source/Live/Record links); fallback dataset if the API is unreachable.
+- **Project Detail** — Filed-document view: markdown body, mono metadata, status badges, view count from backend; skeleton and not-found states.
+- **About** — Employment ledger (current role marked), filing-photo portrait, technical index, attestation panel with stamp.
+
+### Admin Console
+
+- **Secure Login** — JWT with rate limiting (5 attempts / 15 min); non-revealing error messages.
+- **Dashboard overview** — Total projects, summed portfolio views, last updated + telemetry chart (inline SVG bars of views per record).
+- **Project management** — Create, edit, delete with published/draft status; two-step inline delete confirm; `ProjectFormDrawer` slide-over filing form (Esc/backdrop close).
+- **Settings** — Change username/password; read-only derived console config (never `JWT_SECRET` / `MONGODB_URI`).
 
 ---
 
 ## Project Structure
 
 ```
-bkoimett-portfolio/
+bkoimett-portofolio/
 ├── backend/
 │   ├── models/
-│   │   ├── Admin.js            # Admin user schema, bcrypt hashing
+│   │   ├── Admin.js            # Admin schema (bcrypt hashing)
 │   │   └── Project.js          # Project schema
 │   ├── middleware/
-│   │   └── auth.js             # JWT verification middleware
-│   ├── index.js                # Express server & all API routes
-│   ├── seed.js                 # Seed sample projects
+│   │   └── auth.js             # JWT bearer-token middleware
+│   ├── index.js                # Express server & all routes
 │   ├── seedAdmin.js            # Create the initial admin user
-│   ├── .env                    # Environment variables
-│   ├── render.yaml             # Render deploy config
+│   ├── tests/api.test.js       # node:test + supertest (models mocked)
+│   ├── eslint.config.js
 │   └── package.json
 │
 ├── frontend/
 │   ├── src/
-│   │   ├── pages/
-│   │   │   ├── Home.jsx
-│   │   │   ├── Projects.jsx
-│   │   │   ├── ProjectDetail.jsx
-│   │   │   ├── About.jsx
-│   │   │   ├── AdminLogin.jsx
-│   │   │   ├── AdminDashboard.jsx
-│   │   │   └── AdminSettings.jsx
+│   │   ├── pages/              # Home, Projects, ProjectDetail, About,
+│   │   │                       # AdminLogin, AdminDashboard, AdminSettings, NotFound
 │   │   ├── components/
-│   │   │   └── Navbar.jsx
-│   │   ├── context/
-│   │   │   ├── themeContext.js         # Theme context definition
-│   │   │   └── ThemeContext.jsx        # Theme provider (dark/light)
-│   │   ├── utils/
-│   │   │   └── auth.js                 # Admin token helpers
-│   │   ├── styles/                     # Page-level CSS
-│   │   ├── index.css                   # Tailwind v4 @theme tokens + utilities
-│   │   ├── App.jsx
+│   │   │   ├── Navbar.jsx      # Masthead shell (theme toggle, Hire Me)
+│   │   │   ├── ThemeToggle.jsx
+│   │   │   ├── ProtectedRoute.jsx
+│   │   │   ├── layout/         # Layout, Footer, ScrollToTop, NotFound
+│   │   │   ├── primitives/     # Container, Section, SectionHeading, Button,
+│   │   │   │                   # Card, StatusBadge, StatCard, ProjectCard
+│   │   │   └── admin/          # AdminLayout, Sidebar, ProjectsTable,
+│   │   │                       # ProjectFormDrawer, TelemetryChart
+│   │   ├── context/            # AuthContext (JWT), ThemeContext (day/night)
+│   │   ├── utils/              # api.js (shared client), auth.js (token helpers)
+│   │   ├── data/               # profile.js, stats.js, techStack.js
+│   │   ├── index.css           # Tailwind v4 tokens + registry component classes
+│   │   ├── App.jsx             # Routes (admin outside public Layout)
 │   │   └── main.jsx
 │   ├── index.html
-│   ├── vite.config.js                 # Dev proxy to :3001
+│   ├── vite.config.js          # Dev proxy: /api → :3001
 │   └── package.json
 │
-├── .gitignore
+├── DESIGN.md                   # Full design system reference
+├── UISPECS.md                  # As-built UI inventory
+├── AGENTS.md                   # Project conventions & guards
 └── README.md
 ```
 
@@ -155,36 +141,24 @@ bkoimett-portfolio/
 ## Installation & Setup
 
 ### Prerequisites
+
 - Node.js (v18+)
 - MongoDB Atlas account (or local MongoDB)
-- npm or yarn
+- npm
 
-### 1. Clone the Repository
+### 1. Clone & Install
+
 ```bash
-git clone https://github.com/yourusername/bkoimett-portfolio.git
-cd bkoimett-portfolio
+git clone https://github.com/bkoimett/bkoimett-portofolio.git
+cd bkoimett-portofolio
+cd backend && npm install
+cd ../frontend && npm install
 ```
 
-### 2. Backend Setup
-```bash
-cd backend
-npm install
-```
+### 2. Environment Configuration
 
-### 3. Frontend Setup
-```bash
-cd ../frontend
-npm install
-```
+Create `.env` in the **backend** directory:
 
-### 4. Environment Configuration
-Create a `.env` file in the **backend** directory (see [Environment Variables](#environment-variables)).
-
----
-
-## Environment Variables
-
-### Backend (`backend/.env`)
 ```env
 MONGODB_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/<db>
 JWT_SECRET=your_jwt_secret_key
@@ -198,74 +172,53 @@ ADMIN_PASSWORD=changeme
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `MONGODB_URI` | Yes | MongoDB connection string (must start with `mongodb://` or `mongodb+srv://`) |
+| `MONGODB_URI` | Yes | MongoDB connection string |
 | `JWT_SECRET` | Yes | Secret used to sign/verify admin JWTs |
 | `PORT` | No | API port (defaults to `3001`) |
 | `CLIENT_URL` | No | Allowed CORS origin (defaults to `http://localhost:5173`) |
 | `ADMIN_USERNAME` | No | Seed username for `npm run seed:admin` (defaults to `admin`) |
 | `ADMIN_PASSWORD` | No | Seed password for `npm run seed:admin` (defaults to `admin123`) |
 
-### Frontend (`frontend/.env`)
-```env
-VITE_API_URL=http://localhost:3001
-```
-Optional — in development, requests to `/api` are proxied to `http://localhost:3001` via `vite.config.js`, so `VITE_API_URL` is only needed when the frontend is served separately from the API. When set, the shared API client (`frontend/src/utils/api.js`) appends `/api` to it, so `http://localhost:3001` resolves to `http://localhost:3001/api` (if it already ends in `/api`, it is used as-is).
+Frontend `.env` (optional): `VITE_API_URL` — only needed when the frontend is served separately from the API. In dev, `/api` is proxied to `http://localhost:3001` by `vite.config.js`, and the API client base path defaults to `/api`.
 
 ---
 
 ## Development
 
-### Start Backend Server
-```bash
-cd backend
-npm run dev
-```
-Server runs at `http://localhost:3001`
+Run the two servers from separate terminals (no root `package.json`):
 
-### Start Frontend Dev Server
 ```bash
-cd frontend
-npm run dev
+cd backend && npm run dev        # http://localhost:3001
+cd frontend && npm run dev       # http://localhost:5173
 ```
-App runs at `http://localhost:5173`
-
-There is no root `package.json` or `dev:full` script — run the two servers from separate terminals. The Vite dev server proxies `/api` requests to the backend automatically.
 
 ---
 
 ## Building for Production
 
-### Frontend
 ```bash
-cd frontend
-npm run build
-```
-Build output in `frontend/dist/`
-
-### Backend
-No build step — the backend is plain Node.js. Run it directly:
-```bash
-cd backend
-npm start
+cd frontend && npm run build     # → frontend/dist/
+cd backend && npm start          # plain Node, no build step
 ```
 
-### Deploy
-- **Frontend**: Deploy `dist/` to Vercel (`vercel.json` provided) or static hosting
-- **Backend**: Deploy to Render (`render.yaml` provided), Railway, DigitalOcean, or AWS
+- **Frontend**: deploy `dist/` to Vercel/Netlify (client routes need an SPA fallback).
+- **Backend**: deploy to Render (`render.yaml` provided), Railway, Fly.io, etc. Point `CLIENT_URL` at the deployed frontend origin.
 
 ---
 
 ## API Endpoints
 
 ### Public Routes
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `POST` | `/api/admin/login` | Admin login (rate-limited: 5 attempts per 15 min) |
+| `POST` | `/api/admin/login` | Admin login (rate-limited: 5 attempts / 15 min) |
 | `GET` | `/api/projects` | Published projects; authenticated requests return all (incl. drafts) |
 | `GET` | `/api/projects/slug/:slug` | Get a published project by slug |
 | `POST` | `/api/contact` | Submit the contact form |
 
 ### Auth-Protected Routes (Bearer token required)
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | `PUT` | `/api/admin/settings` | Update admin username/password |
@@ -278,104 +231,53 @@ npm start
 
 ## Design System
 
-The design system is defined in `frontend/src/index.css` using Tailwind CSS v4 CSS-first tokens (`@theme`). See `DESIGN.md` for the full reference.
+Defined in `frontend/src/index.css` (Tailwind v4 CSS-first tokens) with a full reference in `DESIGN.md`.
 
-### Color Palette
-```css
---color-surface:                #101415  /* Main Background */
---color-surface-container-low:  #181c1d  /* Cards, Sidebar */
---color-primary:                #4edea3  /* Emerald - CTAs, Icons, Active States */
---color-primary-container:      #10b981  /* Accent Green */
---color-on-surface:             #e0e3e5  /* High Emphasis Text */
---color-on-surface-variant:     #bbcabf  /* Low Emphasis Text */
---color-outline:                #86948a
---color-outline-variant:        #3c4a42  /* Borders */
---color-error:                  #ffb4ab  /* Destructive Actions */
---color-secondary:              #bec6e0
---color-secondary-container:    #3e465c
-```
+**Registry palette:**
 
-### Typography
-- **Fonts**: Inter (body/display), JetBrains Mono (code)
-- **Display XL**: 72px / 1.1 / 800 / -0.04em (48px on mobile)
-- **Display LG**: 64px / 1.1 / 700 / -0.03em
-- **Headline LG/MD/SM**: 32/24/18px, weight 600-700
-- **Body LG/MD**: 18/16px / 1.6 / 400
+| Token | Light | Dark |
+|---|---|---|
+| `paper` | `#f5f7f4` | `#121816` |
+| `ink` | `#16211b` | `#e4eae5` |
+| `ink-muted` | `#54625a` | `#9aa9a1` |
+| `registry` | `#14532d` | `#5fa575` |
+| `registry-dim` | `#3c6b4f` | `#93c3a5` |
+| `rule` | `#d9e1da` | `#27332b` |
+| `rule-strong` | `#b7c4ba` | `#3c4c41` |
+| `stamp` | `#a83c2c` | `#e0705c` |
 
-### Spacing
-- Stack: **8px / 16px / 32px**
-- Gutter: **24px**
-- Section gap: **120px**
-- Container max-width: **1280px**
+**Typefaces** — Newsreader (display/body), IBM Plex Mono (indexes, numerals, stamps). No icon fonts; glyphs are text characters (☰ ✕ ⌘ ↳).
 
-### Radius
-- Base: **4px** | MD: **8px** | LG: **16px** | XL: **24px**
-
-### Effects
-- **Glassmorphism**: `backdrop-blur-xl` with `bg-black/40` borders (`glass-card`, `glass-panel` utilities)
-- **Emerald glow**: radial gradient utility (`emerald-glow`)
-- **Transitions**: `200ms cubic-bezier(0.4, 0, 0.2, 1)` global for theme switching
+**Key classes** — `btn-primary` / `btn-stroke` / `btn-ghost`, `input-base`, `file-index`(-`sm`), `stamp`, `card-flat`, `ledger-row`, `container-page`, `markdown-body`, `animate-rise`.
 
 ---
 
 ## Admin Access
 
-Authentication uses MongoDB-persisted admin users (there are no hardcoded credentials).
+Authentication uses MongoDB-persisted admin users; no hardcoded credentials.
 
-### Create the Admin User
 ```bash
 cd backend
-npm run seed:admin
+npm run seed:admin        # reads ADMIN_USERNAME / ADMIN_PASSWORD from .env
 ```
-The script reads `ADMIN_USERNAME` / `ADMIN_PASSWORD` from `backend/.env` and falls back to `admin` / `admin123`. It is idempotent — if the username already exists, it skips creation.
 
-No default credentials are hardcoded in the app. After seeding, change the password via the admin **Settings** page.
-
-**Security note**: the login endpoint returns a generic "Invalid credentials" error for both unknown usernames and wrong passwords, and is rate-limited to 5 attempts per 15 minutes.
-
----
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+The seed script is idempotent. Sign in at `/admin/login` — the login endpoint returns a generic "Invalid credentials" message for unknown usernames and wrong passwords alike, and is rate-limited (5 attempts / 15 min). Change the password afterwards via Settings.
 
 ---
 
 ## License
 
-This project is proprietary and owned by **Benjamin Kiprotich Koimett**.  
-All rights reserved. No part of this project may be reproduced without permission.
+This project is proprietary and owned by **Benjamin Kiprotich Koimett**. All rights reserved.
 
 ---
 
 ## Author
 
 **Benjamin Kiprotich Koimett**
-- Portfolio: [benjamin.koimett.tech](https://benjamin.koimett.tech)
 - GitHub: [@bkoimett](https://github.com/bkoimett)
 - LinkedIn: [Benjamin Kiprotich Koimett](https://linkedin.com/in/bkoimett)
-- Email: benjamin@koimett.tech
+- Email: koimettb@gmail.com
 
 ---
 
-## Acknowledgments
-
-- Design inspiration from **Expert Minimalist** philosophy
-- Icons from **Google Material Symbols**
-- Fonts from **Google Fonts** (Inter, JetBrains Mono)
-
----
-
-## Support
-
-For issues or questions:
-- Open an issue on GitHub
-- Email: benjamin@koimett.tech
-
----
-
-Built with the MERN stack (MongoDB, Express, React, Node.js).
+Built with the MERN stack + Tailwind CSS v4 design system.

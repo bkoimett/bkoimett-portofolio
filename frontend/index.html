@@ -4,8 +4,25 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/code-svgrepo-com.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>benjieDev</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <meta name="description" content="Benjamin Kiprotich Koimett — full-stack software engineer. Production records across healthcare, agriculture, land governance, and Web3." />
+    <meta name="theme-color" content="#f5f7f4" />
+    <title>Benjamin Kiprotich Koimett — Record of Production</title>
+    <script type="text/javascript">
+      // Inline theme script to prevent FOUC
+      // Set initial theme from localStorage or system preference
+      document.addEventListener('DOMContentLoaded', function() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+          document.documentElement.classList.add(savedTheme === 'dark' ? 'dark' : '');
+          document.documentElement.setAttribute('data-theme', savedTheme);
+        } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          document.documentElement.classList.add('dark');
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      });
+    </script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" />
   </head>
   <body>
     <div id="root"></div>

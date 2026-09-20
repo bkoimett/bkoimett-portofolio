@@ -16,6 +16,7 @@ const projectSchema = new mongoose.Schema({
   tags: [String],
   readTime: String,
   status: { type: String, enum: ['draft', 'published'], default: 'published' },
+  views: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });

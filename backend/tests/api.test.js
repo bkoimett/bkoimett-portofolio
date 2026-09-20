@@ -117,3 +117,10 @@ describe('Projects API', () => {
     assert.equal(res.status, 401);
   });
 });
+
+describe('Project View Tracking', () => {
+    test('POST /api/projects/:id/view with invalid ObjectId returns 400', async () => {
+      const res = await request(app).post('/api/projects/invalid-id/view');
+      assert.equal(res.status, 400);
+    });
+  });

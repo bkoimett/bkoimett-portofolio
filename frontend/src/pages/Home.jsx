@@ -1,202 +1,245 @@
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import api from '../utils/api';
+import ProjectCard from '../components/primitives/ProjectCard';
+import { stats } from '../data/stats';
+import { techStack } from '../data/techStack';
+import { profile } from '../data/profile';
+
+const fallbackProjects = [
+  {
+    _id: '1',
+    slug: 'carefacility-platform',
+    title: 'CareFacility Platform',
+    description: 'Full-stack healthcare management system serving The Serenity Place rehabilitation center.',
+    category: 'Web Dev',
+    technologies: ['React', 'Node.js', 'MongoDB', 'PostgreSQL', 'TypeScript'],
+    github: 'https://github.com/bkoimett/carefacility',
+    demo: 'https://theserenityplace.vercel.app',
+  },
+  {
+    _id: '2',
+    slug: 'landledger',
+    title: 'LandLedger — blockchain title deed verification',
+    description: 'Immutable title deed verification platform preventing land fraud across East Africa.',
+    category: 'Blockchain',
+    technologies: ['TypeScript', 'Golang', 'Solana', 'Smart Contracts'],
+    github: 'https://github.com/bkoimett/land-ledge',
+  },
+];
+
 const Home = () => {
+  const [projects, setProjects] = useState([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const fetchProjects = async () => {
+      try {
+        const response = await api.get('/projects', {
+          signal: controller.signal,
+        });
+        setProjects(response.data);
+      } catch (error) {
+        if (error.name !== 'CanceledError' && error.name !== 'AbortError') {
+          setProjects(fallbackProjects);
+        }
+      } finally {
+        if (!controller.signal.aborted) setLoaded(true);
+      }
+    };
+    fetchProjects();
+    return () => controller.abort();
+  }, []);
+
   return (
     <>
-      {/* SECTION 1: HERO */}
-      <section className="pt-32 pb-24 relative">
-        <div className="max-w-container-max mx-auto px-gutter text-center relative z-10">
-          {/* Name badge — single characteristic identifier */}
-          <div className="inline-flex items-center gap-2 bg-accent/5 border border-accent/20 rounded-full px-4 py-3 mb-12">
-            <span className="material-symbols-outlined text-accent text-sm">terminal</span>
-            <span className="font-label-md text-label-md text-on-surface-variant">Full-Stack Engineer</span>
-          </div>
-
-          {/* Headline — large-scale type treatment as visual element */}
-          <h1 className="font-display-xl-mobile md:font-display-xl text-on-surface mb-8">
-            Benjamin Kiprotich Koimett
-          </h1>
-
-          {/* Subhead — deliberate, no unnecessary labels */}
-          <p className="font-headline-md text-on-surface-variant max-w-2xl mx-auto mb-8">
-            I ship production applications across healthcare, agriculture, land governance, and Web3 —
-            owning projects end-to-end from design through deployment. Based in Kenya, remote-ready,
-            and building with AI tools daily.
+      {/* Masthead */}
+      <section className="container-page pt-14">
+        <div>
+          <p className="file-index animate-rise">
+            REG. NO. BK-026 · FILED {profile.location} · EST. 2022
           </p>
 
-          {/* CTA buttons — one orchestrated moment: primary action first */}
-          <div className="flex flex-col md:flex-row justify-center gap-6">
-            <a 
-              href="/projects" 
-              className="bg-accent text-on-accent px-10 py-4 rounded-lg font-headline-md hover:opacity-110 active:scale-95 transition-all duration-200"
+          <div className="relative mt-8">
+            <h1 className="max-w-[14ch] text-masthead font-semibold text-ink animate-rise">
+              Benjamin K. Koimett
+            </h1>
+            <span
+              aria-hidden="true"
+              className="stamp absolute -top-2 right-0 hidden sm:inline-block animate-rise animate-rise-delay"
             >
-              View My Work
+              Available · Remote
+            </span>
+          </div>
+
+          <p
+            className="mt-6 max-w-[62ch] text-heading font-medium text-ink animate-rise animate-rise-delay"
+          >
+            Full-stack software engineer shipping production systems in
+            healthcare, agriculture, land governance, and Web3.
+          </p>
+
+          <p className="mt-4 max-w-[62ch] text-body text-ink-muted animate-rise animate-rise-delay">
+            I take projects from first commit to live deployment — building the
+            frontend, the backend, and the infrastructure between them. Based
+            in Kisumu, Kenya. Remote-ready.
+          </p>
+
+          <div className="mt-8 flex flex-wrap items-center gap-4 animate-rise animate-rise-delay">
+            <Link to="/projects" className="btn btn-primary">
+              Project records
+            </Link>
+            <a href={`mailto:${profile.email}`} className="btn btn-stroke">
+              Contact
             </a>
-            <a 
-              href="mailto:koimettb@gmail.com" 
-              className="border border-muted text-on-surface px-10 py-4 rounded-lg font-headline-md hover:bg-surface/5 transition-all duration-200"
+            <a
+              href={profile.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-ghost"
             >
-              Contact Me
+              GitHub
             </a>
           </div>
         </div>
+
+        {/* Record cells */}
+        <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          {stats.map((stat, i) => (
+            <div
+              key={stat.label}
+              className={`ledger-row lg:pl-6 ${i === 0 ? 'lg:pl-0' : ''}`}
+            >
+              <p className="font-mono text-[2rem] font-medium leading-none text-ink">
+                {stat.value}
+              </p>
+              <p className="file-index-sm mt-2">{stat.label}</p>
+            </div>
+          ))}
+        </div>
       </section>
 
-      {/* SECTION 2: QUALITY STATEMENT — replaces generic stats */}
-      <section className="py-24 bg-surface/50">
-        <div className="max-w-container-max mx-auto px-gutter">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="font-headline-lg text-on-surface mb-4">
-                Quality Without Compromise
+      {/* Production records */}
+      <section className="container-page mt-24">
+        <header>
+          <p className="file-index-sm">BK / PROD. — RECENTLY FILED</p>
+          <h2 className="mt-1 text-heading-xl font-semibold text-ink">
+            Production records
+          </h2>
+          <p className="mt-3 max-w-[60ch] text-body text-ink-muted">
+            A selection of systems shipped for real users. The full index is on
+            the project records page.
+          </p>
+        </header>
+
+        <div className="mt-8">
+          {loaded ? (
+            projects.slice(0, 4).map((project, i) => (
+              <ProjectCard
+                key={project._id}
+                project={project}
+                regNo={`BK-${String(i + 1).padStart(3, '0')}`}
+              />
+            ))
+          ) : (
+            <p className="file-index-sm py-6">Loading records…</p>
+          )}
+        </div>
+
+        <Link to="/projects" className="btn btn-stroke mt-6">
+          View the full index
+        </Link>
+      </section>
+
+      {/* Technical index */}
+      <section className="container-page mt-24">
+        <header>
+          <p className="file-index-sm">BK / TECH.</p>
+          <h2 className="mt-1 text-heading-xl font-semibold text-ink">
+            Technical index
+          </h2>
+        </header>
+
+        <div className="mt-8">
+          <div className="hidden border-b border-rule pb-2 sm:grid sm:grid-cols-12 sm:gap-x-8">
+            <span className="file-index-sm col-span-4">Tool</span>
+            <span className="file-index-sm col-span-4">Division</span>
+            <span className="file-index-sm col-span-4">Level</span>
+          </div>
+          {techStack.map((tech) => (
+            <div
+              key={tech.name}
+              className="grid grid-cols-1 gap-y-1 border-b border-rule py-3.5 sm:grid-cols-12 sm:gap-x-8"
+            >
+              <span className="text-[17px] font-semibold text-ink sm:col-span-4">
+                {tech.name}
+              </span>
+              <span className="text-[15px] text-ink-muted sm:col-span-4">
+                {tech.category}
+              </span>
+              <span className="file-index-sm sm:col-span-4">
+                {tech.level}
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Contact file */}
+      <section className="container-page mt-24 pb-24">
+        <div className="card-flat rounded-[2px] px-6 py-10 md:p-12">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
+            <div className="md:col-span-7">
+              <p className="file-index-sm">BK / CONTACT</p>
+              <h2 className="mt-1 text-heading-xl font-semibold text-ink">
+                Open a file
               </h2>
-              <p className="text-on-surface-variant text-lg leading-relaxed">
-                I build software that lasts. From mission-critical healthcare platforms to offline-first
-                farming tools, I ship production applications that serve real users under real conditions.
+              <p className="mt-3 max-w-[58ch] text-body text-ink-muted">
+                Currently available for freelance work and full-time roles.
+                Send a note and I will get back to you within a day.
               </p>
             </div>
-            <div className="space-y-4">
-              <div className="card p-6 text-center">
-                <div className="font-display-lg text-accent mb-2">8+</div>
-                <div className="font-label-md text-label-md text-muted uppercase mb-1">Projects Shipped</div>
-              </div>
-              <div className="card p-6 text-center">
-                <div className="font-display-lg text-accent mb-2">4+</div>
-                <div className="font-label-md text-label-md text-muted uppercase mb-1">Years Experience</div>
-              </div>
-              <div className="card p-6 text-center">
-                <div className="font-display-lg text-accent mb-2">24/7</div>
-                <div className="font-label-md text-label-md text-muted uppercase mb-1">Production Uptime</div>
+            <div className="flex flex-col justify-center gap-3 md:col-span-5">
+              <a
+                href={`mailto:${profile.email}`}
+                className="btn btn-primary w-full justify-between"
+              >
+                <span>{profile.email}</span>
+                <span aria-hidden="true">→</span>
+              </a>
+              <div className="flex gap-5 text-[15px]">
+                <a
+                  className="filigree"
+                  href={profile.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  GitHub
+                </a>
+                <a
+                  className="filigree"
+                  href={profile.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  LinkedIn
+                </a>
+                {profile.devto && (
+                  <a
+                    className="filigree"
+                    href={profile.devto}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Dev.to
+                  </a>
+                )}
               </div>
             </div>
           </div>
         </div>
       </section>
-
-      {/* SECTION 3: TECHNICAL STACK — revised with cards, no glass */}
-      <section className="py-24">
-        <div className="max-w-container-max mx-auto px-gutter">
-          <div className="text-center mb-16">
-            <h2 className="font-headline-lg text-on-surface mb-4">
-              Core Infrastructure & Tooling
-            </h2>
-            <p className="text-on-surface-variant max-w-xl mx-auto">
-              The stack that powers every project I own end-to-end.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* React */}
-            <div className="card p-6 text-center transition-colors duration-200 hover:bg-surface/80">
-              <div className="w-14 h-14 bg-accent/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <span className="material-symbols-outlined text-accent">code</span>
-              </div>
-              <h3 className="font-headline-md text-on-surface mb-1">React</h3>
-              <p className="font-label-md text-on-surface-variant">Frontend Library</p>
-            </div>
-
-            {/* Node.js */}
-            <div className="card p-6 text-center transition-colors duration-200 hover:bg-surface/80">
-              <div className="w-14 h-14 bg-accent/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <span className="material-symbols-outlined text-accent">dns</span>
-              </div>
-              <h3 className="font-headline-md text-on-surface mb-1">Node.js</h3>
-              <p className="font-label-md text-on-surface-variant">Backend Runtime</p>
-            </div>
-
-            {/* MongoDB */}
-            <div className="card p-6 text-center transition-colors duration-200 hover:bg-surface/80">
-              <div className="w-14 h-14 bg-accent/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <span className="material-symbols-outlined text-accent">database</span>
-              </div>
-              <h3 className="font-headline-md text-on-surface mb-1">MongoDB</h3>
-              <p className="font-label-md text-on-surface-variant">Database</p>
-            </div>
-
-            {/* TypeScript */}
-            <div className="card p-6 text-center transition-colors duration-200 hover:bg-surface/80">
-              <div className="w-14 h-14 bg-accent/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <span className="material-symbols-outlined text-accent">data_object</span>
-              </div>
-              <h3 className="font-headline-md text-on-surface mb-1">TypeScript</h3>
-              <p className="font-label-md text-on-surface-variant">Type Safety</p>
-            </div>
-
-            {/* Docker */}
-            <div className="card p-6 text-center transition-colors duration-200 hover:bg-surface/80">
-              <div className="w-14 h-14 bg-accent/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <span className="material-symbols-outlined text-accent">deployed_code</span>
-              </div>
-              <h3 className="font-headline-md text-on-surface mb-1">Docker</h3>
-              <p className="font-label-md text-on-surface-variant">Containerization</p>
-            </div>
-
-            {/* Golang */}
-            <div className="card p-6 text-center transition-colors duration-200 hover:bg-surface/80">
-              <div className="w-14 h-14 bg-accent/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <span className="material-symbols-outlined text-accent">memory</span>
-              </div>
-              <h3 className="font-headline-md text-on-surface mb-1">Golang</h3>
-              <p className="font-label-md text-on-surface-variant">Systems Language</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* SECTION 4: FINAL CTA — clean, no gradient noise */}
-      <section className="py-24">
-        <div className="max-w-container-max mx-auto px-gutter text-center">
-          <h2 className="font-display-xl-mobile md:font-display-xl text-on-surface mb-8">
-            Let's Build Something Great
-          </h2>
-          <p className="text-on-surface-variant max-w-2xl mx-auto mb-8">
-            Currently open to freelance opportunities and interesting collaborations. Let's discuss
-            your next project.
-          </p>
-          <div className="flex flex-col md:flex-row justify-center gap-6">
-            <a 
-              href="/about" 
-              className="bg-accent text-on-accent px-12 py-5 rounded-xl font-headline-md hover:opacity-110 active:scale-95 transition-all duration-200"
-            >
-              Start a Conversation
-            </a>
-            <a 
-              href="mailto:koimettb@gmail.com" 
-              className="border border-muted text-on-surface px-12 py-5 rounded-xl font-headline-md hover:bg-surface/5 transition-all duration-200"
-            >
-              Get In Touch
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* SECTION 5: FOOTER */}
-      <footer className="py-12 bg-surface border-t border-border/20">
-        <div className="max-w-container-max mx-auto px-gutter">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            {/* Left side */}
-            <div className="flex flex-col md:flex-row items-center gap-2">
-              <span className="font-headline-sm text-on-surface font-bold">
-                Benjamin Koimett
-              </span>
-              <span className="font-label-md text-on-surface-variant">
-                © 2026 All rights reserved.
-              </span>
-            </div>
-
-            {/* Right side */}
-            <div className="flex items-center gap-4">
-              <a href="https://github.com/bkoimett" className="text-on-surface-variant hover:text-accent transition-colors font-label-md" target="_blank" rel="noopener noreferrer">
-                GitHub
-              </a>
-              <a href="https://linkedin.com/in/benjaminkoimett" className="text-on-surface-variant hover:text-accent transition-colors font-label-md" target="_blank" rel="noopener noreferrer">
-                LinkedIn
-              </a>
-              <a href="https://dev.to/bwanachairman" className="text-on-surface-variant hover:text-accent transition-colors font-label-md" target="_blank" rel="noopener noreferrer">
-                Dev.to
-              </a>
-            </div>
-          </div>
-        </div>
-      </footer>
     </>
   );
 };

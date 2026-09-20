@@ -1,156 +1,377 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&display=swap');
 
-/* Import JetBrains Mono for code */
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
 /* Import Tailwind */
 @import "tailwindcss";
 
-/* Define theme colors for Tailwind v4 CSS-first — Intentional Minimalism palette */
-@theme {
-  --color-background: #FAFAFF;
-  --color-surface: #FFFFFF;
-  --color-accent: #0891B2;
-  --color-muted: #64748B;
-  --color-ink: #1E293B;
-  --color-border: #CAD3C9;
-  
-  --font-size-display-xl: 72px / 1.1 / 800 / -0.04em;
-   --font-size-display-xl-mobile: 48px / 1.1 / 800 / -0.03em;
-    --font-size-display-lg: 64px / 1.1 / 700 / -0.03em;
-    --font-size-headline-lg: 32px / 1.3 / 700;
-    --font-size-headline-md: 24px / 1.4 / 600;
-    --font-size-headline-sm: 18px / 1.4 / 600;
-    --font-size-body-lg: 18px / 1.5 / 400;
-    --font-size-body-md: 16px / 1.5 / 400;
-    --font-size-label-md: 14px / 1.4 / 500 / 0.02em;
-  
-  --spacing-stack-sm: 8px;
-  --spacing-stack-md: 16px;
-  --spacing-stack-lg: 32px;
+/* Registry theme tokens — resolved at runtime so :root / .dark stay distinct */
+@theme inline {
+  --font-serif: 'Newsreader', 'Times New Roman', serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-paper: var(--paper);
+  --color-paper-strong: var(--paper-strong);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-registry: var(--registry);
+  --color-registry-dim: var(--registry-dim);
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+  --color-stamp: var(--stamp);
+  --color-on-registry: var(--on-registry);
+
+  --text-masthead: clamp(2.5rem, 7.5vw, 5.25rem) / 1.02 / 600 / -0.02em;
+  --text-heading-xl: clamp(2rem, 4.5vw, 3rem) / 1.08 / 600 / -0.01em;
+  --text-heading: 1.75rem / 1.15 / 600;
+  --text-title: 1.375rem / 1.25 / 600;
+  --text-title-sm: 1.125rem / 1.3 / 600;
+  --text-body: 1.0625rem / 1.65 / 400;
+  --text-body-sm: 0.9375rem / 1.6 / 400;
+
   --spacing-gutter: 24px;
-  --spacing-section-gap: 96px;
-  --spacing-container-max: 1280px;
-  
-  --border-radius: 6px;
-  --border-radius-md: 8px;
-  --border-radius-lg: 12px;
-  --border-radius-xl: 16px;
+  --spacing-section: 96px;
+  --spacing-container-max: 1240px;
 }
 
-/* Root-level colors for light/dark mode switching */
+/* Custom variant for dark mode */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ============================================================
+   Light mode (default)
+   ============================================================ */
 :root {
-  --text-primary: var(--color-ink);
-  --text-secondary: var(--color-muted);
-  --bg-primary: var(--color-background);
-  --bg-secondary: #F5F6FA;
-  --bg-tertiary: #EAEBF1;
-  --border-color: var(--color-border);
+  color-scheme: light;
+  --paper: #f5f7f4;
+  --paper-strong: #edf1ec;
+  --ink: #16211b;
+  --ink-muted: #54625a;
+  --registry: #14532d;
+  --registry-dim: #3c6b4f;
+  --rule: #d9e1da;
+  --rule-strong: #b7c4ba;
+  --stamp: #a83c2c;
+  --on-registry: #f5f7f4;
 }
 
+/* ============================================================
+   Dark mode
+   ============================================================ */
 .dark {
-  --text-primary: #F8FAFC;
-  --text-secondary: #98A2B3;
-  --bg-primary: #0F0F18;
-  --bg-secondary: #1B1E28;
-  --bg-tertiary: #252733;
-  --border-color: #3A3E4D;
+  color-scheme: dark;
+  --paper: #121816;
+  --paper-strong: #18211c;
+  --ink: #e4eae5;
+  --ink-muted: #9aa9a1;
+  --registry: #5fa575;
+  --registry-dim: #93c3a5;
+  --rule: #27332b;
+  --rule-strong: #3c4c41;
+  --stamp: #e0705c;
+  --on-registry: #0b1a11;
 }
 
-/* Smooth transitions for theme switching — single orchestrated moment */
+/* ============================================================
+   Base
+   ============================================================ */
 * {
   transition-property: background-color, border-color, color, fill, stroke;
   transition-duration: 200ms;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Apply Inter font */
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  font-family: 'Inter', system-ui, -apple-serif, sans-serif;
+  font-family: var(--font-serif);
+  background-color: var(--paper);
+  color: var(--ink);
+  font-feature-settings: 'liga', 'kern';
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Lumina Tech Design System Utilities — revised for distinctive identity */
+::selection {
+  background-color: var(--registry);
+  color: var(--on-registry);
+}
+
+:focus-visible {
+  outline: 2px solid var(--registry);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* ============================================================
+   Components
+   ============================================================ */
 @layer components {
-  /* Reduced-border card: subtle separation, no glass blur (avoids SaaS-card kit cliché) */
-  .card {
-    @apply bg-surface border border-border rounded-lg p-6 transition-colors duration-200 hover:bg-surface/80;
+  /* Page container — registry form width, generous gutters */
+  .container-page {
+    @apply mx-auto w-full px-gutter;
+    max-width: var(--spacing-container-max);
   }
-  
-  .card-hover {
-    @apply card hover:bg-primary/5;
+
+  /* Hairline rules */
+  .rule {
+    border-color: var(--rule);
   }
-  
-  /* Panel with single accent border — structural, not decorative */
-  .panel {
-    @apply bg-surface border-t border-2 border-accent rounded-t-lg py-4;
+  .rule-strong {
+    border-color: var(--rule-strong);
   }
-  
+  .rule-top {
+    border-top-width: 1px;
+    border-top-style: solid;
+    border-color: var(--rule);
+  }
+  .rule-bottom {
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-color: var(--rule);
+  }
+
+  /* Double rule — ledger section divider */
+  .rule-double {
+    border-top: 3px double var(--rule-strong);
+  }
+
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 font-serif text-[15px] font-semibold;
+    padding: 0.625rem 1.25rem;
+    border-radius: 2px;
+  }
   .btn-primary {
-    @apply px-6 py-3 bg-accent text-on-accent rounded-lg font-semibold hover:opacity-110 active:scale-95 transition-all duration-200;
+    background-color: var(--registry);
+    color: var(--on-registry);
   }
-  
-  .btn-secondary {
-    @apply px-6 py-3 border border-muted text-on-surface rounded-lg font-semibold hover:bg-surface/5 transition-all duration-200;
+  .btn-primary:hover {
+    background-color: var(--registry-dim);
   }
-  
+  .btn-stroke {
+    border: 1px solid var(--rule-strong);
+    color: var(--ink);
+  }
+  .btn-stroke:hover {
+    border-color: var(--registry);
+    color: var(--registry);
+  }
+  .btn-ghost {
+    color: var(--ink-muted);
+  }
+  .btn-ghost:hover {
+    color: var(--registry);
+  }
+
+  /* Form fields */
   .input-base {
-    @apply w-full px-4 py-3 bg-surface/50 border border-border rounded-lg text-on-surface focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors duration-200;
+    @apply w-full rounded-[2px] bg-paper font-serif text-body text-ink placeholder:text-ink-muted/70;
+    padding: 0.625rem 0.875rem;
+    border: 1px solid var(--rule-strong);
   }
-  
-  .container-max {
-    @apply max-w-container-max mx-auto px-gutter;
+  .input-base:focus {
+    outline: 1px solid var(--registry);
+    outline-offset: 0;
+    border-color: var(--registry);
   }
-  
-  .section-divider {
-    @apply border-t border-border/20 my-12;
+
+  /* Registry stamp — used once, sparingly */
+  .stamp {
+    display: inline-block;
+    border: 2px solid var(--stamp);
+    color: var(--stamp);
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 0.625rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.6rem;
+    border-radius: 3px;
+    transform: rotate(-2deg);
   }
-  
-  .tech-pill {
-    @apply px-3 py-1 bg-accent/10 border border-accent/20 text-accent rounded-full text-sm font-medium;
-  }
-  
-  .active-filter {
-    @apply bg-accent text-on-accent;
-  }
-  
-  .font-code-sm {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
+
+  /* Index / metadata voice — mono numerals and references */
+  .file-index {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.5;
     font-weight: 500;
+    color: var(--ink-muted);
+    letter-spacing: 0.03em;
   }
-  
-  .text-code-sm {
-    font-size: 12px;
+  .file-index-sm {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1.4;
+    font-weight: 500;
+    color: var(--ink-muted);
   }
-  
-  /* No emerald-glow — replaced with deliberate accent usage */
-  
-  .font-display-xl-mobile {
-    font-size: 48px;
-    font-weight: 800;
-    line-height: 1.1;
-    letter-spacing: -0.03em;
+
+  /* Ledger row — information-carrying rule set */
+  .ledger-row {
+    border-bottom: 1px solid var(--rule);
+    padding: 1rem 0;
   }
-  
-  .font-display-xl {
-    font-size: 72px;
-    font-weight: 800;
-    line-height: 1.1;
-    letter-spacing: -0.04em;
+  .ledger-row:first-child {
+    border-top: 1px solid var(--rule);
   }
-  
-  .font-display-lg {
-    font-size: 64px;
-    font-weight: 700;
-    line-height: 1.1;
-    letter-spacing: -0.03em;
+
+  .card-flat {
+    background-color: var(--paper-strong);
+    border: 1px solid var(--rule);
+  }
+
+  /* Custom scrollbar (admin long tables) */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: var(--paper-strong);
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--rule-strong);
+    border-radius: 0;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--registry-dim);
+  }
+
+  /* Filigree input on hover */
+  a.filigree {
+    color: var(--registry);
+  }
+  a.filigree:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 }
 
-/* Text gradient using the accent — not the default emerald */
-.text-gradient {
-  background: linear-gradient(135deg, #0891B2 0%, #0E7490 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* ============================================================
+   Markdown (filed-document copy)
+   ============================================================ */
+.markdown-body {
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: var(--ink);
+}
+.markdown-body > * + * {
+  margin-top: 1.25rem;
+}
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+  font-weight: 600;
+  line-height: 1.25;
+}
+.markdown-body h1 {
+  font-size: 1.75rem;
+}
+.markdown-body h2 {
+  font-size: 1.5rem;
+  margin-top: 2.25rem;
+}
+.markdown-body h3 {
+  font-size: 1.25rem;
+}
+.markdown-body a {
+  color: var(--registry);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.markdown-body blockquote {
+  border-left: 3px double var(--rule-strong);
+  padding-left: 1.25rem;
+  color: var(--ink-muted);
+  font-style: italic;
+}
+.markdown-body code {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  background-color: var(--paper-strong);
+  border: 1px solid var(--rule);
+  padding: 0.125rem 0.375rem;
+  border-radius: 2px;
+}
+.markdown-body pre {
+  background-color: var(--paper-strong);
+  border: 1px solid var(--rule);
+  padding: 1rem;
+  overflow-x: auto;
+  border-radius: 2px;
+}
+.markdown-body pre code {
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+.markdown-body ul,
+.markdown-body ol {
+  padding-left: 1.5rem;
+}
+.markdown-body ul {
+  list-style: square;
+}
+.markdown-body ol {
+  list-style: decimal;
+}
+.markdown-body li {
+  margin-top: 0.5rem;
+}
+.markdown-body hr {
+  border: 0;
+  border-top: 3px double var(--rule-strong);
+  margin: 2.5rem 0;
+}
+.markdown-body table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+.markdown-body th,
+.markdown-body td {
+  border: 1px solid var(--rule);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+.markdown-body th {
+  background-color: var(--paper-strong);
+  font-weight: 600;
+}
+
+/* ============================================================
+   Motion — a single orchestrated entrance on the masthead only
+   ============================================================ */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.animate-rise {
+  animation: rise 0.65s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: 0.05s;
+}
+.animate-rise-delay {
+  animation-delay: 0.18s;
 }

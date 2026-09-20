@@ -7,43 +7,41 @@ This document defines the visual design system for the project. All new componen
 ## Stack
 
 - **Framework:** Vite + React 19 (JSX)
-- **Styling:** Tailwind CSS v4 (CSS-first config via `@theme` in `index.css`)
-- **Icons:** Google Material Symbols (Outlined)
-- **Fonts:** Inter (sans) + JetBrains Mono (mono)
-- **Dark mode:** ThemeContext provider with localStorage + system preference detection
+- **Styling:** Tailwind CSS v4 (CSS-first config via `@theme inline` in `index.css`)
+- **Fonts:** Newsreader (serif — display + body) + IBM Plex Mono (indexes, numerals, stamps)
+- **Dark mode:** Class-based via `.dark` on `<html>` with ThemeContext provider, `localStorage` persistence, and `prefers-color-scheme` detection. Light and dark palettes are distinct — `:root` and `.dark` override the same `@theme inline` tokens.
+
+---
+
+## Concept
+
+**Registry Office.** The portfolio is styled as an official records office — the products it ships (a land registry, patient records, farm ledgers) are registry systems. The visual language is that of filed forms and ledgers: near-white paper, hairline rules, mono reference numbers, stamped availability, sentence-case labels. One authority colour (registry green), one signal colour (a red stamp, used once per page).
+
+Avoid: glass cards, soft shadows, gradient washes, centered text blocks, pill labels, icon fonts, ALL-CAPS eyebrows, and `→` on every link.
 
 ---
 
 ## Colors
 
-All values are hex, defined as CSS custom properties in `index.css` via the Tailwind v4 `@theme` block.
+All values are hex, defined as CSS custom properties on `:root` / `.dark` and exposed to Tailwind through `@theme inline`.
 
-### Palette
+| Token | Light | Dark | Usage |
+|---|---|---|---|
+| `paper` | `#f5f7f4` | `#121816` | Page background |
+| `paper-strong` | `#edf1ec` | `#18211c` | Cards, fills, framed surfaces |
+| `ink` | `#16211b` | `#e4eae5` | Primary text |
+| `ink-muted` | `#54625a` | `#9aa9a1` | Secondary text |
+| `registry` | `#14532d` | `#5fa575` | Links, accents, fills (authority) |
+| `registry-dim` | `#3c6b4f` | `#93c3a5` | Hover / emphasised registry |
+| `rule` | `#d9e1da` | `#27332b` | Hairline borders, dividers |
+| `rule-strong` | `#b7c4ba` | `#3c4c41` | Strong borders, focus, table heads |
+| `stamp` | `#a83c2c` | `#e0705c` | The single availability stamp + errors |
+| `on-registry` | `#f5f7f4` | `#0b1a11` | Text on registry fills |
 
-| Token | Hex | Usage |
-|---|---|---|
-| `background` | `#FAFAFF` | Page background — warm off-white with cool undertone, not cream, not pure white |
-| `surface` | `#FFFFFF` | Crisp white for cards, sections, used sparingly for hierarchy |
-| `accent` | `#0891B2` | Primary accent — clear cyan-teal, distinctive and intentional (not terracotta/cliché) |
-| `muted` | `#64748B` | Secondary/muted text, dividers, subtle accents |
-| `ink` | `#1E293B` | Primary body text in dark mode |
-| `border` | `#CAD3C9` | Default borders, structural separation |
-
-### Light Mode
-
-| Token | Hex | Usage |
-|---|---|---|
-| `on-surface` | `#1E293B` | Primary text |
-| `on-surface-variant` | `#64748B` | Secondary/muted text |
-| `border` | `#CAD3C9` | Default borders |
-
-### Dark Mode
-
-| Token | Hex | Usage |
-|---|---|---|
-| `on-surface` | `#F8FAFC` | Primary text |
-| `on-surface-variant` | `#98A2B3` | Secondary/muted text |
-| `border` | `#3A3E4D` | Default borders |
+Rules of use:
+- Green is reserved for authority (links, current state, primary actions).
+- Red is a stamp: one per page (availability) plus error states.
+- Uppercase is allowed only where an official form genuinely stamps it (REG. NO., FILED, DIVISION); everywhere else use sentence case.
 
 ---
 
@@ -53,249 +51,127 @@ All values are hex, defined as CSS custom properties in `index.css` via the Tail
 
 | Font | Weight | Usage |
 |---|---|---|
-| **Inter** | 400, 500, 600, 700, 800 | All UI text |
-| **JetBrains Mono** | 500 | Code, monospace content |
+| **Newsreader** | 400, 500, 600, 700 | All display + body text (editorial serif) |
+| **IBM Plex Mono** | 400, 500, 600 | Reference numbers, file indexes, stamps, tables, code |
 
-### Type Scale
+### Type Scale (Tailwind utilities)
 
-| Token | Size | Weight | Line Height | Letter Spacing | Usage |
-|---|---|---|---|---|---|
-| `display-xl` | 72px | 800 | 1.1 | -0.04em | Hero title (desktop) |
-| `display-xl-mobile` | 48px | 800 | 1.1 | -0.03em | Hero title (mobile) |
-| `display-lg` | 64px | 700 | 1.1 | -0.03em | Large display headings |
-| `headline-lg` | 32px | 700 | 1.3 | - | Section headings |
-| `headline-md` | 24px | 600 | 1.4 | - | Card titles, sub-headings |
-| `headline-sm` | 18px | 600 | 1.4 | - | Navbar brand, small headings |
-| `body-lg` | 18px | 400 | 1.5 | - | Large body text |
-| `body-md` | 16px | 400 | 1.5 | - | Default body text |
-| `label-md` | 14px | 500 | 1.4 | 0.02em | Labels, buttons, nav items |
+| Token | Size | Line | Weight | Usage |
+|---|---|---|---|---|
+| `text-masthead` | `clamp(2.5rem → 5.25rem)` | 1.02 | 600 | Home hero name |
+| `text-heading-xl` | `clamp(2rem → 3rem)` | 1.08 | 600 | Section mastheads |
+| `text-heading` | 1.75rem | 1.15 | 600 | Page titles |
+| `text-title` | 1.375rem | 1.25 | 600 | Card / section titles |
+| `text-title-sm` | 1.125rem | 1.3 | 600 | Project record titles |
+| `text-body` | 1.0625rem | 1.65 | 400 | Default body |
+| `text-body-sm` | 0.9375rem | 1.6 | 400 | Compact body |
 
-### Custom Typography Classes
-
-| Class | Definition |
-|---|---|
-| `font-code-sm` | JetBrains Mono, 12px, weight 500 |
-| `text-code-sm` | font-size 12px |
+Component classes: `file-index` (mono 13px) and `file-index-sm` (mono 12px) for indexes/numerals; `.stamp` for the availability stamp.
 
 ---
 
 ## Spacing
 
-### Tokens
-
 | Token | Value | Usage |
 |---|---|---|
-| `stack-sm` | 8px | Tight gaps, small spacers |
-| `stack-md` | 16px | Standard gaps between elements |
-| `stack-lg` | 32px | Section internals, card padding |
 | `gutter` | 24px | Horizontal page padding |
-| `section-gap` | 96px | Vertical gap between page sections |
-| `container-max` | 1280px | Max content width |
+| `section` | 96px | Vertical rhythm between sections |
+| `container-max` | 1240px | Max content width |
 
-### Container Pattern
-
-```html
-<div className="max-w-container-max mx-auto px-gutter">
-```
+Container pattern: `<div className="container-page">` (wraps max-width + gutter).
 
 ---
 
 ## Border Radius
 
-| Token | Value | Usage |
-|---|---|---|
-| `border-radius` | 6px | Base radius, cards |
-| `border-radius-md` | 8px | Buttons, inputs |
-| `border-radius-lg` | 12px | Section corners, moderate rounding |
-| `border-radius-xl` | 16px | Large cards, modals |
+Near-zero throughout — `rounded-[2px]` on buttons, inputs, and frames. No large-radius cards; no pill-shaped chips (the registry does not round its forms). Borders are hairline `1px var(--rule)` or `3px double var(--rule-strong)` for ledger dividers.
 
 ---
 
-## Component Classes
+## Buttons
 
-### card
+| Class | Style | Use |
+|---|---|---|
+| `.btn-primary` | solid registry green fill | Primary action |
+| `.btn-stroke` | 1px strong-rule outline | Secondary action |
+| `.btn-ghost` | text only (muted → registry) | Tertiary / inline |
 
-```css
-bg-surface border border-border rounded-lg p-6 transition-colors duration-200 hover:bg-surface/80
-```
-
-Subtle separation — no glass blur, avoiding the SaaS-card kit cliché.
-
-### card-hover
-
-```css
-card hover:bg-accent/5
-```
-
-### panel
-
-```css
-bg-surface border-t border-2 border-accent rounded-t-lg py-4
-```
-
-Single accent border — structural, not decorative.
-
-### btn-primary
-
-```css
-px-6 py-3 bg-accent text-on-accent rounded-lg font-semibold hover:opacity-110 active:scale-95 transition-all duration-200
-```
-
-### btn-secondary
-
-```css
-px-6 py-3 border border-muted text-on-surface rounded-lg font-semibold hover:bg-surface/5 transition-all duration-200
-```
-
-### input-base
-
-```css
-w-full px-4 py-3 bg-surface/50 border border-border rounded-lg text-on-surface focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors duration-200
-```
-
-### container-max
-
-```html
-<div className="max-w-container-max mx-auto px-gutter">
-```
-
-### section-divider
-
-```css
-border-t border-border/20 my-12
-```
-
-Horizontal structural divider — informs content hierarchy.
-
-### tech-pill
-
-```css
-px-3 py-1 bg-accent/10 border border-accent/20 text-accent rounded-full text-sm font-medium
-```
-
-### active-filter
-
-```css
-bg-accent text-on-accent
-```
-
-### font-code-sm
-
-JetBrains Mono, 12px, weight 500
-
-### text-code-sm
-
-font-size 12px
-
-### text-gradient
-
-```css
-background: linear-gradient(135deg, #0891B2 0%, #0E7490 100%);
--webkit-background-clip: text;
--webkit-text-fill-color: transparent;
-background-clip: text;
-```
-
-Gradient accent using the primary accent color — not the default emerald gradient.
+Button copy names the action, sentence case: "Project records", "File new record", "Save changes". Never "Submit".
 
 ---
 
-## Layout
+## Components
 
-### Page Structure
-
-```
-<Navbar />           -- fixed top, z-50, h-16, subtle accent border
-<main>               -- pt-32 for public pages (offset for fixed nav)
-  {content}
-<footer>             -- bg-surface-dim, border-t
-```
-
-### Responsive Breakpoints
-
-| Breakpoint | Width | Usage |
-|---|---|---|
-| `md:` | 768px | Grid column changes, desktop nav |
-| `lg:` | 1024px | Multi-column layouts |
-
-### Grid Patterns
-
-| Pattern | Usage |
+| Component | Notes |
 |---|---|
-| `grid grid-cols-1 md:grid-cols-3 gap-stack-lg` | Project cards (3 columns desktop) |
-| `grid grid-cols-2 lg:grid-cols-4 gap-stack-md` | Tech stack grid (4 columns desktop) |
-| `grid grid-cols-1 md:grid-cols-2 gap-stack-md` | Stat cards, feature grids |
-| `grid grid-cols-1 md:grid-cols-12 gap-gutter` | About page layout |
-
-### Line Length Guideline
-
-- Default body text: < 80 characters (Inter at 16px/1.5)
-- Accent/display type: controlled via letter-spacing and max-width
-
----
-
-## Icons
-
-**Library:** Google Material Symbols (Outlined)
-
-Loaded via `<link>` in `index.html`.
-
-### Sizing
-
-| Size | Class | Usage |
-|---|---|---|
-| SM | `text-sm` or `text-[18px]` | Inline icons, nav arrows |
-| MD | `text-[20px]` | Action icons, form icons |
-| LG | `text-xl` | Table action buttons |
-| XL | `text-[48px]` | Hero stat numbers |
-
-### Common Icons Used
-
-`terminal`, `dashboard`, `folder_open`, `settings`, `logout`, `add`, `edit`, `delete`, `visibility`, `code`, `open_in_new`, `mail`, `call`, `link`, `arrow_back`, `login`, `error`, `check_circle`, `person`, `lock`, `dns`, `database`, `data_object`, `deployed_code`, `memory`, `cloud`, `web`, `analytics`, `trending_up`, `history`, `help`
+| `layout/Layout` | Public shell: masthead + `<main>` + document footer. Public routes wrap themselves with `<Layout>`. |
+| `layout/Footer` | Registry document footer (filing lines, record index, correspondence). Reads profile from `data/profile.js`. |
+| `components/Navbar` | Masthead — no icons, text nav, `bk / 026` monogram, shared `ThemeToggle`. |
+| `components/ThemeToggle` | Shared day/night toggle (mono text + glyph), used by Navbar and admin. |
+| `primitives/ProjectCard` | Case-file row: reg no., title, division, description, tech index, Source/Live/Record links, optional framed photo. |
+| `primitives/StatCard` | Ruled fact row: hedge numeral + mono label. |
+| `primitives/SectionHeading` | Reference line (optional) + serif heading + short rule. |
+| `primitives/Button` | `primary` / `stroke` / `ghost` × `sm` / `md` / `lg`. |
+| `primitives/Card` | Flat framed surface (`card-flat`). |
+| `primitives/StatusBadge` | Mono bordered tag (views, read time, status). |
+| `primitives/Container` / `Section` | Layout primitives. |
 
 ---
 
-## Dark Mode
+## Layout Conventions
 
-- **Method:** Class-based via ThemeContext with `localStorage` + `prefers-color-scheme`
-- **Default:** System preference
-- **Toggle:** Managed through ThemeContext provider
-- **CSS:** `:root` defines light mode variables, `.dark` class overrides them
-- **Global transition:** All elements have `200ms cubic-bezier(0.4, 0, 0.2, 1)` transition on `background-color`, `border-color`, `color`, `fill`, `stroke`
+- Text is left-aligned. Never center whole sections.
+- Measure: ~60–70ch for prose.
+- Records (projects, tech) are rendered as ruled ledgers / index tables, not cards.
+- Sections open with a `file-index-sm` reference line (e.g. `BK / PROD.`) followed by a serif heading.
+- Primary page padding: `pt-14` at top, `pb-24` at bottom.
 
----
+### Page structure
 
-## Branding
-
-### Logo Text
-
-Navbar brand: `benjieDev` in `font-headline-md` bold, `text-on-surface`.
-
-### Accent Usage
-
-```css
-linear-gradient(135deg, #0891B2 0%, #0E7490 100%)
 ```
-
-Used for `.text-gradient` on About page heading and intentional accent spots throughout. Not applied indiscriminately.
+<header>          3px registry top band · sticky · hairline bottom rule
+<main>            container-page, left-aligned sections
+<footer>          document footer (paper-strong)
+```
 
 ---
 
 ## Motion
 
-- **Page-load:** Single fade-in-up orchestrated entrance — one coordinated moment, not scattered effects
-- **Hover:** Subtle opacity/scale on interactive elements (buttons, links, cards)
-- **Reduced motion:** All transitions respect `prefers-reduced-motion`
-- **No micro-animations on every element** — motion answers a person's action or one page-load reveal
+One orchestrated entrance per page, on the home masthead only (`.animate-rise`, 0.65s). All other motion answers a user action (menu open, drawer slide, hover colour change). `prefers-reduced-motion: reduce` disables transitions and animation.
 
 ---
 
-## Writing in Design
+## Focus & Accessibility
 
-- Words appear to make it easier to understand and use — design content, not decoration
-- Write from the end user's perspective: name things by what users will understand in simple language
-- Active voice as default: "Save changes," not "Submit"
-- Keep tone conversational: plain verbs, sentence case, no filler, matched to brand and audience
-- Treat failure and emptiness as moments for direction, not mood
-- Empty screen is an invitation to act
-- One written element = one job
+- `:focus-visible` → 2px `var(--registry)` outline, offset 2px.
+- Focus ring on inputs: 1px registry outline + border swap.
+- AA contrast verified for text (ink-on-paper, registry-on-paper, *muted* ≥ 4.5 in both modes).
+- Keyboard-operable admin: tab strip, drawer (Esc to close, backdrop click, focus moves to title field).
+
+---
+
+## Markdown (filed-document copy)
+
+Rendered via `react-markdown` inside `.markdown-body`: serif body, square list markers, mono inline code on `paper-strong`, `3px double` horizontal/blockquote rules, hairline tables with `paper-strong` heads.
+
+---
+
+## Admin Console
+
+- **Shell:** `components/admin/AdminLayout` (console masthead + `Sidebar`). Admin routes live **outside** the public `Layout`.
+- **Sidebar:** index of Dashboard / Projects / Settings + session stamp + log out.
+- **Metrics:** ledger fact rows, not cards.
+- **Tables:** hairline registry tables, mono column heads, two-step inline delete confirm.
+- **Forms:** `ProjectFormDrawer` (right-side filing form), `AdminSettings` (username / password / derived config — never raw secrets).
+- **API paths:** always `/projects` / `/admin/*` (client baseURL already includes `/api`).
+- 401 responses clear the token and emit `auth-unauthorized` — `AuthProvider` flips `isAuthenticated`, `ProtectedRoute` redirects to sign-in.
+
+---
+
+## Tokens Reference (CSS)
+
+Defined in `index.css`:
+- `:root` = light, `.dark` = dark; `@theme inline { --color-<token>: var(--<token>) }` exposes `bg-ink`, `text-registry`, `border-rule`, etc. to Tailwind.
+- Type utilities are emitted from `--text-<name>` tokens.
+- Component classes live in `@layer components`: button variants, `input-base`, `file-index(-sm)`, `stamp`, `card-flat`, `ledger-row`, `container-page`, `markdown-body`, `animate-rise`.
