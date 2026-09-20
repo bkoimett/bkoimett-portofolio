@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
+import { cvDownloadUrl, fetchActiveCv, copyCvLink } from '../utils/cv';
 import ProjectCard from '../components/primitives/ProjectCard';
 import { stats } from '../data/stats';
 import { techStack } from '../data/techStack';
@@ -31,6 +32,22 @@ const fallbackProjects = [
 const Home = () => {
   const [projects, setProjects] = useState([]);
   const [loaded, setLoaded] = useState(false);
+  const [cv, setCv] = useState(null);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchActiveCv({ signal: controller.signal }).then((activeCv) => {
+      if (!controller.signal.aborted) setCv(activeCv);
+    });
+    return () => controller.abort();
+  }, []);
+
+  const handleShare = async () => {
+    await copyCvLink();
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   useEffect(() => {
     const controller = new AbortController();
@@ -93,6 +110,21 @@ const Home = () => {
             <a href={`mailto:${profile.email}`} className="btn btn-stroke">
               Contact
             </a>
+            {cv && (
+              <a href={cvDownloadUrl} className="btn btn-stroke">
+                Download CV
+              </a>
+            )}
+            {cv && (
+              <button
+                type="button"
+                onClick={handleShare}
+                aria-live="polite"
+                className="btn btn-ghost"
+              >
+                {copied ? 'Link copied' : 'Share CV'}
+              </button>
+            )}
             <a
               href={profile.github}
               target="_blank"

@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { cvDownloadUrl, fetchActiveCv } from '../utils/cv';
 import { techStack } from '../data/techStack';
 import { profile } from '../data/profile';
 
@@ -39,6 +40,16 @@ const roles = [
 ];
 
 const About = () => {
+  const [cv, setCv] = useState(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchActiveCv({ signal: controller.signal }).then((activeCv) => {
+      if (!controller.signal.aborted) setCv(activeCv);
+    });
+    return () => controller.abort();
+  }, []);
+
   return (
     <>
       {/* Record header */}
@@ -181,6 +192,11 @@ const About = () => {
             </div>
             <div className="flex flex-col items-start gap-4">
               <span className="stamp">Available · Remote</span>
+              {cv && (
+                <a href={cvDownloadUrl} className="btn btn-stroke">
+                  Download CV
+                </a>
+              )}
               <Link to="/projects" className="btn btn-primary">
                 Review the records
               </Link>

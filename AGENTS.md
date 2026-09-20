@@ -8,16 +8,17 @@
 ## STRUCTURE
 
 - `backend/index.js` — Express server, all routes inline
-- `backend/models/` — Mongoose models (Project.js, Admin.js)
+- `backend/models/` — Mongoose models (Project.js, Admin.js, CV.js)
+- `backend/gridfs.js` — GridFS bucket helper for CV file storage (bucket `cvs`)
 - `backend/middleware/auth.js` — JWT bearer-token middleware
 - `backend/seedAdmin.js` — Script to create initial admin user
 - `backend/eslint.config.js` — ESLint flat config
 - `backend/tests/` — API tests (node:test + supertest, models mocked)
 - `frontend/src/pages/` — Page components (Home, Projects, About, AdminLogin, AdminDashboard, AdminSettings, ProjectDetail, NotFound)
 - `frontend/src/components/` — Shared primitives (Layout, Container, Section, SectionHeading, Button, Card, StatusBadge, StatCard, ProjectCard, Footer, ScrollToTop, NotFound, ProtectedRoute, ThemeToggle)
-- `frontend/src/components/admin/` — Admin components (AdminLayout, Sidebar, StatCards, TelemetryChart, ProjectsTable, ProjectFormDrawer, ConfigViewer, SessionBadge)
+- `frontend/src/components/admin/` — Admin components (AdminLayout, Sidebar, CVsManager, TelemetryChart, ProjectsTable, ProjectFormDrawer)
 - `frontend/src/context/` — AuthContext.jsx, ThemeContext.jsx
-- `frontend/src/utils/` — api.js, auth.js
+- `frontend/src/utils/` — api.js, auth.js, cv.js
 
 ## ENVIRONMENT
 
@@ -89,11 +90,11 @@ Design language: Registry Office. See `@DESIGN.md` for tokens and conventions.
 
 ### Frontend — admin components
 `components/admin/AdminLayout`, `components/admin/Sidebar`, `components/admin/ProjectsTable`,
-`components/admin/ProjectFormDrawer`, `components/admin/TelemetryChart`
+`components/admin/ProjectFormDrawer`, `components/admin/CVsManager`, `components/admin/TelemetryChart`
 
 ### Frontend — data/context/utils
 `data/profile.js`, `data/stats.js`, `data/techStack.js`, `context/AuthContext.jsx` (+ `context/authContext.js`),
-`context/ThemeContext.jsx` (+ `context/themeContext.js`), `utils/api.js`, `utils/auth.js`
+`context/ThemeContext.jsx` (+ `context/themeContext.js`), `utils/api.js`, `utils/auth.js`, `utils/cv.js`
 
 ### Frontend — pages
 `App.jsx`, `index.css`, `index.html`, `pages/Home.jsx`, `pages/Projects.jsx`,
@@ -104,7 +105,7 @@ Removed during redesign: `data/terminalCommands.js`, `lib/telemetry.js`, `src/st
 Material Symbols icon font (no icon fonts anywhere on the site).
 
 ### Modified — backend
-`models/Project.js`, `index.js`, `tests/api.test.js`
+`models/Project.js`, `index.js`, `gridfs.js`, `models/CV.js`, `tests/api.test.js`
 
 ### Modified — docs
 `UISPECS.md`, `DESIGN.md`, `AGENTS.md`, `README.md`

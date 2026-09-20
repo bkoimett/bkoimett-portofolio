@@ -115,6 +115,7 @@ Button copy names the action, sentence case: "Project records", "File new record
 | `primitives/Card` | Flat framed surface (`card-flat`). |
 | `primitives/StatusBadge` | Mono bordered tag (views, read time, status). |
 | `primitives/Container` / `Section` | Layout primitives. |
+| `utils/cv.js` | CV helpers: public download URL, share URL (+ clipboard copy), active-CV check. |
 
 ---
 
@@ -160,10 +161,11 @@ Rendered via `react-markdown` inside `.markdown-body`: serif body, square list m
 ## Admin Console
 
 - **Shell:** `components/admin/AdminLayout` (console masthead + `Sidebar`). Admin routes live **outside** the public `Layout`.
-- **Sidebar:** index of Dashboard / Projects / Settings + session stamp + log out.
+- **Sidebar:** index of Dashboard / Projects / CVs / Settings + session stamp + log out.
 - **Metrics:** ledger fact rows, not cards.
 - **Tables:** hairline registry tables, mono column heads, two-step inline delete confirm.
 - **Forms:** `ProjectFormDrawer` (right-side filing form), `AdminSettings` (username / password / derived config — never raw secrets).
+- **CV records:** PDFs stored in GridFS (bucket `cvs`); metadata in the `CV` model. Exactly one record is `active` and is the only one served publicly (`/api/cv`, `/api/cv/download`). Uploads are PDF-only, ≤ 10MB, via the shared API client. Public `Download CV` (`btn-stroke`) / `Share CV` (`btn-ghost`) buttons render only when an active CV exists.
 - **API paths:** always `/projects` / `/admin/*` (client baseURL already includes `/api`).
 - 401 responses clear the token and emit `auth-unauthorized` — `AuthProvider` flips `isAuthenticated`, `ProtectedRoute` redirects to sign-in.
 
