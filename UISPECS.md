@@ -67,9 +67,10 @@ Shared primitives live in `frontend/src/components/primitives/`, the public shel
 | Component | Notes |
 |---|---|
 | `admin/AdminLayout` | Console shell: admin masthead + `Sidebar` + content `container-page` |
-| `admin/Sidebar` | Controlled (`active` + `onSelect`): Dashboard / Projects / Settings, session stamp, log out |
+| `admin/Sidebar` | Controlled (`active` + `onSelect`): Dashboard / Projects / CVs / Settings, session stamp, log out |
 | `admin/ProjectsTable` | Registry table; edit button; two-step inline delete confirm |
 | `admin/ProjectFormDrawer` | Slide-over filing form; state seeded from `initialData`; Esc/backdrop close; `onSaved` callback |
+| `admin/CVsManager` | CV records tab: PDF upload (label + make-active), registry table, make-active + two-step delete |
 | `admin/TelemetryChart` | Inline SVG — portfolio views per record (horizontal bars from `projects`) |
 
 ---
@@ -79,7 +80,9 @@ Shared primitives live in `frontend/src/components/primitives/`, the public shel
 ### 3.1 Home — `pages/Home.jsx`
 
 1. Masthead hero — `text-masthead` name, mono intro line, availability stamp,
-   `Hire Me` (mailto) + `View my record` (→ `/projects`).
+   `Hire Me` (mailto) + `View my record` (→ `/projects`). When an active CV is on
+   file, `Download CV` (`btn-stroke`) and `Share CV` (`btn-ghost`, copies the
+   public CV URL with "Link copied" confirmation) appear next to the masthead buttons.
 2. Record cells — 4 `StatCard` facts from `data/stats.js` (`8+` shipped, `4+` years,
    `24/7` uptime, monthly views).
 3. Production records — first 4 `ProjectCard` rows (fresh from `/api/projects`, fallback
@@ -111,7 +114,8 @@ Shared primitives live in `frontend/src/components/primitives/`, the public shel
    bio paragraphs.
 2. Employment ledger — roles from `data/profile.js`; current role marked "CURRENT".
 3. Technical index — same table as Home (`data/techStack.js`).
-4. Attestation panel — statement + availability stamp.
+4. Attestation panel — statement + availability stamp; `Download CV` button when an
+   active CV is on file.
 
 ### 3.5 AdminLogin — `pages/AdminLogin.jsx`
 
@@ -132,6 +136,10 @@ Shell: `AdminLayout` + `Sidebar`. Active tab in state (`dashboard` / `projects` 
 - **Projects view** — "File new record" (`btn-primary`) opens `ProjectFormDrawer`; below,
   `ProjectsTable` (title, division, status badge, views, actions). Save flow calls
   `loadProjects` again; inline confirm for delete.
+- **CVs view** — `CVsManager`: upload form (PDF file, optional version label, "make
+  downloadable" toggle; auto-activates the first filed CV), registry table of all CVs
+  (label, file, size, filed date, Active/On file badge), "Make active" for non-active
+  records, two-step delete that also removes the GridFS file.
 - **Settings view** — renders `AdminSettings`.
 
 ### 3.7 AdminSettings — `pages/AdminSettings.jsx`
@@ -171,6 +179,12 @@ etc.); secrets (`JWT_SECRET`, `MONGODB_URI`) are never fetched or rendered.
 - Dead/deprecated components removed: `StatCards`, `ConfigViewer`, `SessionBadge`.
 - `ProtectedRoute` checks `useAuth().isAuthenticated` and redirects to `/admin/login`.
 - `api.js` 401 interceptor emits `auth-unauthorized` (no `window.location.replace` loop).
+- **CV storage:** PDFs in GridFS bucket `cvs` (survives redeploys); metadata in the `CV`
+  model. Public routes `GET /api/cv` (active metadata) and `GET /api/cv/download`
+  (streams the active file) — non-active CVs are never served. Admin routes
+  `GET|POST /api/admin/cvs`, `PUT /api/admin/cvs/:id/active`, `DELETE /api/admin/cvs/:id`
+  are auth-protected. `utils/cv.js` exposes `cvDownloadUrl` / `cvShareUrl` / `copyCvLink`
+  / `fetchActiveCv`.
 
 ---
 

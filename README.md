@@ -77,16 +77,17 @@ The design language is **Registry Office**: near-white paper, hairline rules, mo
 
 ### Public Pages
 
-- **Home** — Masthead hero with availability stamp, ruled fact cells (stats), production records (project case files), technical index, and a correspondence (contact) file.
+- **Home** — Masthead hero with availability stamp, ruled fact cells (stats), production records (project case files), technical index, and a correspondence (contact) file. When a CV is on file: `Download CV` + `Share CV` (copies the public download URL).
 - **Projects** — Filterable case-file index; `ProjectCard` ledger rows (reg. no., division, tech index, Source/Live/Record links); fallback dataset if the API is unreachable.
 - **Project Detail** — Filed-document view: markdown body, mono metadata, status badges, view count from backend; skeleton and not-found states.
-- **About** — Employment ledger (current role marked), filing-photo portrait, technical index, attestation panel with stamp.
+- **About** — Employment ledger (current role marked), filing-photo portrait, technical index, attestation panel with `Download CV` when a CV is on file.
 
 ### Admin Console
 
 - **Secure Login** — JWT with rate limiting (5 attempts / 15 min); non-revealing error messages.
 - **Dashboard overview** — Total projects, summed portfolio views, last updated + telemetry chart (inline SVG bars of views per record).
 - **Project management** — Create, edit, delete with published/draft status; two-step inline delete confirm; `ProjectFormDrawer` slide-over filing form (Esc/backdrop close).
+- **CV records** — File multiple CV versions (PDF, ≤10MB, stored in MongoDB GridFS so they survive redeploys); mark one as the downloadable record; delete old versions. The active CV is served publicly at `/api/cv/download`.
 - **Settings** — Change username/password; read-only derived console config (never `JWT_SECRET` / `MONGODB_URI`).
 
 ---
@@ -96,12 +97,11 @@ The design language is **Registry Office**: near-white paper, hairline rules, mo
 ```
 bkoimett-portofolio/
 ├── backend/
-│   ├── models/
-│   │   ├── Admin.js            # Admin schema (bcrypt hashing)
-│   │   └── Project.js          # Project schema
+│   ├── models/                 # Admin, Project, CV schemas
 │   ├── middleware/
 │   │   └── auth.js             # JWT bearer-token middleware
 │   ├── index.js                # Express server & all routes
+│   ├── gridfs.js               # GridFS bucket helper (CV files)
 │   ├── seedAdmin.js            # Create the initial admin user
 │   ├── tests/api.test.js       # node:test + supertest (models mocked)
 │   ├── eslint.config.js
@@ -118,10 +118,10 @@ bkoimett-portofolio/
 │   │   │   ├── layout/         # Layout, Footer, ScrollToTop, NotFound
 │   │   │   ├── primitives/     # Container, Section, SectionHeading, Button,
 │   │   │   │                   # Card, StatusBadge, StatCard, ProjectCard
-│   │   │   └── admin/          # AdminLayout, Sidebar, ProjectsTable,
-│   │   │                       # ProjectFormDrawer, TelemetryChart
+│   │   │   └── admin/          # AdminLayout, Sidebar, CVsManager,
+│   │   │                       # ProjectsTable, ProjectFormDrawer, TelemetryChart
 │   │   ├── context/            # AuthContext (JWT), ThemeContext (day/night)
-│   │   ├── utils/              # api.js (shared client), auth.js (token helpers)
+│   │   ├── utils/              # api.js (shared client), auth.js (token helpers), cv.js (CV helpers)
 │   │   ├── data/               # profile.js, stats.js, techStack.js
 │   │   ├── index.css           # Tailwind v4 tokens + registry component classes
 │   │   ├── App.jsx             # Routes (admin outside public Layout)
@@ -215,6 +215,8 @@ cd backend && npm start          # plain Node, no build step
 | `POST` | `/api/admin/login` | Admin login (rate-limited: 5 attempts / 15 min) |
 | `GET` | `/api/projects` | Published projects; authenticated requests return all (incl. drafts) |
 | `GET` | `/api/projects/slug/:slug` | Get a published project by slug |
+| `GET` | `/api/cv` | Active CV metadata (404 when none is on file) |
+| `GET` | `/api/cv/download` | Download the active CV (PDF attachment) |
 | `POST` | `/api/contact` | Submit the contact form |
 
 ### Auth-Protected Routes (Bearer token required)
@@ -226,6 +228,10 @@ cd backend && npm start          # plain Node, no build step
 | `POST` | `/api/projects` | Create a new project |
 | `PUT` | `/api/projects/:id` | Update a project |
 | `DELETE` | `/api/projects/:id` | Delete a project |
+| `GET` | `/api/admin/cvs` | List all CV records (metadata only) |
+| `POST` | `/api/admin/cvs` | Upload a new CV (multipart `cv` file + optional `label` / `active`) |
+| `PUT` | `/api/admin/cvs/:id/active` | Set the downloadable CV |
+| `DELETE` | `/api/admin/cvs/:id` | Delete a CV record and its file |
 
 ---
 

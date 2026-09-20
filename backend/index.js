@@ -3,11 +3,14 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
+const multer = require('multer');
 require('dotenv').config();
 
 const Project = require('./models/Project');
 const Admin = require('./models/Admin');
+const CV = require('./models/CV');
 const authMiddleware = require('./middleware/auth');
+const gridfs = require('./gridfs');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -20,6 +23,29 @@ function generateSlug(title) {
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '');
 }
+
+function toCV(cv) {
+  return {
+    id: cv._id,
+    label: cv.label && cv.label.length ? cv.label : cv.fileName,
+    fileName: cv.fileName,
+    contentType: cv.contentType,
+    size: cv.size,
+    active: cv.active,
+    createdAt: cv.createdAt,
+  };
+}
+
+const cvUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const isPdf =
+      file.mimetype === 'application/pdf' || /\.pdf$/i.test(file.originalname);
+    if (isPdf) cb(null, true);
+    else cb(new Error('Only PDF files are accepted'));
+  },
+});
 
 function startServer() {
   if (!process.env.MONGODB_URI || !process.env.MONGODB_URI.startsWith('mongodb')) {
@@ -216,6 +242,177 @@ app.post('/api/contact', async (req, res) => {
     res.json({ success: true, message: 'Message received!' });
   } catch {
     res.status(500).json({ error: 'Failed to process contact form' });
+  }
+});
+
+// GET - Active CV metadata (public).
+app.get('/api/cv', async (req, res) => {
+  try {
+    const cv = await CV.findOne({ active: true }, null, { sort: { createdAt: -1 } });
+    if (!cv) {
+      return res.status(404).json({ error: 'No curriculum vitae on file' });
+    }
+    res.json(toCV(cv));
+  } catch {
+    res.status(500).json({ error: 'Failed to fetch CV' });
+  }
+});
+
+// GET - Download the active CV (public).
+app.get('/api/cv/download', async (req, res) => {
+  try {
+    const cv = await CV.findOne({ active: true }, null, { sort: { createdAt: -1 } });
+    if (!cv) {
+      return res.status(404).json({ error: 'No curriculum vitae on file' });
+    }
+    if (!mongoose.Types.ObjectId.isValid(cv.fileId)) {
+      return res.status(404).json({ error: 'CV file missing from storage' });
+    }
+
+    let bucket;
+    try {
+      bucket = gridfs.getBucket();
+    } catch {
+      return res.status(503).json({ error: 'CV storage unavailable' });
+    }
+
+    const downloadStream = bucket.openDownloadStream(cv.fileId);
+    res.setHeader('Content-Type', cv.contentType || 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename="bkoimett-cv.pdf"'
+    );
+    downloadStream.on('error', () => {
+      if (!res.headersSent) {
+        res.status(404).json({ error: 'CV file missing from storage' });
+      } else {
+        res.end();
+      }
+    });
+    downloadStream.pipe(res);
+  } catch {
+    res.status(500).json({ error: 'Failed to serve CV' });
+  }
+});
+
+// GET - All CV records (admin only).
+app.get('/api/admin/cvs', authMiddleware, async (req, res) => {
+  try {
+    const cvs = await CV.find().sort({ createdAt: -1 });
+    res.json(cvs.map(toCV));
+  } catch {
+    res.status(500).json({ error: 'Failed to fetch CV records' });
+  }
+});
+
+// POST - File a new CV (admin only, pdf upload).
+app.post('/api/admin/cvs', authMiddleware, (req, res) => {
+  cvUpload.single('cv')(req, res, async (uploadError) => {
+    if (uploadError) {
+      const message =
+        uploadError.code === 'LIMIT_FILE_SIZE'
+          ? 'File is too large (max 10MB)'
+          : uploadError.message || 'Upload failed';
+      return res.status(400).json({ error: message });
+    }
+
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'Choose a PDF file to file' });
+      }
+
+      const label = typeof req.body.label === 'string' ? req.body.label.trim() : '';
+      const existingCount = await CV.countDocuments({});
+      const makeActive = req.body.active === 'true' || existingCount === 0;
+
+      let bucket;
+      try {
+        bucket = gridfs.getBucket();
+      } catch {
+        return res.status(503).json({ error: 'CV storage unavailable' });
+      }
+
+      const uploadStream = bucket.openUploadStream(req.file.originalname, {
+        contentType: req.file.mimetype || 'application/pdf',
+        metadata: { label, active: makeActive },
+      });
+      uploadStream.end(req.file.buffer);
+      await new Promise((resolve, reject) => {
+        uploadStream.once('finish', resolve);
+        uploadStream.once('error', reject);
+      });
+
+      const cv = await CV.create({
+        label,
+        fileName: req.file.originalname,
+        contentType: req.file.mimetype || 'application/pdf',
+        size: req.file.size,
+        fileId: uploadStream.id,
+        active: makeActive,
+      });
+
+      if (makeActive) {
+        await CV.updateMany({ _id: { $ne: cv._id } }, { $set: { active: false } });
+      }
+
+      res.status(201).json({
+        message: makeActive
+          ? 'CV filed and set as the downloadable record'
+          : 'CV filed to the records',
+        cv: toCV(cv),
+      });
+    } catch (error) {
+      console.error('CV upload error:', error.message);
+      res.status(500).json({ error: 'Failed to file CV' });
+    }
+  });
+});
+
+// PUT - Set which CV is downloadable (admin only).
+app.put('/api/admin/cvs/:id/active', authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'Invalid CV id' });
+    }
+
+    const cv = await CV.findById(id);
+    if (!cv) {
+      return res.status(404).json({ error: 'CV record not found' });
+    }
+
+    await CV.updateMany({ _id: { $ne: id } }, { $set: { active: false } });
+    cv.active = true;
+    await cv.save();
+
+    res.json({ message: 'CV is now the downloadable record', cv: toCV(cv) });
+  } catch {
+    res.status(500).json({ error: 'Failed to update CV status' });
+  }
+});
+
+// DELETE - Remove a CV record and its file (admin only).
+app.delete('/api/admin/cvs/:id', authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'Invalid CV id' });
+    }
+
+    const cv = await CV.findByIdAndDelete(id);
+    if (!cv) {
+      return res.status(404).json({ error: 'CV record not found' });
+    }
+
+    try {
+      await gridfs.getBucket().delete(cv.fileId);
+    } catch {
+      // Grid file already removed — nothing left to clean up
+    }
+
+    res.json({ message: 'CV record deleted' });
+  } catch {
+    res.status(500).json({ error: 'Failed to delete CV record' });
   }
 });
 

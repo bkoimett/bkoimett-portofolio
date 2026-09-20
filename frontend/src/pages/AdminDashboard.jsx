@@ -7,10 +7,12 @@ import AdminSettings from './AdminSettings';
 import ProjectsTable from '../components/admin/ProjectsTable';
 import ProjectFormDrawer from '../components/admin/ProjectFormDrawer';
 import TelemetryChart from '../components/admin/TelemetryChart';
+import CVsManager from '../components/admin/CVsManager';
 
 const tabs = [
   { id: 'dashboard', name: 'Dashboard' },
   { id: 'projects', name: 'Projects' },
+  { id: 'cvs', name: 'CVs' },
   { id: 'settings', name: 'Settings' },
 ];
 
@@ -200,6 +202,10 @@ export default function AdminDashboard() {
                 />
               </div>
             </section>
+          )}
+
+          {activeTab === 'cvs' && (
+            <CVsManager />
           )}
 
           {activeTab === 'settings' && (
