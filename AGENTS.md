@@ -79,27 +79,29 @@ Frontend (optional .env):
 
 ## FILE INVENTORY (as-built)
 
-### New — frontend components
-`Layout`, `Container`, `Section`, `SectionHeading`, `Button`, `Card`, `StatusBadge`,
-`StatCard`, `ProjectCard`, `Terminal`, `FeaturedSystems`, `MarkdownContent`, `ThemeToggle`,
-`NotFound`, `ProtectedRoute`, `ScrollToTop`
+Design language: Registry Office. See `@DESIGN.md` for tokens and conventions.
 
-### New — frontend admin components
-`admin/AdminLayout`, `admin/Sidebar`, `admin/StatCards`, `admin/TelemetryChart`,
-`admin/ProjectsTable`, `admin/ProjectFormDrawer`, `admin/ConfigViewer`, `admin/SessionBadge`
+### Frontend — public components
+`Layout`, `Navbar`, `ThemeToggle`, `layout/Footer`, `layout/ScrollToTop`, `layout/NotFound`,
+`ProtectedRoute`, `primitives/Container`, `primitives/Section`, `primitives/SectionHeading`,
+`primitives/Button`, `primitives/Card`, `primitives/StatusBadge`, `primitives/StatCard`,
+`primitives/ProjectCard`
 
-### New — frontend lib/data/context
-`data/profile.js`, `data/techStack.js`, `data/stats.js`, `data/terminalCommands.js`,
-`lib/telemetry.js`, `context/AuthContext.jsx` (+ `context/authContext.js`)
+### Frontend — admin components
+`components/admin/AdminLayout`, `components/admin/Sidebar`, `components/admin/ProjectsTable`,
+`components/admin/ProjectFormDrawer`, `components/admin/TelemetryChart`
 
-### Modified — frontend
+### Frontend — data/context/utils
+`data/profile.js`, `data/stats.js`, `data/techStack.js`, `context/AuthContext.jsx` (+ `context/authContext.js`),
+`context/ThemeContext.jsx` (+ `context/themeContext.js`), `utils/api.js`, `utils/auth.js`
+
+### Frontend — pages
 `App.jsx`, `index.css`, `index.html`, `pages/Home.jsx`, `pages/Projects.jsx`,
 `pages/ProjectDetail.jsx`, `pages/About.jsx`, `pages/AdminLogin.jsx`,
-`pages/AdminDashboard.jsx`, `pages/AdminSettings.jsx`, `utils/api.js`
+`pages/AdminDashboard.jsx`, `pages/AdminSettings.jsx`
 
-### Deleted — frontend
-`styles/ProjectDetail.css`, `styles/AdminSettings.css`, `styles/AdminDashboard.css`,
-`styles/AdminLogin.css`
+Removed during redesign: `data/terminalCommands.js`, `lib/telemetry.js`, `src/styles/*`,
+Material Symbols icon font (no icon fonts anywhere on the site).
 
 ### Modified — backend
 `models/Project.js`, `index.js`, `tests/api.test.js`

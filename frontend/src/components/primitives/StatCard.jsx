@@ -1,10 +1,13 @@
 import React from 'react';
 
-const StatCard = ({ value, label, className }) => {
+const StatCard = ({ value, label, index, className = '' }) => {
   return (
-    <div className={`glass-card rounded-lg p-8 text-center ${className}`}>
-      <p className="text-on-surface-variant text-sm mb-2">{label}</p>
-      <p className="text-4xl font-bold text-primary">{value}</p>
+    <div className={`ledger-row ${className}`}>
+      {index && <span className="file-index-sm block">{index}</span>}
+      <p className="mt-1 font-serif text-[2.5rem] font-semibold leading-none text-ink">
+        {value}
+      </p>
+      <p className="file-index-sm mt-2">{label}</p>
     </div>
   );
 };

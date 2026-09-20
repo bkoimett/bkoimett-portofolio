@@ -16,9 +16,9 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401 && error.config?.url?.includes('/admin/login') === false) {
+    if (error.response?.status === 401 && !error.config?.url?.includes('/admin/login')) {
       localStorage.removeItem('adminToken');
-      window.location.replace('/admin/login');
+      window.dispatchEvent(new Event('auth-unauthorized'));
     }
     return Promise.reject(error);
   }

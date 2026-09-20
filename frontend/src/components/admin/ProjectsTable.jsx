@@ -1,86 +1,124 @@
 import React from 'react';
 
-const ProjectsTable = ({ projects, onDelete }) => {
+const ProjectsTable = ({
+  projects,
+  onEdit,
+  onDelete,
+  confirmDeleteId,
+  setConfirmDeleteId,
+}) => {
   return (
-    <div>
-      <table className="w-full text-left border-collapse">
-        <thead className="bg-surface-container-high border-b border-outline-variant">
-          <tr>
-            <th className="px-4 py-3 font-label-md text-label-md text-on-surface">Title</th>
-            <th className="px-4 py-3 font-label-md text-label-md text-on-surface">Category</th>
-            <th className="px-4 py-3 font-label-md text-label-md text-on-surface">Tech Stack</th>
-            <th className="px-4 py-3 font-label-md text-label-md text-on-surface">Status</th>
-            <th className="px-4 py-3 font-label-md text-label-md text-on-surface text-right">Actions</th>
+    <div className="overflow-x-auto">
+      <table className="w-full border-collapse">
+        <thead>
+          <tr className="border-b-2 border-rule-strong text-left">
+            <th className="pb-2 pr-4 font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-ink-muted">
+              Reg.
+            </th>
+            <th className="pb-2 pr-4 font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-ink-muted">
+              Title
+            </th>
+            <th className="pb-2 pr-4 font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-ink-muted">
+              Division
+            </th>
+            <th className="pb-2 pr-4 font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-ink-muted">
+              Status
+            </th>
+            <th className="pb-2 pr-4 font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-ink-muted text-right">
+              Views
+            </th>
+            <th className="pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-ink-muted text-right">
+              Actions
+            </th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-outline-variant/30">
+        <tbody>
           {projects.length === 0 ? (
             <tr>
-              <td colSpan="5" className="px-4 py-5 text-center text-on-surface-variant">
-                No projects yet. Create your first one!
+              <td
+                colSpan="6"
+                className="py-6 font-mono text-[13px] text-ink-muted"
+              >
+                No records on file. File the first project record to begin.
               </td>
             </tr>
           ) : (
-            projects.map((project) => (
-              <tr key={project._id} className="hover:bg-white/5 transition-colors group">
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded bg-surface-container-highest overflow-hidden">
-                      {project.image && (
-                        <img
-                          className="w-full h-full object-cover"
-                          src={project.image}
-                          alt={project.title}
-                        />
-                      )}
-                    </div>
-                    <span className="font-body-md text-body-md font-semibold">
-                      {project.title}
-                    </span>
-                  </div>
-                </td>
-                <td className="px-4 py-3">
-                  <span className="font-code-sm text-code-sm text-on-surface-variant">
+            projects.map((project, i) => {
+              const confirming = confirmDeleteId === project._id;
+              return (
+                <tr
+                  key={project._id}
+                  className="border-b border-rule text-[14px] hover:bg-paper-strong/60"
+                >
+                  <td className="py-3 pr-4 font-mono text-[12px] text-ink-muted">
+                    BK-{String(i + 1).padStart(3, '0')}
+                  </td>
+                  <td className="py-3 pr-4">
+                    <p className="font-semibold text-ink">{project.title}</p>
+                    <p className="font-mono text-[12px] text-ink-muted">
+                      {project.slug}
+                    </p>
+                  </td>
+                  <td className="py-3 pr-4 font-mono text-[12px] text-ink-muted">
                     {project.category}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex flex-wrap gap-2">
-                    {project.technologies.map((tech, index) => (
-                      <span
-                        key={index}
-                        className="px-2 py-0.5 bg-primary/10 text-primary font-label-md text-[10px] rounded border border-primary/20"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-2">
+                  </td>
+                  <td className="py-3 pr-4">
                     <span
-                      className={`w-2 h-2 rounded-full ${project.status === 'published' ? 'bg-primary' : 'bg-tertiary'}`}>
-                    </span>
-                    <span className="font-label-md text-xs capitalize">
+                      className={`inline-block border px-2 py-0.5 font-mono text-[11px] font-semibold uppercase tracking-[0.08em] ${
+                        project.status === 'published'
+                          ? 'border-registry text-registry'
+                          : 'border-rule-strong text-ink-muted'
+                      }`}
+                    >
                       {project.status}
                     </span>
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-right">
-                  <div className="flex items-center justify-end gap-2">
-                    <button className="p-1 text-on-surface-variant hover:text-primary transition-colors rounded">
-                      <span className="material-symbols-outlined text-xl">visibility</span>
-                    </button>
-                    <button
-                      onClick={onDelete}
-                      className="p-1 text-on-surface-variant hover:text-error transition-colors rounded"
-                    >
-                      <span className="material-symbols-outlined text-xl">delete</span>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))
+                  </td>
+                  <td className="py-3 pr-4 text-right font-mono text-[12px] text-ink">
+                    {project.views ?? 0}
+                  </td>
+                  <td className="py-3 text-right">
+                    {confirming ? (
+                      <span className="inline-flex items-center gap-2">
+                        <span className="font-mono text-[12px] text-stamp">
+                          Delete?
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => onDelete(project._id)}
+                          className="border border-stamp px-2 py-0.5 font-mono text-[12px] text-stamp hover:bg-stamp hover:text-paper"
+                        >
+                          Yes
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setConfirmDeleteId(null)}
+                          className="border border-rule-strong px-2 py-0.5 font-mono text-[12px] text-ink-muted hover:text-ink"
+                        >
+                          No
+                        </button>
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => onEdit(project)}
+                          className="filigree text-[14px] font-medium"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setConfirmDeleteId(project._id)}
+                          className="text-[14px] font-medium text-ink-muted hover:text-stamp"
+                        >
+                          Delete
+                        </button>
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })
           )}
         </tbody>
       </table>

@@ -1,161 +1,246 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import api from '../utils/api';
+import ProjectCard from '../components/primitives/ProjectCard';
 import { stats } from '../data/stats';
 import { techStack } from '../data/techStack';
-import { terminalResponse } from '../lib/telemetry';
+import { profile } from '../data/profile';
+
+const fallbackProjects = [
+  {
+    _id: '1',
+    slug: 'carefacility-platform',
+    title: 'CareFacility Platform',
+    description: 'Full-stack healthcare management system serving The Serenity Place rehabilitation center.',
+    category: 'Web Dev',
+    technologies: ['React', 'Node.js', 'MongoDB', 'PostgreSQL', 'TypeScript'],
+    github: 'https://github.com/bkoimett/carefacility',
+    demo: 'https://theserenityplace.vercel.app',
+  },
+  {
+    _id: '2',
+    slug: 'landledger',
+    title: 'LandLedger — blockchain title deed verification',
+    description: 'Immutable title deed verification platform preventing land fraud across East Africa.',
+    category: 'Blockchain',
+    technologies: ['TypeScript', 'Golang', 'Solana', 'Smart Contracts'],
+    github: 'https://github.com/bkoimett/land-ledge',
+  },
+];
 
 const Home = () => {
-  const helpResponse = terminalResponse('$help');
+  const [projects, setProjects] = useState([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const fetchProjects = async () => {
+      try {
+        const response = await api.get('/projects', {
+          signal: controller.signal,
+        });
+        setProjects(response.data);
+      } catch (error) {
+        if (error.name !== 'CanceledError' && error.name !== 'AbortError') {
+          setProjects(fallbackProjects);
+        }
+      } finally {
+        if (!controller.signal.aborted) setLoaded(true);
+      }
+    };
+    fetchProjects();
+    return () => controller.abort();
+  }, []);
 
   return (
     <>
-      {/* SECTION 1: HERO */}
-      <section className="pt-32 pb-section-gap relative">
-        <div className="absolute inset-0 emerald-glow pointer-events-none"></div>
-        <div className="max-w-container-max mx-auto px-6 text-center relative z-10">
-          {/* Status Badge */}
-          <div className="inline-flex items-center gap-2 bg-primary/5 border border-primary/20 rounded-full px-4 py-2 mb-stack-md">
-            <span className="material-symbols-outlined text-primary text-sm">terminal</span>
-            <span className="font-label-md text-label-md text-on-surface-variant">Available Immediately · Remote-Ready</span>
+      {/* Masthead */}
+      <section className="container-page pt-14">
+        <div>
+          <p className="file-index animate-rise">
+            REG. NO. BK-026 · FILED {profile.location} · EST. 2022
+          </p>
+
+          <div className="relative mt-8">
+            <h1 className="max-w-[14ch] text-masthead font-semibold text-ink animate-rise">
+              Benjamin K. Koimett
+            </h1>
+            <span
+              aria-hidden="true"
+              className="stamp absolute -top-2 right-0 hidden sm:inline-block animate-rise animate-rise-delay"
+            >
+              Available · Remote
+            </span>
           </div>
 
-          {/* Headline */}
-          <h1 className="font-display-xl-mobile md:font-display-xl text-display-xl text-on-surface mb-stack-md">
-            Benjamin Kiprotich Koimett
-          </h1>
-
-          {/* Subheading */}
-          <p className="font-headline-md text-headline-md text-on-surface-variant max-w-3xl mx-auto mb-stack-md">
-            Full-Stack Software Engineer | MERN + Go + TypeScript
+          <p
+            className="mt-6 max-w-[62ch] text-heading font-medium text-ink animate-rise animate-rise-delay"
+          >
+            Full-stack software engineer shipping production systems in
+            healthcare, agriculture, land governance, and Web3.
           </p>
 
-          {/* Description */}
-          <p className="font-body-lg text-body-lg text-on-surface-variant/80 max-w-2xl mx-auto mb-stack-lg">
-            I ship production applications across healthcare, agriculture, land governance, and Web3 —
-            owning projects end-to-end from design through deployment. Based in Kenya, remote-ready,
-            and building with AI tools daily.
+          <p className="mt-4 max-w-[62ch] text-body text-ink-muted animate-rise animate-rise-delay">
+            I take projects from first commit to live deployment — building the
+            frontend, the backend, and the infrastructure between them. Based
+            in Kisumu, Kenya. Remote-ready.
           </p>
 
-          {/* Buttons */}
-          <div className="flex flex-col md:flex-row justify-center gap-stack-md">
-<Link
- to="/projects"
- className="bg-primary-container text-on-primary-container px-10 py-4 rounded-lg font-headline-md hover:brightness-110 active:scale-95 transition-all duration-200"
->
- View My Work
-</Link>
+          <div className="mt-8 flex flex-wrap items-center gap-4 animate-rise animate-rise-delay">
+            <Link to="/projects" className="btn btn-primary">
+              Project records
+            </Link>
+            <a href={`mailto:${profile.email}`} className="btn btn-stroke">
+              Contact
+            </a>
             <a
-              href="mailto:koimettb@gmail.com"
-              className="border border-outline-variant text-on-surface px-10 py-4 rounded-lg font-headline-md hover:bg-white/5 transition-all duration-200"
+              href={profile.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-ghost"
             >
-              Contact Me
+              GitHub
             </a>
           </div>
         </div>
-      </section>
 
-      {/* SECTION 2: QUICK STATS */}
-      <section className="py-section-gap">
-        <div className="max-w-container-max mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-stack-lg">
-            {stats.map((stat) => (
-              <div
-                key={stat.label}
-                className="glass-card p-stack-lg rounded-xl text-center"
-              >
-                <div className="font-display-lg text-display-lg text-primary mb-2">{stat.value}</div>
-                <div className="font-label-md text-label-md text-on-surface-variant uppercase">{stat.label}</div>
-              </div>
-            ))}
-          </div>
+        {/* Record cells */}
+        <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          {stats.map((stat, i) => (
+            <div
+              key={stat.label}
+              className={`ledger-row lg:pl-6 ${i === 0 ? 'lg:pl-0' : ''}`}
+            >
+              <p className="font-mono text-[2rem] font-medium leading-none text-ink">
+                {stat.value}
+              </p>
+              <p className="file-index-sm mt-2">{stat.label}</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* SECTION 3: TECHNICAL STACK */}
-      <section className="py-section-gap bg-surface-container-low/50">
-        <div className="max-w-container-max mx-auto px-6">
-          {/* Header */}
-          <div className="text-center mb-stack-lg">
-            <h2 className="font-headline-lg text-headline-lg text-on-surface mb-stack-md">
-              Core Infrastructure & Tooling
-            </h2>
-            <div className="w-20 h-1 bg-primary rounded-full mx-auto"></div>
-          </div>
+      {/* Production records */}
+      <section className="container-page mt-24">
+        <header>
+          <p className="file-index-sm">BK / PROD. — RECENTLY FILED</p>
+          <h2 className="mt-1 text-heading-xl font-semibold text-ink">
+            Production records
+          </h2>
+          <p className="mt-3 max-w-[60ch] text-body text-ink-muted">
+            A selection of systems shipped for real users. The full index is on
+            the project records page.
+          </p>
+        </header>
 
-          {/* Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-stack-md">
-            {techStack.map((tech) => (
-              <div
-                key={tech.name}
-                className="glass-card p-stack-md rounded-xl text-center transition-all duration-300 hover:translate-y-[-4px]"
-              >
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-stack-md">
-                  <span className="material-symbols-outlined text-primary">{tech.name === 'Go' ? 'deployed_code' : tech.name === 'React' ? 'code' : tech.name === 'Node.js' ? 'dns' : tech.name === 'TypeScript' ? 'data_object' : tech.name === 'MongoDB' ? 'database' : 'memory'}</span>
-                </div>
-                <h3 className="font-headline-md text-headline-md text-on-surface mb-1">{tech.name}</h3>
-                <p className="font-label-md text-label-md text-on-surface-variant">{tech.category}</p>
-              </div>
-            ))}
+        <div className="mt-8">
+          {loaded ? (
+            projects.slice(0, 4).map((project, i) => (
+              <ProjectCard
+                key={project._id}
+                project={project}
+                regNo={`BK-${String(i + 1).padStart(3, '0')}`}
+              />
+            ))
+          ) : (
+            <p className="file-index-sm py-6">Loading records…</p>
+          )}
+        </div>
+
+        <Link to="/projects" className="btn btn-stroke mt-6">
+          View the full index
+        </Link>
+      </section>
+
+      {/* Technical index */}
+      <section className="container-page mt-24">
+        <header>
+          <p className="file-index-sm">BK / TECH.</p>
+          <h2 className="mt-1 text-heading-xl font-semibold text-ink">
+            Technical index
+          </h2>
+        </header>
+
+        <div className="mt-8">
+          <div className="hidden border-b border-rule pb-2 sm:grid sm:grid-cols-12 sm:gap-x-8">
+            <span className="file-index-sm col-span-4">Tool</span>
+            <span className="file-index-sm col-span-4">Division</span>
+            <span className="file-index-sm col-span-4">Level</span>
           </div>
+          {techStack.map((tech) => (
+            <div
+              key={tech.name}
+              className="grid grid-cols-1 gap-y-1 border-b border-rule py-3.5 sm:grid-cols-12 sm:gap-x-8"
+            >
+              <span className="text-[17px] font-semibold text-ink sm:col-span-4">
+                {tech.name}
+              </span>
+              <span className="text-[15px] text-ink-muted sm:col-span-4">
+                {tech.category}
+              </span>
+              <span className="file-index-sm sm:col-span-4">
+                {tech.level}
+              </span>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* SECTION 4: LATEST WORK (Bento Grid) - SKIP FOR NOW */}
-      {/* TODO: Add Bento Grid Projects Section */}
-
-      {/* SECTION 5: FINAL CTA */}
-      <section className="py-section-gap">
-        <div className="max-w-container-max mx-auto px-6">
-          <div className="glass-card rounded-2xl p-stack-lg md:p-24 text-center relative">
-            <div className="absolute inset-0 emerald-glow opacity-30 pointer-events-none"></div>
-            <div className="relative z-10">
-              <h2 className="font-display-lg text-display-xl-mobile md:text-display-lg text-on-surface mb-stack-md">
-                Let's Build Something Great
+      {/* Contact file */}
+      <section className="container-page mt-24 pb-24">
+        <div className="card-flat rounded-[2px] px-6 py-10 md:p-12">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
+            <div className="md:col-span-7">
+              <p className="file-index-sm">BK / CONTACT</p>
+              <h2 className="mt-1 text-heading-xl font-semibold text-ink">
+                Open a file
               </h2>
-              <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-stack-lg">
-                Currently open to freelance opportunities and interesting collaborations.
-                Let's discuss your next project.
+              <p className="mt-3 max-w-[58ch] text-body text-ink-muted">
+                Currently available for freelance work and full-time roles.
+                Send a note and I will get back to you within a day.
               </p>
-              <div className="flex flex-col md:flex-row justify-center gap-stack-md">
-<Link
- to="/about"
- className="bg-primary-container text-on-primary-container px-12 py-5 rounded-xl font-headline-md hover:brightness-110 active:scale-95 transition-all duration-200"
->
- Start a Conversation
-</Link>
+            </div>
+            <div className="flex flex-col justify-center gap-3 md:col-span-5">
+              <a
+                href={`mailto:${profile.email}`}
+                className="btn btn-primary w-full justify-between"
+              >
+                <span>{profile.email}</span>
+                <span aria-hidden="true">→</span>
+              </a>
+              <div className="flex gap-5 text-[15px]">
                 <a
-                  href="mailto:koimettb@gmail.com"
-                  className="border border-outline-variant text-on-surface px-12 py-5 rounded-xl font-headline-md hover:bg-white/5 transition-all duration-200"
+                  className="filigree"
+                  href={profile.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                  Get In Touch
+                  GitHub
                 </a>
+                <a
+                  className="filigree"
+                  href={profile.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  LinkedIn
+                </a>
+                {profile.devto && (
+                  <a
+                    className="filigree"
+                    href={profile.devto}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Dev.to
+                  </a>
+                )}
               </div>
             </div>
           </div>
         </div>
       </section>
-
-      {/* SECTION 6: TERMINAL */}
-      <section className="py-section-gap bg-surface-container-low/50">
-        <div className="max-w-container-max mx-auto px-6">
-          <div className="glass-card rounded-xl p-8 text-center">
-            <div className="mb-stack-md">
-              <h2 className="font-headline-md text-headline-md text-on-surface mb-2">Interactive Terminal</h2>
-              <p className="font-label-md text-label-md text-on-surface-variant">
-                {helpResponse || 'Available commands: $help $projects $stack $uptime $contact'}
-              </p>
-            </div>
-            <div className="terminal-output mt-stack-lg">
-              {terminalResponse('$projects')}
-              {terminalResponse('$stack')}
-              {terminalResponse('$uptime')}
-              {terminalResponse('$contact')}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      </>
+    </>
   );
 };
 

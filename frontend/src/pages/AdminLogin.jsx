@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import { useAuth } from '../context/authContext';
+import ThemeToggle from '../components/ThemeToggle';
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ export default function AdminLogin() {
     try {
       const loginPayload = {
         username: username.trim(),
-        password: password.trim()
+        password: password.trim(),
       };
 
       const response = await api.post('/admin/login', loginPayload);
@@ -43,70 +44,96 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-surface flex items-center justify-center p-stack-lg">
-      {/* Atmospheric Background */}
-      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] bg-primary/10 rounded-full blur-[120px]"></div>
-        <div className="absolute -bottom-[20%] -right-[10%] w-[50%] h-[50%] bg-secondary-container/10 rounded-full blur-[120px]"></div>
-      </div>
+    <div className="flex min-h-screen flex-col">
+      <header className="border-b border-rule border-t-[3px] border-t-registry bg-paper">
+        <div className="flex h-14 items-center justify-between px-gutter">
+          <Link
+            to="/"
+            className="flex items-baseline gap-2 font-serif text-[17px] font-semibold text-ink"
+          >
+            Registry Console
+            <span className="file-index-sm hidden sm:inline">// SIGN IN</span>
+          </Link>
+          <ThemeToggle />
+        </div>
+      </header>
 
-      {/* Login Container */}
-      <main className="relative z-10 w-full max-w-[400px]">
-        {/* Back Link */}
-        <Link className="group inline-flex items-center gap-stack-sm mb-stack-lg font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" to="/">
-          <span className="material-symbols-outlined text-[18px]">arrow_back</span>
-          <span>Home</span>
-        </Link>
+      <main className="flex flex-1 items-center justify-center px-gutter py-16">
+        <section className="w-full max-w-[430px] border border-rule bg-paper">
+          <header className="border-b border-rule px-7 py-5">
+            <p className="file-index-sm">AUTHORISED PERSONNEL ONLY</p>
+            <h1 className="mt-1 text-heading font-semibold text-ink">
+              Registry sign in
+            </h1>
+            <p className="mt-1 text-body-sm text-ink-muted">
+              Enter your credentials to open the console.
+            </p>
+          </header>
 
-        {/* Login Card */}
-        <div className="glass-panel rounded-xl p-stack-lg w-full">
-          <div className="mb-stack-lg">
-            <h1 className="font-headline-lg text-headline-lg text-on-surface mb-2">Admin Login</h1>
-            <p className="font-body-md text-body-md text-on-surface-variant">Access the technical console.</p>
-          </div>
+          <form onSubmit={handleSubmit} className="px-7 py-6">
+            {error && (
+              <p className="mb-5 border border-stamp px-4 py-2.5 font-mono text-[13px] text-stamp">
+                {error}
+              </p>
+            )}
 
-          {/* Form */}
-          <form className="flex flex-col gap-stack-md" onSubmit={handleSubmit}>
-            {/* Error Message (Hidden by default) */}
-            <div className={`bg-error-container/20 border border-error/30 rounded-lg p-stack-sm flex items-center gap-stack-sm animate-pulse ${error ? '' : 'hidden'}`} id="errorMessage">
-              <span className="material-symbols-outlined text-error text-[20px]">error</span>
-              <span className="font-label-md text-label-md text-error">{error}</span>
+            <div className="mb-4">
+              <label
+                className="mb-1 block font-mono text-[12px] uppercase tracking-[0.08em] text-ink-muted"
+                htmlFor="login-username"
+              >
+                Username
+              </label>
+              <input
+                id="login-username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                autoComplete="username"
+                className="input-base"
+                placeholder="admin"
+              />
             </div>
 
-            {/* Username */}
-            <div className="space-y-1">
-              <label className="font-label-md text-label-md text-on-surface-variant" htmlFor="username">Username</label>
-              <div className="relative">
-                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px]">person</span>
-                <input className="w-full h-12 bg-surface-container-low border border-outline-variant rounded-lg pl-12 pr-4 font-code-sm text-code-sm text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" id="username" placeholder="admin_id" type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
-              </div>
+            <div className="mb-6">
+              <label
+                className="mb-1 block font-mono text-[12px] uppercase tracking-[0.08em] text-ink-muted"
+                htmlFor="login-password"
+              >
+                Password
+              </label>
+              <input
+                id="login-password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+                className="input-base"
+                placeholder="••••••••"
+              />
             </div>
 
-            {/* Password */}
-            <div className="space-y-1">
-              <label className="font-label-md text-label-md text-on-surface-variant" htmlFor="password">Password</label>
-              <div className="relative">
-                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px]">lock</span>
-                <input className="w-full h-12 bg-surface-container-low border border-outline-variant rounded-lg pl-12 pr-4 font-code-sm text-code-sm text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" id="password" placeholder="••••••••" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-              </div>
-            </div>
-
-            {/* Submit Button */}
-            <button className="mt-stack-sm w-full h-12 bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-headline-md text-[16px] rounded-lg flex items-center justify-center gap-stack-sm transition-all active:scale-95 group" type="submit" disabled={loading}>
-              <span id="btnText">Sign In</span>
-              <span className="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform" id="btnIcon">login</span>
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn btn-primary w-full"
+            >
+              {loading ? 'Signing in…' : 'Sign in'}
             </button>
           </form>
 
-          {/* Footer Text */}
-          <div className="mt-stack-lg pt-stack-lg border-t border-outline-variant/30 flex flex-col items-center gap-2">
-            <span className="font-label-md text-label-md text-outline">System v2.4.0 (MERN & Go)</span>
-            <div className="flex gap-4">
-              <Link className="text-outline hover:text-on-surface transition-colors font-label-md text-label-md" to="/about">About</Link>
-              <Link className="text-outline hover:text-on-surface transition-colors font-label-md text-label-md" to="/projects">Projects</Link>
-            </div>
-          </div>
-        </div>
+          <footer className="flex items-center justify-between border-t border-rule px-7 py-4">
+            <Link
+              to="/"
+              className="font-mono text-[12px] uppercase tracking-[0.08em] text-ink-muted hover:text-registry"
+            >
+              ← Back to site
+            </Link>
+            <span className="file-index-sm">System v2.5.0</span>
+          </footer>
+        </section>
       </main>
     </div>
   );

@@ -1,32 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import api from '../../utils/api';
 
-const ProjectFormDrawer = ({
-  isOpen,
-  onClose,
-  onSave,
-  projectId,
-  initialData
-}) => {
-  const [formData, setFormData] = useState({
-    title: '',
-    slug: '',
-    category: 'General',
-    technologies: [],
-    tags: [],
-    readTime: '5 min read',
-    status: 'draft',
-    content: ''
-  });
+const emptyForm = {
+  title: '',
+  slug: '',
+  category: 'General',
+  technologies: [],
+  tags: [],
+  readTime: '5 min read',
+  status: 'draft',
+  content: '',
+};
 
+const ProjectFormDrawer = ({ isOpen, onClose, projectId, initialData, onSaved }) => {
+  const [formData, setFormData] = useState(emptyForm);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const titleRef = useRef(null);
 
-  // Initialize form with existing project data
   useEffect(() => {
+    if (!isOpen) return;
+    setError('');
     if (projectId && initialData) {
       setFormData({
+        ...emptyForm,
         title: initialData.title || '',
         slug: initialData.slug || '',
         category: initialData.category || 'General',
@@ -34,241 +31,242 @@ const ProjectFormDrawer = ({
         tags: initialData.tags || [],
         readTime: initialData.readTime || '5 min read',
         status: initialData.status || 'draft',
-        content: initialData.content || ''
+        content: initialData.content || '',
       });
     } else {
-      setFormData({
-        title: '',
-        slug: '',
-        category: 'General',
-        technologies: [],
-        tags: [],
-        readTime: '5 min read',
-        status: 'draft',
-        content: ''
-      });
+      setFormData(emptyForm);
     }
-  }, [projectId, initialData]);
+    setTimeout(() => titleRef.current?.focus(), 50);
+  }, [isOpen, projectId, initialData]);
 
-  const handleInputChange = (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleArrayInput = (e, field) => {
+  const handleArrayChange = (e, field) => {
     const { value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value.split(',').map(item => item.trim()).filter(item => item)
+      [field]: value.split(',').map((item) => item.trim()).filter(Boolean),
     }));
   };
 
-  const handleSave = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError('');
 
     try {
       if (projectId) {
-        await api.put(`/api/projects/${projectId}`, formData);
-        setSuccess('Project updated successfully');
+        await api.put(`/projects/${projectId}`, formData);
+        onSaved('Record amended');
       } else {
-        await api.post('/api/projects', formData);
-        setSuccess('Project created successfully');
+        await api.post('/projects', formData);
+        onSaved('Record filed');
       }
-      onSave(formData);
       onClose();
-      setFormData({
-        title: '',
-        slug: '',
-        category: 'General',
-        technologies: [],
-        tags: [],
-        readTime: '5 min read',
-        status: 'draft',
-        content: ''
-      });
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to save project');
+      setError(err.response?.data?.error || 'Could not save the record');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Close on ESC key
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
+    if (!isOpen) return undefined;
+    const onKey = (e) => {
+      if (e.key === 'Escape') onClose();
     };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [isOpen, onClose]);
 
-  // Handle outside click (backdrop close)
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (e.target.className && e.target.className.contains('project-form-drawer')) {
-        onClose();
-      }
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [onClose]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
+  const fieldClass =
+    'input-base';
+
   return (
-    <div
-      className="fixed inset-0 z-50 backdrop-blur-xl bg-black/40"
-      onClick={e => e.target === e.currentTarget && onClose()}
-    >
+    <div className="fixed inset-0 z-50">
       <div
-        className="fixed top-0 right-0 left-0 z-50 max-w-md mx-auto bg-surface-container-low rounded-lg p-6 shadow-lg transform opacity-0 transition-all duration-300 ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}"
-        onClick={e => e.stopPropagation()}
+        className="absolute inset-0 bg-ink/40"
+        onClick={onClose}
+        aria-hidden="true"
+      ></div>
+      <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="drawer-title"
+        className="absolute inset-y-0 right-0 flex w-full max-w-xl flex-col overflow-y-auto border-l border-rule bg-paper shadow-[0_0_40px_rgba(0,0,0,0.18)]"
       >
-        <h2 id="drawer-title" className="text-headline-lg text-headline-lg text-on-surface mb-4">
-          {projectId ? 'Edit Project' : 'Create New Project'}
-        </h2>
-
-        {error && (
-          <div className="bg-error-container/20 border border-error/30 rounded-lg p-3 mb-4 animate-pulse">
-            <span className="material-symbols-outlined text-error text-[20px]">error</span>
-            <span className="font-label-md text-label-md text-error">{error}</span>
-          </div>
-        )}
-
-        {success && (
-          <div className="bg-primary-container/20 border border-primary/30 rounded-lg p-3 mb-4 animate-pulse">
-            <span className="material-symbols-outlined text-primary text-[20px]">check_circle</span>
-            <span className="font-label-md text-label-md text-primary">{success}</span>
-          </div>
-        )}
-
-        <form onSubmit={handleSave} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <header className="border-b border-rule px-6 py-4">
+          <div className="flex items-start justify-between gap-4">
             <div>
-              <label className="font-label-md text-label-md text-on-surface-variant">Title *</label>
-              <input
-                type="text"
-                name="title"
-                value={formData.title}
-                onChange={handleInputChange}
-                required
-                className="w-full bg-surface-container-low border border-outline-variant rounded-lg p-2 font-code-sm text-code-sm text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-                placeholder="Project title"
-              />
+              <p className="file-index-sm">
+                {projectId ? `AMEND · BK-${projectId.slice(-4)}` : 'FILE · NEW'}
+              </p>
+              <h2
+                id="drawer-title"
+                className="mt-0.5 text-title font-semibold text-ink"
+              >
+                {projectId ? 'Amend record' : 'File new record'}
+              </h2>
             </div>
-
-            <div>
-              <label className="font-label-md text-label-md text-on-surface-variant">Slug</label>
-              <input
-                type="text"
-                name="slug"
-                value={formData.slug}
-                onChange={handleInputChange}
-                className="w-full bg-surface-container-low border border-outline-variant rounded-lg p-2 font-code-sm text-code-sm text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-                placeholder="project-slug"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="font-label-md text-label-md text-on-surface-variant">Category</label>
-            <input
-              type="text"
-              name="category"
-              value={formData.category}
-              onChange={handleInputChange}
-              className="w-full bg-surface-container-low border border-outline-variant rounded-lg p-2 font-code-sm text-code-sm text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-              placeholder="General"
-            />
-          </div>
-
-          <div>
-            <label className="font-label-md text-label-md text-on-surface-variant">Technologies (comma-separated)</label>
-            <input
-              type="text"
-              name="technologies"
-              value={formData.technologies.join(', ')}
-              onChange={(e) => handleArrayInput(e, 'technologies')}
-              className="w-full bg-surface-container-low border border-outline-variant rounded-lg p-2 font-code-sm text-code-sm text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-              placeholder="React, Node.js, MongoDB"
-            />
-          </div>
-
-          <div>
-            <label className="font-label-md text-label-md text-on-surface-variant">Tags (comma-separated)</label>
-            <input
-              type="text"
-              name="tags"
-              value={formData.tags.join(', ')}
-              onChange={(e) => handleArrayInput(e, 'tags')}
-              className="w-full bg-surface-container-low border border-outline-variant rounded-lg p-2 font-code-sm text-code-sm text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-              placeholder="javascript, web, tutorial"
-            />
-          </div>
-
-          <div>
-            <label className="font-label-md text-label-md text-on-surface-variant">Read Time</label>
-            <input
-              type="text"
-              name="readTime"
-              value={formData.readTime}
-              onChange={handleInputChange}
-              className="w-full bg-surface-container-low border border-outline-variant rounded-lg p-2 font-code-sm text-code-sm text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-              placeholder="5 min read"
-            />
-          </div>
-
-          <div>
-            <label className="font-label-md text-label-md text-on-surface-variant">Status</label>
-            <select
-              value={formData.status}
-              onChange={handleInputChange}
-              className="w-full bg-surface-container-low border border-outline-variant rounded-lg p-2 font-code-sm text-code-sm text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-            >
-              <option value="draft">Draft</option>
-              <option value="published">Published</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="font-label-md text-label-md text-on-surface-variant">Content (Markdown)</label>
-            <textarea
-              name="content"
-              value={formData.content}
-              onChange={handleInputChange}
-              rows="6"
-              placeholder="# Project Title\n\nYour markdown content here..."
-              className="w-full bg-surface-container-low border border-outline-variant rounded-lg p-2 font-code-sm text-code-sm text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-            ></textarea>
-          </div>
-
-          <div className="flex gap-2">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex-1 bg-primary text-on-primary rounded-lg py-2 font-label-md text-label-md hover:brightness-110 active:scale-95 transition-all"
-            >
-              {isSubmitting ? 'Saving...' : 'Save Project'}
-            </button>
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 bg-surface-container-highest text-on-surface rounded-lg py-2 font-label-md text-label-md hover:bg-surface-container-high transition-all"
+              aria-label="Close form"
+              className="inline-flex h-9 w-9 items-center justify-center border border-rule-strong font-mono text-sm text-ink hover:border-registry hover:text-registry"
             >
-              Cancel
+              ✕
             </button>
           </div>
-        </form>
+        </header>
+
+        <div className="px-6 py-5">
+          {error && (
+            <p className="mb-4 border border-stamp px-4 py-2.5 font-mono text-[13px] text-stamp">
+              {error}
+            </p>
+          )}
+
+          <form onSubmit={handleSubmit}>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="sm:col-span-2">
+                <label className="mb-1 block font-mono text-[12px] uppercase tracking-[0.08em] text-ink-muted" htmlFor="f-title">
+                  Title
+                </label>
+                <input
+                  ref={titleRef}
+                  id="f-title"
+                  type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleChange}
+                  required
+                  className={fieldClass}
+                  placeholder="Record title"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block font-mono text-[12px] uppercase tracking-[0.08em] text-ink-muted" htmlFor="f-slug">
+                  Slug
+                </label>
+                <input
+                  id="f-slug"
+                  type="text"
+                  name="slug"
+                  value={formData.slug}
+                  onChange={handleChange}
+                  className={fieldClass}
+                  placeholder="record-slug"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block font-mono text-[12px] uppercase tracking-[0.08em] text-ink-muted" htmlFor="f-category">
+                  Division
+                </label>
+                <input
+                  id="f-category"
+                  type="text"
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
+                  className={fieldClass}
+                  placeholder="Web Dev, Blockchain, PWA…"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block font-mono text-[12px] uppercase tracking-[0.08em] text-ink-muted" htmlFor="f-tech">
+                  Technologies (comma-separated)
+                </label>
+                <input
+                  id="f-tech"
+                  type="text"
+                  name="technologies"
+                  value={formData.technologies.join(', ')}
+                  onChange={(e) => handleArrayChange(e, 'technologies')}
+                  className={fieldClass}
+                  placeholder="React, Node.js, MongoDB"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block font-mono text-[12px] uppercase tracking-[0.08em] text-ink-muted" htmlFor="f-tags">
+                  Tags (comma-separated)
+                </label>
+                <input
+                  id="f-tags"
+                  type="text"
+                  name="tags"
+                  value={formData.tags.join(', ')}
+                  onChange={(e) => handleArrayChange(e, 'tags')}
+                  className={fieldClass}
+                  placeholder="web, api, deployment"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block font-mono text-[12px] uppercase tracking-[0.08em] text-ink-muted" htmlFor="f-readtime">
+                  Read time
+                </label>
+                <input
+                  id="f-readtime"
+                  type="text"
+                  name="readTime"
+                  value={formData.readTime}
+                  onChange={handleChange}
+                  className={fieldClass}
+                  placeholder="5 min read"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block font-mono text-[12px] uppercase tracking-[0.08em] text-ink-muted" htmlFor="f-status">
+                  Status
+                </label>
+                <select
+                  id="f-status"
+                  name="status"
+                  value={formData.status}
+                  onChange={handleChange}
+                  className={fieldClass}
+                >
+                  <option value="draft">Draft</option>
+                  <option value="published">Published</option>
+                </select>
+              </div>
+              <div className="sm:col-span-2">
+                <label className="mb-1 block font-mono text-[12px] uppercase tracking-[0.08em] text-ink-muted" htmlFor="f-content">
+                  Content (markdown)
+                </label>
+                <textarea
+                  id="f-content"
+                  name="content"
+                  value={formData.content}
+                  onChange={handleChange}
+                  rows="8"
+                  className={fieldClass}
+                  placeholder={'# Record title\n\nCase notes in markdown…'}
+                ></textarea>
+              </div>
+            </div>
+
+            <div className="mt-6 flex flex-row-reverse gap-3">
+              <button type="submit" disabled={isSubmitting} className="btn btn-primary">
+                {isSubmitting ? 'Saving…' : projectId ? 'Save amendments' : 'File record'}
+              </button>
+              <button type="button" onClick={onClose} className="btn btn-stroke">
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

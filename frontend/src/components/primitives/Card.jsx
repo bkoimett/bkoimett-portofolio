@@ -1,8 +1,10 @@
 import React from 'react';
 
-const Card = ({ children, className }) => {
+const Card = ({ children, className = '' }) => {
   return (
-    <div className={`glass-card rounded-lg ${className}`}>{children}</div>
+    <div className={`card-flat rounded-[2px] p-6 ${className}`}>
+      {children}
+    </div>
   );
 };
 

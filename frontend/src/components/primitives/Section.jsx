@@ -1,8 +1,8 @@
 import React from 'react';
 
-const Section = ({ children }) => {
+const Section = ({ children, className }) => {
   return (
-    <section className="py-12">
+    <section className={`py-section ${className || ''}`}>
       {children}
     </section>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AuthContext } from './authContext';
 
 export default function AuthProvider({ children }) {
@@ -6,6 +6,15 @@ export default function AuthProvider({ children }) {
     const token = localStorage.getItem('adminToken');
     return !!token;
   });
+
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      localStorage.removeItem('adminToken');
+      setIsAuthenticated(false);
+    };
+    window.addEventListener('auth-unauthorized', handleUnauthorized);
+    return () => window.removeEventListener('auth-unauthorized', handleUnauthorized);
+  }, []);
 
   const login = (token) => {
     localStorage.setItem('adminToken', token);

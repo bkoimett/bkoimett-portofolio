@@ -1,89 +1,66 @@
-import React, { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/authContext';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/authContext';
 
-const Sidebar = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const location = useLocation();
-  const { isAuthenticated, logout } = useAuth();
-  const navigate = useNavigate();
+const navItems = [
+  { id: 'dashboard', name: 'Dashboard' },
+  { id: 'projects', name: 'Projects' },
+  { id: 'settings', name: 'Settings' },
+];
 
-  const toggleMenu = () => setMenuOpen(!menuOpen);
-
-  const handleLogout = () => {
-    logout();
-    setMenuOpen(false);
-    navigate('/admin/login');
-  };
-
-  const navItems = [
-    { name: 'Dashboard', path: '/admin/dashboard', icon: 'dashboard' },
-    { name: 'Projects', path: '/admin/dashboard/projects', icon: 'folder_open' },
-    { name: 'Settings', path: '/admin/dashboard/settings', icon: 'settings' },
-  ];
+const Sidebar = ({ active, onSelect, onLogout }) => {
+  const { isAuthenticated } = useAuth();
 
   return (
-    <aside
-      className={`fixed left-0 top-0 h-full w-64 bg-surface-container-low border-r border-outline-variant flex flex-col p-2 z-40 transition-all duration-300 ${menuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
-    >
-      {/* Brand Header */}
-      <div className="mb-2 border-b border-outline-variant/30">
-        <h1 className="font-headline-sm text-headline-sm text-primary font-bold">B. Koimett</h1>
-        <p className="font-label-md text-label-md text-on-surface-variant">Admin Console</p>
+    <aside className="fixed inset-y-14 left-0 z-30 hidden w-56 flex-col border-r border-rule bg-paper-strong lg:flex">
+      <div className="border-b border-rule px-5 py-4">
+        <p className="font-serif text-lg font-semibold text-ink">B. Koimett</p>
+        <p className="file-index-sm mt-0.5">Administration</p>
       </div>
 
-      {/* Session Badge */}
       {isAuthenticated && (
-        <div className="mb-2 p-2 bg-primary/10 border border-primary/20 rounded text-xs">
-          <span className="material-symbols-outlined text-primary">badge</span>
-          <span className="ml-2 text-primary">Active session</span>
+        <div className="border-b border-rule px-5 py-3">
+          <span className="inline-block border border-registry px-2.5 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-registry">
+            Session active
+          </span>
         </div>
       )}
 
-      {/* Mobile menu toggle */}
-      {menuOpen && (
-        <button
-          onClick={toggleMenu}
-          className="mt-2 flex items-center gap-2 px-3 py-2 rounded border outline-variant/30 text-on-surface-variant hover:text-primary transition-colors"
-        >
-          <span className="material-symbols-outlined">close</span>
-          <span>Close menu</span>
-        </button>
-      )}
-
-      {/* Navigation Links */}
-      <nav className="flex-1 space-y-1">
+      <nav className="flex-1 px-3 py-4" aria-label="Registry administration">
         {navItems.map((item) => (
-          <Link
-            key={item.name}
-            to={item.path}
-            className={`flex items-center gap-2 px-3 py-2 rounded border ${
-              location.pathname === item.path
-                ? 'bg-primary/10 border-primary text-primary'
-                : 'text-on-surface-variant hover:bg-surface-container-high'
-            } transition-colors`}
+          <button
+            key={item.id}
+            type="button"
+            onClick={() => onSelect(item.id)}
+            aria-current={active === item.id ? 'page' : undefined}
+            className={`mb-1 flex w-full items-center justify-between px-3 py-2 text-left text-[15px] transition-colors border rounded-[2px] ${
+              active === item.id
+                ? 'border-registry bg-registry text-on-registry font-semibold'
+                : 'border-transparent text-ink-muted hover:border-rule-strong hover:text-ink'
+            }`}
           >
-            <span className="material-symbols-outlined text-sm">{item.icon}</span>
-            <span className="font-label-md text-label-md">{item.name}</span>
-          </Link>
+            {item.name}
+            <span aria-hidden="true" className="font-mono text-[11px]">
+              {active === item.id ? '●' : '·'}
+            </span>
+          </button>
         ))}
       </nav>
 
-      {/* Footer Actions */}
-      <div className="mt-auto flex flex-col gap-2">
-        <button
-          onClick={() => window.location.href='mailto:koimettb@gmail.com'}
-          className="flex items-center gap-2 px-3 py-2 rounded bg-primary/10 border border-primary/20 text-on-surface-variant hover:text-primary transition-colors text-sm"
+      <div className="border-t border-rule px-3 py-3">
+        <Link
+          to="/"
+          className="flex w-full items-center gap-2 px-3 py-2 font-mono text-[12px] uppercase tracking-[0.08em] text-ink-muted hover:text-registry"
         >
-          <span className="material-symbols-outlined">mail</span>
-          Support
-        </button>
+          ← Back to site
+        </Link>
         <button
-          onClick={handleLogout}
-          className="flex items-center gap-2 px-3 py-2 rounded bg-surface-container-highest text-on-surface hover:bg-primary hover:text-on-primary transition-colors text-sm group"
+          type="button"
+          onClick={onLogout}
+          className="mt-1 flex w-full items-center justify-between rounded-[2px] border border-rule-strong px-3 py-2 text-[14px] text-ink hover:border-stamp hover:text-stamp"
         >
-          <span className="material-symbols-outlined text-xs">logout</span>
-          Logout
+          Log out
+          <span aria-hidden="true">→</span>
         </button>
       </div>
     </aside>

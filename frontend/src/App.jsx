@@ -17,24 +17,23 @@ function App() {
     <AuthProvider>
       <ThemeProvider>
         <Router>
-          <Layout>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/projects" element={<Projects />} />
-              <Route path="/projects/:slug" element={<ProjectDetail />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route
-                path="/admin/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Layout>
+          <Routes>
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route
+              path="/admin/dashboard"
+              element={
+                <ProtectedRoute>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route path="/" element={<Layout><Home /></Layout>} />
+            <Route path="/projects" element={<Layout><Projects /></Layout>} />
+            <Route path="/projects/:slug" element={<Layout><ProjectDetail /></Layout>} />
+            <Route path="/about" element={<Layout><About /></Layout>} />
+            <Route path="*" element={<Layout><NotFound /></Layout>} />
+          </Routes>
         </Router>
       </ThemeProvider>
     </AuthProvider>
