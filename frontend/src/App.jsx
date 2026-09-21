@@ -32,6 +32,7 @@ function App() {
             <Route path="/projects" element={<Layout><Projects /></Layout>} />
             <Route path="/projects/:slug" element={<Layout><ProjectDetail /></Layout>} />
             <Route path="/about" element={<Layout><About /></Layout>} />
+<Route path="/blog" element={<Layout><Blog /></Layout>} />
             <Route path="*" element={<Layout><NotFound /></Layout>} />
           </Routes>
         </Router>

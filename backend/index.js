@@ -9,6 +9,7 @@ require('dotenv').config();
 const Project = require('./models/Project');
 const Admin = require('./models/Admin');
 const CV = require('./models/CV');
+const Blog = require('./models/Blog');
 const authMiddleware = require('./middleware/auth');
 const gridfs = require('./gridfs');
 
@@ -531,6 +532,31 @@ app.delete('/api/projects/:id', authMiddleware, async (req, res) => {
     });
   } catch {
     res.status(500).json({ error: 'Failed to delete project' });
+  }
+});
+
+// GET - All published blogs for public blog page.
+app.get('/api/blogs', async (req, res) => {
+  try {
+    const blogs = await Blog.find({ status: 'published' }).sort({ publishDate: -1 });
+    res.json(blogs);
+  } catch {
+    res.status(500).json({ error: 'Failed to fetch blogs' });
+  }
+});
+
+// GET - Single blog by slug for public detail page.
+app.get('/api/blogs/slug/:slug', async (req, res) => {
+  try {
+    const blog = await Blog.findOne({ slug: req.params.slug, status: 'published' });
+    
+    if (!blog) {
+      return res.status(404).json({ error: 'Blog not found' });
+    }
+    
+    res.json(blog);
+  } catch {
+    res.status(500).json({ error: 'Failed to fetch blog' });
   }
 });
 
