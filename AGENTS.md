@@ -86,7 +86,7 @@ Design language: Registry Office. See `@DESIGN.md` for tokens and conventions.
 `Layout`, `Navbar`, `ThemeToggle`, `layout/Footer`, `layout/ScrollToTop`, `layout/NotFound`,
 `ProtectedRoute`, `primitives/Container`, `primitives/Section`, `primitives/SectionHeading`,
 `primitives/Button`, `primitives/Card`, `primitives/StatusBadge`, `primitives/StatCard`,
-`primitives/ProjectCard`
+`primitives/ProjectCard`, `primitives/SystemMap`, `primitives/StatNumber` (`SystemMap`: survey plat of filed systems with status tokens; `StatNumber`: count-up ledger numerals)
 
 ### Frontend — admin components
 `components/admin/AdminLayout`, `components/admin/Sidebar`, `components/admin/ProjectsTable`,

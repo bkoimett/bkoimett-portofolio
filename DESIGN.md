@@ -114,6 +114,8 @@ Button copy names the action, sentence case: "Project records", "File new record
 | `primitives/Button` | `primary` / `stroke` / `ghost` × `sm` / `md` / `lg`. |
 | `primitives/Card` | Flat framed surface (`card-flat`). |
 | `primitives/StatusBadge` | Mono bordered tag (views, read time, status). |
+| `primitives/SystemMap` | Surveyor's plat of filed systems — 2×2 parcels on a hairline survey grid, status tokens (live = registry fill, source = hollow, file = muted), link to each case file. No red; the page's single stamp stays in the masthead. |
+| `primitives/StatNumber` | Counting hedge numeral: ticks up once on first scroll into view (ease-out, rAF), static if reduced-motion, static for non-numeric values (e.g. `24/7`). |
 | `primitives/Container` / `Section` | Layout primitives. |
 | `utils/cv.js` | CV helpers: public download URL, share URL (+ clipboard copy), active-CV check. |
 
@@ -139,7 +141,7 @@ Button copy names the action, sentence case: "Project records", "File new record
 
 ## Motion
 
-One orchestrated entrance per page, on the home masthead only (`.animate-rise`, 0.65s). All other motion answers a user action (menu open, drawer slide, hover colour change). `prefers-reduced-motion: reduce` disables transitions and animation.
+One orchestrated entrance per page, on the home masthead only (`.animate-rise`, 0.65s). All other motion answers a user action (menu open, drawer slide, hover colour change, hedge numerals ticking after the masthead entrance has settled). `prefers-reduced-motion: reduce` disables transitions and animation.
 
 ---
 
