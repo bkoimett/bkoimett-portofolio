@@ -33,12 +33,16 @@ const Home = () => {
   const [projects, setProjects] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [cv, setCv] = useState(null);
+  const [cvLoading, setCvLoading] = useState(true);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
     fetchActiveCv({ signal: controller.signal }).then((activeCv) => {
-      if (!controller.signal.aborted) setCv(activeCv);
+      if (!controller.signal.aborted) {
+        setCv(activeCv);
+        setCvLoading(false);
+      }
     });
     return () => controller.abort();
   }, []);
@@ -110,7 +114,11 @@ const Home = () => {
             <a href={`mailto:${profile.email}`} className="btn btn-stroke">
               Contact
             </a>
-            {cv && (
+            {cvLoading ? (
+              <button type="button" disabled className="btn btn-ghost" aria-busy="true">
+                Waking CV…
+              </button>
+            ) : cv && (
               <a href={cvDownloadUrl} className="btn btn-stroke">
                 Download CV
               </a>

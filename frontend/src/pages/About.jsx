@@ -41,11 +41,15 @@ const roles = [
 
 const About = () => {
   const [cv, setCv] = useState(null);
+  const [cvLoading, setCvLoading] = useState(true);
 
   useEffect(() => {
     const controller = new AbortController();
     fetchActiveCv({ signal: controller.signal }).then((activeCv) => {
-      if (!controller.signal.aborted) setCv(activeCv);
+      if (!controller.signal.aborted) {
+        setCv(activeCv);
+        setCvLoading(false);
+      }
     });
     return () => controller.abort();
   }, []);
@@ -192,7 +196,11 @@ const About = () => {
             </div>
             <div className="flex flex-col items-start gap-4">
               <span className="stamp">Available · Remote</span>
-              {cv && (
+              {cvLoading ? (
+                <button type="button" disabled className="btn btn-ghost" aria-busy="true">
+                  Waking CV…
+                </button>
+              ) : cv && (
                 <a href={cvDownloadUrl} className="btn btn-stroke">
                   Download CV
                 </a>

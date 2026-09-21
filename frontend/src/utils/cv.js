@@ -7,11 +7,20 @@ export const cvDownloadUrl = downloadPath;
 export const cvShareUrl = () => new URL(downloadPath, window.location.origin).href;
 
 export const fetchActiveCv = async ({ signal } = {}) => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+  const combinedSignal = signal
+    ? (signal.addEventListener?.('abort', () => controller.abort()), controller.signal)
+    : controller.signal;
+
   try {
-    const response = await api.get('/cv', { signal });
+    const response = await api.get('/cv', { signal: combinedSignal });
     return response.data;
   } catch {
     return null;
+  } finally {
+    clearTimeout(timeoutId);
   }
 };
 
