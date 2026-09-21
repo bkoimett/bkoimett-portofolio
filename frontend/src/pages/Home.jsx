@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import { cvDownloadUrl, fetchActiveCv, copyCvLink } from '../utils/cv';
 import ProjectCard from '../components/primitives/ProjectCard';
+import StatNumber from '../components/primitives/StatNumber';
+import SystemMap from '../components/primitives/SystemMap';
 import { stats } from '../data/stats';
 import { techStack } from '../data/techStack';
 import { profile } from '../data/profile';
@@ -152,11 +154,32 @@ const Home = () => {
               className={`ledger-row lg:pl-6 ${i === 0 ? 'lg:pl-0' : ''}`}
             >
               <p className="font-mono text-[2rem] font-medium leading-none text-ink">
-                {stat.value}
+                <StatNumber {...stat} />
               </p>
               <p className="file-index-sm mt-2">{stat.label}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* System map */}
+      <section className="container-page mt-24">
+        <header>
+          <p className="file-index-sm">BK / NETWORK — PLAT OF FILED SYSTEMS</p>
+          <h2 className="mt-1 text-heading-xl font-semibold text-ink">
+            System map
+          </h2>
+          <p className="mt-3 max-w-[60ch] text-body text-ink-muted">
+            A survey of the production plots. Each parcel opens its case file.
+          </p>
+        </header>
+
+        <div className="mt-8">
+          {loaded ? (
+            <SystemMap projects={projects} />
+          ) : (
+            <p className="file-index-sm py-6">Plotting records…</p>
+          )}
         </div>
       </section>
 
