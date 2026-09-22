@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import SEO from '../components/SEO';
+import { SITE_URL, personJsonLd } from '../utils/seo';
 import { cvDownloadUrl, fetchActiveCv } from '../utils/cv';
 import { techStack } from '../data/techStack';
 import { profile } from '../data/profile';
@@ -54,8 +56,25 @@ const About = () => {
     return () => controller.abort();
   }, []);
 
+  const aboutJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ProfilePage',
+    mainEntity: {
+      ...personJsonLd,
+      description: 'Personnel record — Benjamin K. Koimett, full-stack engineer (React, Node.js, MERN), employment ledger and technical index.',
+    },
+    url: `${SITE_URL}/about`,
+  };
+
   return (
     <>
+      <SEO
+        title="Personnel record — Employment ledger & Technical index"
+        description="Personnel record of Benjamin K. Koimett — full-stack React/Node.js engineer in Kisumu, Kenya. Employment ledger (Zone01, Occulus, Serenity Place) and technical index (MERN, Golang, Solana). Available remote."
+        canonical="/about"
+        keywords="Benjamin Koimett about, employment ledger, MERN stack, Zone01 Kisumu, Kenya full-stack engineer"
+        jsonLd={aboutJsonLd}
+      />
       {/* Record header */}
       <section className="container-page pt-14">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-12">

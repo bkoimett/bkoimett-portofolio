@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../utils/api';
+import SEO from '../components/SEO';
+import { SITE_URL } from '../utils/seo';
 import ProjectCard from '../components/primitives/ProjectCard';
 
 const fallbackProjects = [
@@ -79,8 +81,32 @@ const Projects = () => {
       ? projects
       : projects.filter((p) => p.category === filter);
 
+  const projectsJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Project records — Benjamin K. Koimett',
+    description: 'Production MERN and full-stack project records shipped by Benjamin K. Koimett — React, Node.js, MongoDB, Express.',
+    url: `${SITE_URL}/projects`,
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: filteredProjects.slice(0, 8).map((p, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `${SITE_URL}/projects/${p.slug}`,
+        name: p.title,
+      })),
+    },
+  };
+
   return (
     <>
+      <SEO
+        title="Project records — MERN & Full-Stack Case Files"
+        description="Browse production project records by Benjamin K. Koimett — CareFacility healthcare platform, LandLedger blockchain verification, Kijiji and AgriSync. Full-stack React/Node.js, TypeScript, Golang. Each case file with live demo and source."
+        canonical="/projects"
+        keywords="Benjamin Koimett projects, React Node.js portfolio, MERN projects, CareFacility, LandLedger, Kisumu developer"
+        jsonLd={projectsJsonLd}
+      />
       <section className="container-page pt-14 pb-24">
         <header className="border-b border-rule pb-10">
           <p className="file-index-sm">BK / PROD. — FULL INDEX</p>

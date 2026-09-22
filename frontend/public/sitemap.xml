@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://bkoimett-portofolio.vercel.app/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://bkoimett-portofolio.vercel.app/projects</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://bkoimett-portofolio.vercel.app/blog</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://bkoimett-portofolio.vercel.app/about</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <!-- Project records (fallback + live — add slugs as you publish for deeper indexing) -->
+  <url><loc>https://bkoimett-portofolio.vercel.app/projects/carefacility-platform</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://bkoimett-portofolio.vercel.app/projects/landledger</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://bkoimett-portofolio.vercel.app/projects/kijiji-corporate-cuisine</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://bkoimett-portofolio.vercel.app/projects/agrisync</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <!-- Blog records -->
+  <url><loc>https://bkoimett-portofolio.vercel.app/blog/building-a-portfolio-registry-my-journey-with-open-source-tools</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://bkoimett-portofolio.vercel.app/blog/from-registry-records-to-modern-apis-lessons-learned</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+</urlset>

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
+import SEO from '../components/SEO';
+import { SITE_URL, personJsonLd } from '../utils/seo';
 import { cvDownloadUrl, fetchActiveCv, copyCvLink } from '../utils/cv';
 import ProjectCard from '../components/primitives/ProjectCard';
 import StatNumber from '../components/primitives/StatNumber';
@@ -75,8 +77,30 @@ const Home = () => {
     return () => controller.abort();
   }, []);
 
+  const homeJsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      personJsonLd,
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
+          { '@type': 'ListItem', position: 2, name: 'Projects', item: `${SITE_URL}/projects` },
+          { '@type': 'ListItem', position: 3, name: 'Blog', item: `${SITE_URL}/blog` },
+        ],
+      },
+    ],
+  };
+
   return (
     <>
+      <SEO
+        title="Full-Stack Engineer — React, Node.js, MERN"
+        description="Benjamin K. Koimett — full-stack software engineer (React, Node.js, MongoDB, Express) in Kisumu, Kenya. Shipping MERN production systems for healthcare, agriculture and land governance. Remote-ready — browse project records, blog case notes and CV."
+        canonical="/"
+        keywords="Benjamin Koimett, full-stack engineer, React developer, Node.js, MERN, MongoDB Express, Kisumu Kenya remote, healthcare platform"
+        jsonLd={homeJsonLd}
+      />
       {/* Masthead */}
       <section className="container-page pt-14">
         <div>

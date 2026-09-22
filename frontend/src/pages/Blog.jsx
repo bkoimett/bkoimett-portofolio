@@ -1,6 +1,8 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
+import SEO from '../components/SEO';
+import { SITE_URL } from '../utils/seo';
 
 const fallbackBlogs = [
   {
@@ -69,8 +71,32 @@ const Blog = () => {
 
   const filtered = activeTag === 'all' ? displayedBlogs : displayedBlogs.filter((b) => (b.tags || []).includes(activeTag));
 
+  const blogJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Blog',
+    name: 'Filed notes — Benjamin K. Koimett',
+    description: 'Case notes on building MERN and registry-line systems by Benjamin K. Koimett.',
+    url: `${SITE_URL}/blog`,
+    author: { '@type': 'Person', name: 'Benjamin Kiprotich Koimett' },
+    blogPost: filtered.map((b) => ({
+      '@type': 'BlogPosting',
+      headline: b.title,
+      description: b.description,
+      url: `${SITE_URL}/blog/${b.slug}`,
+      datePublished: b.publishDate ? new Date(b.publishDate).toISOString() : undefined,
+      author: { '@type': 'Person', name: 'Benjamin Kiprotich Koimett' },
+    })),
+  };
+
   return (
     <div className="container-page pt-14 pb-24">
+      <SEO
+        title="Filed notes — MERN APIs & Registry Case Notes"
+        description="Filed notes by Benjamin K. Koimett — full-stack React/Node.js case notes on API design, offline ledgers and MERN trade-offs. Lessons from LandLedger, CareFacility and production deploys for recruiters evaluating real-world experience."
+        canonical="/blog"
+        keywords="Benjamin Koimett blog, React Node.js blog, MERN case notes, API design, offline-first, Kenya developer blog"
+        jsonLd={blogJsonLd}
+      />
       <header className="border-b border-rule pb-10">
         <p className="file-index-sm">BK / BLOG — FILED ARTICLES</p>
         <h1 className="mt-1 text-heading-xl font-semibold text-ink">Filed notes</h1>

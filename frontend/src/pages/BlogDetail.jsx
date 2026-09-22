@@ -2,6 +2,8 @@ import { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import api from '../utils/api';
+import SEO from '../components/SEO';
+import { SITE_URL } from '../utils/seo';
 import StatusBadge from '../components/primitives/StatusBadge';
 
 const formatDate = (d) => {
@@ -77,8 +79,30 @@ const BlogDetail = () => {
 
   const filed = formatDate(blog.publishDate);
 
+  const blogPostingJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: blog.title,
+    description: blog.description,
+    author: { '@type': 'Person', name: 'Benjamin Kiprotich Koimett', url: SITE_URL },
+    datePublished: blog.publishDate ? new Date(blog.publishDate).toISOString() : undefined,
+    dateModified: blog.updatedAt ? new Date(blog.updatedAt).toISOString() : undefined,
+    mainEntityOfPage: `${SITE_URL}/blog/${blog.slug}`,
+    image: `${SITE_URL}/og-cover.png`,
+    keywords: (blog.tags || []).join(', '),
+    url: `${SITE_URL}/blog/${blog.slug}`,
+  };
+
   return (
     <div className="container-page py-14">
+      <SEO
+        title={blog.title}
+        description={blog.description || blog.content?.slice(0, 155)}
+        canonical={`/blog/${blog.slug}`}
+        type="article"
+        keywords={(blog.tags || []).join(', ') + ', Benjamin Koimett, React Node.js'}
+        jsonLd={blogPostingJsonLd}
+      />
       <Link
         to="/blog"
         className="inline-flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.1em] text-ink-muted hover:text-registry"

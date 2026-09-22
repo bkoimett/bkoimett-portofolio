@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
+import SEO from '../components/SEO';
 import { useAuth } from '../context/authContext';
 import AdminLayout from '../components/admin/AdminLayout';
 import AdminSettings from './AdminSettings';
@@ -145,6 +146,7 @@ export default function AdminDashboard() {
       onSelect={setActiveTab}
       onLogout={handleLogout}
     >
+      <SEO title="Console — Registry" noindex />
       {activeTab !== 'settings' && (error || success) && (
         <div className="mb-6 flex flex-col gap-2">
           {error && (

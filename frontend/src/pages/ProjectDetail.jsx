@@ -1,6 +1,8 @@
 import { useParams, useState, useEffect, useRef, Link } from 'react';
 import api from '../utils/api';
 import ReactMarkdown from 'react-markdown';
+import SEO from '../components/SEO';
+import { SITE_URL } from '../utils/seo';
 import StatusBadge from '../components/primitives/StatusBadge';
 
 const formatDate = (date) =>
@@ -18,20 +20,40 @@ export default function ProjectDetail() {
   const viewCountRef = useRef(0);
 
   useEffect(() => {
+    const controller = new AbortController();
     const fetchProject = async () => {
       try {
-        const response = await api.get(`/projects/${slug}`);
-        setProject(response.data);
-        viewCountRef.current = response.data.views || 0;
+        // Try slug endpoint first (public), fall back to legacy path for backwards-compat
+        let response;
+        try {
+          response = await api.get(`/projects/slug/${slug}`, { signal: controller.signal });
+        } catch (err) {
+          if (err.response?.status === 404) throw err;
+          response = await api.get(`/projects/${slug}`, { signal: controller.signal });
+        }
+        if (!controller.signal.aborted) {
+          setProject(response.data);
+          viewCountRef.current = response.data.views || 0;
+        }
       } catch {
-        setError('Project not found');
+        if (!controller.signal.aborted) setError('Project not found');
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) setLoading(false);
       }
     };
 
     fetchProject();
+    return () => controller.abort();
   }, [slug]);
+
+  useEffect(() => {
+    if (project?._id && viewCountRef.current !== project._id) {
+      viewCountRef.current = project._id;
+      const ctrl = new AbortController();
+      api.post(`/projects/${project._id}/view`, {}, { signal: ctrl.signal }).catch(() => {});
+      return () => ctrl.abort();
+    }
+  }, [project]);
 
   if (loading) {
     return (
@@ -58,8 +80,30 @@ export default function ProjectDetail() {
     );
   }
 
+  const projectJsonLd = project && {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: project.title,
+    description: project.description,
+    url: `${SITE_URL}/projects/${project.slug}`,
+    image: project.image,
+    author: { '@type': 'Person', name: 'Benjamin Kiprotich Koimett' },
+    applicationCategory: project.category || 'WebApplication',
+    operatingSystem: 'Web',
+    keywords: (project.technologies || []).join(', '),
+  };
+
   return (
     <div className="container-page py-14">
+      <SEO
+        title={project.title}
+        description={project.description}
+        canonical={`/projects/${project.slug}`}
+        image={project.image || `${SITE_URL}/og-cover.png`}
+        type="article"
+        keywords={`${(project.technologies || []).join(', ')}, ${project.category}, Benjamin Koimett`}
+        jsonLd={projectJsonLd}
+      />
       <Link
         to="/projects"
         className="inline-flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.1em] text-ink-muted hover:text-registry"

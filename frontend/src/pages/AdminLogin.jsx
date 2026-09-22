@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
+import SEO from '../components/SEO';
 import { useAuth } from '../context/authContext';
 import ThemeToggle from '../components/ThemeToggle';
 
@@ -45,6 +46,7 @@ export default function AdminLogin() {
 
   return (
     <div className="flex min-h-screen flex-col">
+      <SEO title="Registry sign in" noindex />
       <header className="border-b border-rule border-t-[3px] border-t-registry bg-paper">
         <div className="flex h-14 items-center justify-between px-gutter">
           <Link
