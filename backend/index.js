@@ -560,6 +560,133 @@ app.get('/api/blogs/slug/:slug', async (req, res) => {
   }
 });
 
+// POST - Increment blog view count (public endpoint).
+app.post('/api/blogs/:id/view', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'Invalid blog ID' });
+    }
+
+    const blog = await Blog.findByIdAndUpdate(
+      id,
+      { $inc: { views: 1 } },
+      { new: true, runValidators: true }
+    );
+
+    if (!blog) {
+      return res.status(404).json({ error: 'Blog not found' });
+    }
+
+    res.json({ views: blog.views });
+  } catch (error) {
+    console.error('View increment error:', error.message);
+    res.status(500).json({ error: 'Failed to increment view count' });
+  }
+});
+
+// GET - All blogs (admin only, includes drafts).
+app.get('/api/admin/blogs', authMiddleware, async (req, res) => {
+  try {
+    const blogs = await Blog.find().sort({ publishDate: -1 });
+    res.json(blogs);
+  } catch {
+    res.status(500).json({ error: 'Failed to fetch blogs' });
+  }
+});
+
+// POST - Create new blog (admin only).
+app.post('/api/admin/blogs', authMiddleware, async (req, res) => {
+  try {
+    const { title, slug, description, content, tags, readTime, publishDate, status } = req.body;
+
+    if (!title || !description || !content) {
+      return res.status(400).json({ error: 'title, description, and content are required' });
+    }
+
+    const finalSlug = slug || generateSlug(title);
+
+    const existingBlog = await Blog.findOne({ slug: finalSlug });
+    if (existingBlog) {
+      return res.status(400).json({ error: 'A blog with this slug already exists' });
+    }
+
+    const newBlog = new Blog({
+      title,
+      slug: finalSlug,
+      description,
+      content,
+      tags: tags || [],
+      readTime: readTime || '5 min read',
+      publishDate: publishDate || new Date(),
+      status: status || 'draft',
+    });
+
+    const savedBlog = await newBlog.save();
+    res.status(201).json({
+      message: 'Blog filed successfully',
+      blog: savedBlog,
+    });
+  } catch {
+    res.status(500).json({ error: 'Failed to create blog' });
+  }
+});
+
+// PUT - Update blog (admin only).
+app.put('/api/admin/blogs/:id', authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = { ...req.body, updatedAt: new Date() };
+
+    if (updateData.title && !updateData.slug) {
+      updateData.slug = generateSlug(updateData.title);
+    }
+
+    if (updateData.slug) {
+      const existingBlog = await Blog.findOne({
+        slug: updateData.slug,
+        _id: { $ne: id },
+      });
+      if (existingBlog) {
+        return res.status(400).json({ error: 'A blog with this slug already exists' });
+      }
+    }
+
+    const updatedBlog = await Blog.findByIdAndUpdate(id, updateData, { new: true });
+
+    if (!updatedBlog) {
+      return res.status(404).json({ error: 'Blog not found' });
+    }
+
+    res.json({
+      message: 'Blog updated successfully',
+      blog: updatedBlog,
+    });
+  } catch {
+    res.status(500).json({ error: 'Failed to update blog' });
+  }
+});
+
+// DELETE - Delete blog (admin only).
+app.delete('/api/admin/blogs/:id', authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedBlog = await Blog.findByIdAndDelete(id);
+
+    if (!deletedBlog) {
+      return res.status(404).json({ error: 'Blog not found' });
+    }
+
+    res.json({
+      message: 'Blog deleted successfully',
+      blog: deletedBlog,
+    });
+  } catch {
+    res.status(500).json({ error: 'Failed to delete blog' });
+  }
+});
+
 if (require.main === module) {
   startServer();
 

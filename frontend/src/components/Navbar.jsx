@@ -5,12 +5,14 @@ import ThemeToggle from './ThemeToggle';
 const navItems = [
   { name: 'Home', path: '/' },
   { name: 'Projects', path: '/projects' },
+  { name: 'Blog', path: '/blog' },
   { name: 'About', path: '/about' },
 ];
 
 const getActivePath = (pathname) => {
   if (pathname === '/') return '/';
   if (pathname.startsWith('/projects')) return '/projects';
+  if (pathname.startsWith('/blog')) return '/blog';
   if (pathname === '/about') return '/about';
   return pathname;
 };

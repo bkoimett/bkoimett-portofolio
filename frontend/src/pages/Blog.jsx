@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ReactMarkdown } from 'react-markdown';
+import ReactMarkdown from 'react-markdown';
 import api from '../utils/api';
 import { Link } from 'react-router-dom';
 import Section from '../components/primitives/Section';
@@ -80,7 +80,6 @@ The full index is public. You can browse projects by division, filter by technol
 
 const Blog = () => {
   const [blogs, setBlogs] = useState([]);
-  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -90,14 +89,10 @@ const Blog = () => {
           signal: controller.signal,
         });
         setBlogs(response.data);
-        setLoaded(true);
       } catch (error) {
         if (error.name !== 'CanceledError' && error.name !== 'AbortError') {
           setBlogs(fallbackBlogs);
-          setLoaded(true);
         }
-      } finally {
-        if (!controller.signal.aborted) setLoaded(true);
       }
     };
     fetchBlogs();
@@ -115,7 +110,7 @@ const Blog = () => {
           </SectionHeading>
 
           <div className="mt-8 space-y-8">
-            {displayedBlogs.slice(0, 2).map((blog, i) => (
+            {displayedBlogs.slice(0, 2).map((blog) => (
               <div className="markdown-body max-w-[60ch] ink leading-relaxed">
                 <header className="mb-6">
                   <p className="file-index-sm mb-2">

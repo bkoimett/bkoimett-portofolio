@@ -81,6 +81,14 @@ const Footer = () => {
           <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-muted">
             © {new Date().getFullYear()} {profile.name}
           </p>
+          <Link
+            to="/admin/login"
+            className="text-ink-muted hover:text-registry transition-colors"
+            aria-label="Admin console"
+            title="Admin console"
+          >
+            🔒
+          </Link>
         </div>
       </div>
     </footer>

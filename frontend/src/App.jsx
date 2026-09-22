@@ -7,6 +7,8 @@ import Home from './pages/Home';
 import Projects from './pages/Projects';
 import ProjectDetail from './pages/ProjectDetail';
 import About from './pages/About';
+import Blog from './pages/Blog';
+import BlogDetail from './pages/BlogDetail';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import NotFound from './components/layout/NotFound';
@@ -31,8 +33,9 @@ function App() {
             <Route path="/" element={<Layout><Home /></Layout>} />
             <Route path="/projects" element={<Layout><Projects /></Layout>} />
             <Route path="/projects/:slug" element={<Layout><ProjectDetail /></Layout>} />
+            <Route path="/blog" element={<Layout><Blog /></Layout>} />
+            <Route path="/blog/:slug" element={<Layout><BlogDetail /></Layout>} />
             <Route path="/about" element={<Layout><About /></Layout>} />
-<Route path="/blog" element={<Layout><Blog /></Layout>} />
             <Route path="*" element={<Layout><NotFound /></Layout>} />
           </Routes>
         </Router>
