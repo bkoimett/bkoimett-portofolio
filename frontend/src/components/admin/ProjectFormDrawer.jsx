@@ -10,13 +10,16 @@ const emptyForm = {
   readTime: '5 min read',
   status: 'draft',
   content: '',
+  image: '',
 };
 
 const ProjectFormDrawer = ({ isOpen, onClose, projectId, initialData, onSaved }) => {
   const [formData, setFormData] = useState(emptyForm);
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageUploading, setImageUploading] = useState(false);
   const titleRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -32,6 +35,7 @@ const ProjectFormDrawer = ({ isOpen, onClose, projectId, initialData, onSaved })
         readTime: initialData.readTime || '5 min read',
         status: initialData.status || 'draft',
         content: initialData.content || '',
+        image: initialData.image || '',
       });
     } else {
       setFormData(emptyForm);
@@ -50,6 +54,24 @@ const ProjectFormDrawer = ({ isOpen, onClose, projectId, initialData, onSaved })
       ...prev,
       [field]: value.split(',').map((item) => item.trim()).filter(Boolean),
     }));
+  };
+
+  const handleImageFile = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageUploading(true);
+    setError('');
+    try {
+      const fd = new FormData();
+      fd.append('image', file);
+      const res = await api.post('/admin/images', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+      setFormData((prev) => ({ ...prev, image: res.data.url }));
+    } catch (err) {
+      setError(err.response?.data?.error || 'Image upload failed');
+    } finally {
+      setImageUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -241,6 +263,45 @@ const ProjectFormDrawer = ({ isOpen, onClose, projectId, initialData, onSaved })
                   <option value="published">Published</option>
                 </select>
               </div>
+              <div className="sm:col-span-2">
+                <label className="mb-1 block font-mono text-[12px] uppercase tracking-[0.08em] text-ink-muted" htmlFor="f-image">
+                  Title image
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    id="f-image"
+                    type="text"
+                    name="image"
+                    value={formData.image}
+                    onChange={handleChange}
+                    className={`${fieldClass} flex-1`}
+                    placeholder="https://… or /api/images/…"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={imageUploading}
+                    className="btn btn-stroke shrink-0"
+                  >
+                    {imageUploading ? 'Uploading…' : 'Upload'}
+                  </button>
+                  <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageFile} />
+                </div>
+                {formData.image ? (
+                  <div className="mt-2 border border-rule bg-paper-strong p-2">
+                    <img src={formData.image} alt="Preview" className="max-h-40 w-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                    <div className="mt-1 flex items-center justify-between">
+                      <span className="file-index-sm truncate">{formData.image}</span>
+                      <button type="button" onClick={() => setFormData((p) => ({ ...p, image: '' }))} className="filigree text-[12px]">
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="file-index-sm mt-1">JPEG/PNG/WebP ≤5MB — stored in GridFS, served at /api/images/:id</p>
+                )}
+              </div>
+
               <div className="sm:col-span-2">
                 <label className="mb-1 block font-mono text-[12px] uppercase tracking-[0.08em] text-ink-muted" htmlFor="f-content">
                   Content (markdown)

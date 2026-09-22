@@ -152,6 +152,16 @@ const cvUpload = multer({
   },
 });
 
+const imageUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const ok = /^image\/(jpeg|png|webp|gif|svg\+xml)$/.test(file.mimetype) || /\.(jpe?g|png|webp|gif|svg)$/i.test(file.originalname);
+    if (ok) cb(null, true);
+    else cb(new Error('Only image files (jpeg, png, webp, gif, svg) are accepted'));
+  },
+});
+
 function startServer() {
   if (!process.env.MONGODB_URI || !process.env.MONGODB_URI.startsWith('mongodb')) {
     throw new Error('MONGODB_URI must be set to a valid mongodb:// or mongodb+srv:// connection string');
@@ -521,6 +531,53 @@ app.delete('/api/admin/cvs/:id', authMiddleware, async (req, res) => {
   }
 });
 
+// POST - Upload title image (admin only, jpeg/png/webp/gif/svg ≤5MB → GridFS images)
+app.post('/api/admin/images', authMiddleware, (req, res) => {
+  imageUpload.single('image')(req, res, async (uploadError) => {
+    if (uploadError) {
+      const message = uploadError.code === 'LIMIT_FILE_SIZE' ? 'File is too large (max 5MB)' : uploadError.message || 'Upload failed';
+      return res.status(400).json({ error: message });
+    }
+    try {
+      if (!req.file) return res.status(400).json({ error: 'Choose an image file to upload' });
+      let bucket;
+      try { bucket = gridfs.getImageBucket(); } catch { return res.status(503).json({ error: 'Image storage unavailable' }); }
+      const uploadStream = bucket.openUploadStream(req.file.originalname, {
+        contentType: req.file.mimetype,
+        metadata: { uploadedBy: req.user?.id || 'admin', originalName: req.file.originalname },
+      });
+      uploadStream.end(req.file.buffer);
+      await new Promise((resolve, reject) => { uploadStream.once('finish', resolve); uploadStream.once('error', reject); });
+      const url = `/api/images/${uploadStream.id}`;
+      res.status(201).json({ url, fileId: uploadStream.id.toString(), contentType: req.file.mimetype, size: req.file.size });
+    } catch (error) {
+      console.error('Image upload error:', error.message);
+      res.status(500).json({ error: 'Failed to upload image' });
+    }
+  });
+});
+
+// GET - Serve image by id (public, cached)
+app.get('/api/images/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({ error: 'Image not found' });
+    let bucket;
+    try { bucket = gridfs.getImageBucket(); } catch { return res.status(503).json({ error: 'Image storage unavailable' }); }
+    const files = await bucket.find({ _id: new mongoose.Types.ObjectId(id) }).toArray();
+    if (!files.length) return res.status(404).json({ error: 'Image not found' });
+    const file = files[0];
+    res.setHeader('Content-Type', file.contentType || 'image/jpeg');
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    res.setHeader('Content-Disposition', `inline; filename="${file.filename}"`);
+    const downloadStream = bucket.openDownloadStream(new mongoose.Types.ObjectId(id));
+    downloadStream.on('error', () => { if (!res.headersSent) res.status(404).json({ error: 'Image not found' }); else res.end(); });
+    downloadStream.pipe(res);
+  } catch {
+    res.status(500).json({ error: 'Failed to serve image' });
+  }
+});
+
 // POST - Create new project (admin only).
 app.post('/api/projects', authMiddleware, async (req, res) => {
   try {
@@ -703,7 +760,7 @@ app.get('/api/admin/blogs', authMiddleware, async (req, res) => {
 // POST - Create new blog (admin only).
 app.post('/api/admin/blogs', authMiddleware, async (req, res) => {
   try {
-    const { title, slug, description, content, tags, readTime, publishDate, status } = req.body;
+    const { title, slug, description, content, image, tags, readTime, publishDate, status } = req.body;
 
     if (!title || !description || !content) {
       return res.status(400).json({ error: 'title, description, and content are required' });
@@ -721,6 +778,7 @@ app.post('/api/admin/blogs', authMiddleware, async (req, res) => {
       slug: finalSlug,
       description,
       content,
+      image: image || '',
       tags: tags || [],
       readTime: readTime || '5 min read',
       publishDate: publishDate || new Date(),
