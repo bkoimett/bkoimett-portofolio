@@ -27,43 +27,47 @@ export default function AdminDashboard() {
   const [blogs, setBlogs] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [showBlogForm, setShowBlogForm] = useState(false);
-  const [editingId, setEditingId] = useState(null);
+  const [editingProjectId, setEditingProjectId] = useState(null);
+  const [editingBlogId, setEditingBlogId] = useState(null);
   const [editingProject, setEditingProject] = useState(null);
   const [editingBlog, setEditingBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+  const [confirmBlogDeleteId, setConfirmBlogDeleteId] = useState(null);
 
   const loadProjects = async () => {
     try {
       const response = await api.get('/projects');
-      setProjects(response.data);
+      setProjects(Array.isArray(response.data) ? response.data : []);
     } catch {
       setError('Failed to load projects');
-    } finally {
-      setLoading(false);
     }
   };
 
   const loadBlogs = async () => {
     try {
       const response = await api.get('/admin/blogs');
-      setBlogs(response.data);
+      setBlogs(Array.isArray(response.data) ? response.data : []);
     } catch {
       setError('Failed to load blogs');
-    } finally {
-      setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadProjects();
-    loadBlogs();
+    let cancelled = false;
+    const loadAll = async () => {
+      setLoading(true);
+      await Promise.all([loadProjects(), loadBlogs()]);
+      if (!cancelled) setLoading(false);
+    };
+    loadAll();
+    return () => { cancelled = true; };
   }, []);
 
   const openNewForm = () => {
-    setEditingId(null);
+    setEditingProjectId(null);
     setEditingProject(null);
     setSuccess('');
     setError('');
@@ -71,7 +75,7 @@ export default function AdminDashboard() {
   };
 
   const handleEdit = (project) => {
-    setEditingId(project._id);
+    setEditingProjectId(project._id);
     setEditingProject(project);
     setSuccess('');
     setError('');
@@ -91,7 +95,7 @@ export default function AdminDashboard() {
   };
 
   const openNewBlogForm = () => {
-    setEditingId(null);
+    setEditingBlogId(null);
     setEditingBlog(null);
     setSuccess('');
     setError('');
@@ -99,7 +103,7 @@ export default function AdminDashboard() {
   };
 
   const handleEditBlog = (blog) => {
-    setEditingId(blog._id);
+    setEditingBlogId(blog._id);
     setEditingBlog(blog);
     setSuccess('');
     setError('');
@@ -115,7 +119,7 @@ export default function AdminDashboard() {
     } catch {
       setError('Failed to delete blog record');
     }
-    setConfirmDeleteId(null);
+    setConfirmBlogDeleteId(null);
   };
 
   const handleLogout = () => {
@@ -301,8 +305,8 @@ export default function AdminDashboard() {
                   blogs={blogs}
                   onEdit={handleEditBlog}
                   onDelete={handleDeleteBlog}
-                  confirmDeleteId={confirmDeleteId}
-                  setConfirmDeleteId={setConfirmDeleteId}
+                  confirmDeleteId={confirmBlogDeleteId}
+                  setConfirmDeleteId={setConfirmBlogDeleteId}
                 />
               </div>
             </section>
@@ -323,7 +327,7 @@ export default function AdminDashboard() {
       <ProjectFormDrawer
         isOpen={showForm}
         onClose={() => setShowForm(false)}
-        projectId={editingId}
+        projectId={editingProjectId}
         initialData={editingProject}
         onSaved={(message) => handleSaved(message)}
       />
@@ -331,7 +335,7 @@ export default function AdminDashboard() {
       <BlogFormDrawer
         isOpen={showBlogForm}
         onClose={() => setShowBlogForm(false)}
-        blogId={editingId}
+        blogId={editingBlogId}
         initialData={editingBlog}
         onSaved={(message) => handleSaved(message)}
       />

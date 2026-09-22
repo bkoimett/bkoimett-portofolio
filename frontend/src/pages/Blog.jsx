@@ -1,11 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import api from '../utils/api';
+import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import Section from '../components/primitives/Section';
-import SectionHeading from '../components/primitives/SectionHeading';
-import Container from '../components/primitives/Container';
-import Button from '../components/primitives/Button';
+import api from '../utils/api';
 
 const fallbackBlogs = [
   {
@@ -13,38 +8,12 @@ const fallbackBlogs = [
     slug: 'building-a-portfolio-registry-my-journey-with-open-source-tools',
     title: 'Building a Portfolio Registry: My Journey with Open-Source Tools',
     description:
-      'How I structured my public work as a searchable registry of projects, decisions, and lessons learned -- from early scripts to the filed system you see today.',
-    content: `# Building a Portfolio Registry
-
-When I first started sharing code, my repositories were scattered across GitHub with no central coherence. I wanted a system that felt as intentional as the land registries and patient record systems I studied during my training.
-
-So I built one. Inspired by the Registry Office visual language -- hairline rules, mono reference numbers, stamped availability -- I filed every project, every decision, every insight into a searchable case file.
-
-Each entry has a slug, a status, and a read time. Each is cross-referenced with the technologies it touches and the problems it solves. The system is live and public: you can browse the full index, open individual files, or watch view counts tick up as people explore the records.
-
-If you're building too, I recommend starting with a simple ledger. Add a field for status, another for tags, and a timestamp. From there, the registry grows naturally.
-
----
-
-## Why a registry instead of a blog?
-
-A blog implies chronology. A registry implies authority. By treating my work as filed documents rather than dated posts, I can link related projects across years without forcing a narrative sequence. A new project can reference an old one without needing to appear beneath it in a feed.
-
-## What you'll find inside
-
-- **Project files**: every shipped system, from care facilities to land governance
-- **Decision notes**: trade-offs I considered, and why I landed where I did
-- **Tool surveys**: what levels each technology reaches, and why
-- **Read time**: every article estimates how long it takes to reach the end
-
----
-
-## Getting started
-
-Start at the index. Every record is open. No paywall, no gatekept feed. Just filed systems ready for you to explore at your own pace.`,
-    publishDate: new Date('2026-09-21'),
+      'How I structured my public work as a searchable registry of projects, decisions, and lessons learned — from early scripts to the filed system you see today.',
+    content: `# Building a Portfolio Registry`,
+    publishDate: '2026-09-21',
     tags: ['portfolio', 'systems', 'open source', 'registry'],
     readTime: '8 min read',
+    views: 142,
   },
   {
     _id: '2',
@@ -52,47 +21,38 @@ Start at the index. Every record is open. No paywall, no gatekept feed. Just fil
     title: 'From Registry Records to Modern APIs: Lessons Learned',
     description:
       'What a land registry, a patient record system, and a farm ledger taught me about designing APIs that survive scale and succession.',
-    content: `# From Registry Records to Modern APIs
-
-During my work on registry-backed systems, I built three core platforms: a land title deed verification service for East Africa, a patient records pipeline for a rehabilitation center, and a farm management ledger for smallholder farmers. Each had different constraints, but all three shared a surprising amount in common with the API designs I build today.
-
-## The registry pattern
-
-Every system I worked on started as a filed document. A land title wasn't just data -- it was a record with a registration number, a status stamp, and a chain of custody. A patient chart had similar markers: REG. NO., FILED, AVAILABLE - REMOTE. These aren't decorative. They are the difference between a document that can be located in a crisis and one that disappears.
-
-I carried those markers into the APIs I later built. Every resource gets a slug. Every status is enumerated. Every link carries a reference code. The system is locatable, not just readable.
-
-## Lessons from scale
-
-1. **Idempotency matters**. Just as a land deed can be re-registered without altering the original, API endpoints should handle repeated calls without side effects.
-2. **Status as data**. A record's state (draft, published, archived) should be a first-class field, not inferred from context.
-3. **Audit trails**. Every change should carry a timestamp and an actor, just as a registry entry is signed and dated.
-4. **Measure once, cut twice**. A 60-70 character measure for prose translates to a sane line length for API documentation -- wide enough to be readable, narrow enough to stay scoped.
-
-## What's filed here
-
-The full index is public. You can browse projects by division, filter by technology, or open a single case file by its slug. View counts tick up silently. There's no algorithmic feed, no engagement bait -- just records ready for you to explore at your own pace.`,
-    publishDate: new Date('2026-09-21'),
+    content: `# From Registry Records to Modern APIs`,
+    publishDate: '2026-09-21',
     tags: ['api', 'design', 'lessons', 'registry', 'backend'],
     readTime: '6 min read',
+    views: 89,
   },
 ];
 
+const formatDate = (d) => {
+  if (!d) return '—';
+  const date = d instanceof Date ? d : new Date(d);
+  if (Number.isNaN(date.getTime())) return String(d);
+  return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+};
+
 const Blog = () => {
   const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTag, setActiveTag] = useState('all');
 
   useEffect(() => {
     const controller = new AbortController();
     const fetchBlogs = async () => {
       try {
-        const response = await api.get('/api/blogs', {
-          signal: controller.signal,
-        });
-        setBlogs(response.data);
+        const response = await api.get('/blogs', { signal: controller.signal });
+        setBlogs(Array.isArray(response.data) ? response.data : []);
       } catch (error) {
         if (error.name !== 'CanceledError' && error.name !== 'AbortError') {
           setBlogs(fallbackBlogs);
         }
+      } finally {
+        if (!controller.signal.aborted) setLoading(false);
       }
     };
     fetchBlogs();
@@ -101,51 +61,119 @@ const Blog = () => {
 
   const displayedBlogs = blogs.length ? blogs : fallbackBlogs;
 
+  const allTags = useMemo(() => {
+    const s = new Set();
+    displayedBlogs.forEach((b) => (b.tags || []).forEach((t) => s.add(t)));
+    return ['all', ...Array.from(s).slice(0, 8)];
+  }, [displayedBlogs]);
+
+  const filtered = activeTag === 'all' ? displayedBlogs : displayedBlogs.filter((b) => (b.tags || []).includes(activeTag));
+
   return (
-    <section className="pt-14">
-      <Container>
-        <Section>
-          <SectionHeading>
-            Blog
-          </SectionHeading>
+    <div className="container-page pt-14 pb-24">
+      <header className="border-b border-rule pb-10">
+        <p className="file-index-sm">BK / BLOG — FILED ARTICLES</p>
+        <h1 className="mt-1 text-heading-xl font-semibold text-ink">Filed notes</h1>
+        <p className="mt-3 max-w-[62ch] text-body text-ink-muted">
+          Case notes on building registry-line systems — APIs, offline ledgers, and the trade-offs
+          between paper forms and live code. Each entry is a filed record, not a feed.
+        </p>
+      </header>
 
-          <div className="mt-8 space-y-8">
-            {displayedBlogs.slice(0, 2).map((blog) => (
-              <div className="markdown-body max-w-[60ch] ink leading-relaxed">
-                <header className="mb-6">
-                  <p className="file-index-sm mb-2">
-                    BK / BLOG -- POSTED {blog.publishDate instanceof Date ? blog.publishDate.toLocaleDateString() : blog.publishDate}
-                  </p>
-                  <h2 className="text-heading text-ink font-semibold">{blog.title}</h2>
-                  <div className="mt-3 text-body text-ink-muted">
-                    {blog.readTime} · {blog.tags?.length ? blog.tags.join(', ') : 'General'}
-                  </div>
-                </header>
+      <div className="mt-8 flex flex-wrap gap-2">
+        {allTags.map((tag) => (
+          <button
+            key={tag}
+            type="button"
+            onClick={() => setActiveTag(tag)}
+            aria-pressed={activeTag === tag}
+            className={`border px-4 py-1.5 font-mono text-[12px] uppercase tracking-[0.08em] rounded-[2px] transition-colors ${
+              activeTag === tag
+                ? 'border-registry bg-registry text-on-registry'
+                : 'border-rule-strong text-ink-muted hover:border-registry hover:text-registry'
+            }`}
+          >
+            {tag}
+          </button>
+        ))}
+      </div>
 
-                <div className="mt-4">
-                  <ReactMarkdown>{blog.content}</ReactMarkdown>
-                </div>
+      <div className="mt-2 flex items-center gap-3 border-b border-rule py-3">
+        <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-ink-muted">
+          {filtered.length} {filtered.length === 1 ? 'record' : 'records'} on file
+        </span>
+        <span className="h-3 w-px bg-rule-strong" aria-hidden="true" />
+        <span className="font-mono text-[11px] text-ink-muted">{activeTag === 'all' ? 'All divisions' : `Tag: ${activeTag}`}</span>
+      </div>
 
-                <div className="mt-6">
-                  <Link
-                    to={`/blog/${blog.slug}`}
-                    className="btn btn-primary"
-                  >
-                    Read full entry
-                  </Link>
-                </div>
+      {loading ? (
+        <p className="file-index-sm py-10">Opening the index…</p>
+      ) : filtered.length === 0 ? (
+        <div className="border border-dashed border-rule-strong bg-paper-strong/40 px-6 py-12">
+          <p className="file-index-sm">No records match this tag.</p>
+          <button type="button" onClick={() => setActiveTag('all')} className="btn btn-stroke mt-4">
+            Clear filter
+          </button>
+        </div>
+      ) : (
+        <div className="mt-0">
+          {filtered.map((blog, i) => (
+            <article
+              key={blog._id}
+              className="grid grid-cols-1 gap-x-8 border-b border-rule py-8 md:grid-cols-[112px_1fr]"
+            >
+              <div className="hidden md:block">
+                <p className="font-mono text-[11px] uppercase tracking-[0.1em] text-ink-muted">BK-BLG-{String(i + 1).padStart(3, '0')}</p>
+                <p className="mt-1 font-mono text-[11px] text-ink-muted">{formatDate(blog.publishDate)}</p>
+                {blog.views != null && (
+                  <p className="mt-2 inline-block border border-rule px-2 py-0.5 font-mono text-[11px] text-ink-muted">{blog.views} views</p>
+                )}
               </div>
-            ))}
 
-            {displayedBlogs.length < 2 && (
-              <p className="text-body text-ink-muted">
-                More records are filed daily. Check the index again soon.
-              </p>
-            )}
-          </div>
-        </Section>
-      </Container>
-    </section>
+              <div>
+                <div className="flex flex-wrap items-center gap-2 md:hidden">
+                  <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-ink-muted">BK-BLG-{String(i + 1).padStart(3, '0')}</span>
+                  <span className="text-rule-strong">·</span>
+                  <span className="font-mono text-[11px] text-ink-muted">{formatDate(blog.publishDate)}</span>
+                </div>
+
+                <h2 className="mt-2 text-title font-semibold leading-tight text-ink md:mt-0">
+                  <Link to={`/blog/${blog.slug}`} className="hover:text-registry transition-colors">
+                    {blog.title}
+                  </Link>
+                </h2>
+
+                <p className="mt-2 max-w-[62ch] text-[15px] leading-relaxed text-ink-muted">{blog.description}</p>
+
+                <div className="mt-4 flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase tracking-[0.06em] text-ink-muted">
+                  <span className="border border-rule px-2 py-0.5">{blog.readTime || '5 min read'}</span>
+                  {blog.tags?.slice(0, 3).map((t) => (
+                    <span key={t} className="border border-rule-strong/60 px-2 py-0.5">
+                      {t}
+                    </span>
+                  ))}
+                  {blog.tags?.length > 3 && <span className="px-1">+{blog.tags.length - 3}</span>}
+                </div>
+
+                <Link
+                  to={`/blog/${blog.slug}`}
+                  className="filigree mt-5 inline-flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.08em]"
+                >
+                  Open record <span aria-hidden="true">→</span>
+                </Link>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+
+      <div className="mt-10 flex flex-wrap items-center gap-3 border-t border-rule pt-6">
+        <p className="font-mono text-[11px] uppercase tracking-[0.1em] text-ink-muted">More records are filed as work ships.</p>
+        <Link to="/projects" className="filigree font-mono text-[12px] uppercase tracking-[0.08em]">
+          Project index →
+        </Link>
+      </div>
+    </div>
   );
 };
 

@@ -27,6 +27,9 @@ const Footer = () => {
               <Link className="text-[15px] text-ink-muted hover:text-registry" to="/projects">
                 Project records
               </Link>
+              <Link className="text-[15px] text-ink-muted hover:text-registry" to="/blog">
+                Filed notes
+              </Link>
               <Link className="text-[15px] text-ink-muted hover:text-registry" to="/about">
                 Employment ledger
               </Link>
@@ -74,21 +77,38 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="mt-8 flex flex-col gap-2 border-t border-rule pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-8 flex flex-col gap-3 border-t border-rule pt-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-muted">
             Reg. {profile.email} · EST. 2022
           </p>
-          <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-muted">
-            © {new Date().getFullYear()} {profile.name}
-          </p>
-          <Link
-            to="/admin/login"
-            className="text-ink-muted hover:text-registry transition-colors"
-            aria-label="Admin console"
-            title="Admin console"
-          >
-            🔒
-          </Link>
+          <div className="flex items-center gap-4">
+            <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-muted">
+              © {new Date().getFullYear()} {profile.name}
+            </p>
+            <Link
+              to="/admin/login"
+              className="inline-flex items-center gap-1.5 border border-rule/0 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-ink-muted/45 hover:border-rule-strong hover:text-ink transition-colors"
+              aria-label="Admin console"
+              title="Admin console"
+            >
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <rect x="5" y="11" width="14" height="10" rx="1.5" />
+                <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+                <circle cx="12" cy="16" r="1.25" />
+              </svg>
+              Console
+            </Link>
+          </div>
         </div>
       </div>
     </footer>
