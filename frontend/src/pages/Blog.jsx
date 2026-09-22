@@ -4,6 +4,17 @@ import api from '../utils/api';
 import SEO from '../components/SEO';
 import { SITE_URL } from '../utils/seo';
 
+function resolveImage(src) {
+  if (!src) return null;
+  if (/^https?:\/\//.test(src)) return src;
+  if (src.startsWith('/api/')) {
+    const base = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '').replace(/\/api$/, '');
+    if (base && base.startsWith('http')) return `${base}${src}`;
+    return src;
+  }
+  return src;
+}
+
 const fallbackBlogs = [
   {
     _id: '1',
@@ -16,6 +27,7 @@ const fallbackBlogs = [
     tags: ['portfolio', 'systems', 'open source', 'registry'],
     readTime: '8 min read',
     views: 142,
+    image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&auto=format',
   },
   {
     _id: '2',
@@ -28,6 +40,7 @@ const fallbackBlogs = [
     tags: ['api', 'design', 'lessons', 'registry', 'backend'],
     readTime: '6 min read',
     views: 89,
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&auto=format',
   },
 ];
 
@@ -143,53 +156,89 @@ const Blog = () => {
         </div>
       ) : (
         <div className="mt-0">
-          {filtered.map((blog, i) => (
-            <article
-              key={blog._id}
-              className="grid grid-cols-1 gap-x-8 border-b border-rule py-8 md:grid-cols-[112px_1fr]"
-            >
-              <div className="hidden md:block">
-                <p className="font-mono text-[11px] uppercase tracking-[0.1em] text-ink-muted">BK-BLG-{String(i + 1).padStart(3, '0')}</p>
-                <p className="mt-1 font-mono text-[11px] text-ink-muted">{formatDate(blog.publishDate)}</p>
-                {blog.views != null && (
-                  <p className="mt-2 inline-block border border-rule px-2 py-0.5 font-mono text-[11px] text-ink-muted">{blog.views} views</p>
-                )}
-              </div>
-
-              <div>
-                <div className="flex flex-wrap items-center gap-2 md:hidden">
-                  <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-ink-muted">BK-BLG-{String(i + 1).padStart(3, '0')}</span>
-                  <span className="text-rule-strong">·</span>
-                  <span className="font-mono text-[11px] text-ink-muted">{formatDate(blog.publishDate)}</span>
+          {filtered.map((blog, i) => {
+            const imgSrc = resolveImage(blog.image);
+            return (
+              <article
+                key={blog._id}
+                className="group grid grid-cols-1 gap-x-8 border-b border-rule py-8 md:grid-cols-[112px_1fr_188px]"
+              >
+                <div className="hidden md:block">
+                  <p className="font-mono text-[11px] uppercase tracking-[0.1em] text-ink-muted">BK-BLG-{String(i + 1).padStart(3, '0')}</p>
+                  <p className="mt-1 font-mono text-[11px] text-ink-muted">{formatDate(blog.publishDate)}</p>
+                  {blog.views != null && (
+                    <p className="mt-2 inline-block border border-rule px-2 py-0.5 font-mono text-[11px] text-ink-muted">{blog.views} views</p>
+                  )}
                 </div>
 
-                <h2 className="mt-2 text-title font-semibold leading-tight text-ink md:mt-0">
-                  <Link to={`/blog/${blog.slug}`} className="hover:text-registry transition-colors">
-                    {blog.title}
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2 md:hidden">
+                    <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-ink-muted">BK-BLG-{String(i + 1).padStart(3, '0')}</span>
+                    <span className="text-rule-strong">·</span>
+                    <span className="font-mono text-[11px] text-ink-muted">{formatDate(blog.publishDate)}</span>
+                  </div>
+
+                  {/* Mobile preview — framed, registry style */}
+                  <Link to={`/blog/${blog.slug}`} className="mt-3 block md:hidden" aria-hidden="true" tabIndex={-1}>
+                    <div className="border border-rule bg-paper-strong p-1.5">
+                      {imgSrc ? (
+                        <img src={imgSrc} alt="" className="aspect-[16/10] w-full object-cover" loading="lazy" />
+                      ) : (
+                        <div className="flex aspect-[16/10] w-full items-center justify-center border border-dashed border-rule-strong bg-paper">
+                          <span className="file-index-sm">FIG. BK-BLG-{String(i + 1).padStart(3, '0')}</span>
+                        </div>
+                      )}
+                      <div className="pt-1.5 text-center">
+                        <span className="file-index-sm">{imgSrc ? 'FIG. — filed preview' : 'No figure on file'}</span>
+                      </div>
+                    </div>
                   </Link>
-                </h2>
 
-                <p className="mt-2 max-w-[62ch] text-[15px] leading-relaxed text-ink-muted">{blog.description}</p>
+                  <h2 className="mt-3 text-title font-semibold leading-tight text-ink md:mt-0">
+                    <Link to={`/blog/${blog.slug}`} className="group-hover:text-registry transition-colors">
+                      {blog.title}
+                    </Link>
+                  </h2>
 
-                <div className="mt-4 flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase tracking-[0.06em] text-ink-muted">
-                  <span className="border border-rule px-2 py-0.5">{blog.readTime || '5 min read'}</span>
-                  {blog.tags?.slice(0, 3).map((t) => (
-                    <span key={t} className="border border-rule-strong/60 px-2 py-0.5">
-                      {t}
-                    </span>
-                  ))}
-                  {blog.tags?.length > 3 && <span className="px-1">+{blog.tags.length - 3}</span>}
+                  <p className="mt-2 max-w-[62ch] text-[15px] leading-relaxed text-ink-muted">{blog.description}</p>
+
+                  <div className="mt-4 flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase tracking-[0.06em] text-ink-muted">
+                    <span className="border border-rule px-2 py-0.5">{blog.readTime || '5 min read'}</span>
+                    {blog.tags?.slice(0, 3).map((t) => (
+                      <span key={t} className="border border-rule-strong/60 px-2 py-0.5">
+                        {t}
+                      </span>
+                    ))}
+                    {blog.tags?.length > 3 && <span className="px-1">+{blog.tags.length - 3}</span>}
+                  </div>
+
+                  <Link
+                    to={`/blog/${blog.slug}`}
+                    className="filigree mt-5 inline-flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.08em]"
+                  >
+                    Open record <span aria-hidden="true">→</span>
+                  </Link>
                 </div>
 
-                <Link
-                  to={`/blog/${blog.slug}`}
-                  className="filigree mt-5 inline-flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.08em]"
-                >
-                  Open record <span aria-hidden="true">→</span>
+                {/* Desktop preview — right ledger column, symmetrical with ProjectCard */}
+                <Link to={`/blog/${blog.slug}`} className="hidden md:block" aria-label={`${blog.title} — open record`}>
+                  <div className="border border-rule bg-paper-strong p-2 transition-colors group-hover:border-registry/40">
+                    {imgSrc ? (
+                      <img src={imgSrc} alt="" className="aspect-[4/3] w-full object-cover" loading="lazy" />
+                    ) : (
+                      <div className="flex aspect-[4/3] w-full items-center justify-center border border-dashed border-rule-strong bg-paper">
+                        <span className="file-index-sm text-center leading-tight">No<br />figure</span>
+                      </div>
+                    )}
+                    <div className="mt-2 flex items-center justify-between">
+                      <span className="file-index-sm">FIG. {String(i + 1).padStart(3, '0')}</span>
+                      <span className="file-index-sm truncate">{blog.readTime || '—'}</span>
+                    </div>
+                  </div>
                 </Link>
-              </div>
-            </article>
-          ))}
+              </article>
+            );
+          })}
         </div>
       )}
 
