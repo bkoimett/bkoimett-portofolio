@@ -25,6 +25,110 @@ function generateSlug(title) {
     .replace(/^-|-$/g, '');
 }
 
+const SITE_URL = (process.env.SITE_URL || 'https://bkoimett-portofolio.vercel.app').replace(/\/+$/, '');
+
+function escapeXml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
+function toISODate(value) {
+  if (!value) return null;
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toISOString().split('T')[0];
+}
+
+function isValidSlug(slug) {
+  if (typeof slug !== 'string') return false;
+  const s = slug.trim();
+  if (!s || s.length < 2 || s.length > 120) return false;
+  if (s.includes('..') || s.includes('//') || s.includes(' ')) return false;
+  if (/^admin/i.test(s)) return false;
+  return /^[a-z0-9]+(?:-[a-z0-9]+)*$/i.test(s);
+}
+
+function buildSitemapXml({ projects, blogs }) {
+  const urls = [];
+
+  // Static routes
+  urls.push({ loc: `${SITE_URL}/`, changefreq: 'weekly', priority: '1.0' });
+  urls.push({ loc: `${SITE_URL}/projects`, changefreq: 'weekly', priority: '0.9' });
+  urls.push({ loc: `${SITE_URL}/blog`, changefreq: 'weekly', priority: '0.9' });
+  urls.push({ loc: `${SITE_URL}/about`, changefreq: 'monthly', priority: '0.7' });
+
+  const seen = new Set();
+
+  for (const p of projects) {
+    if (!p || !isValidSlug(p.slug)) continue;
+    const key = `p:${p.slug}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const lastmod = toISODate(p.updatedAt || p.publishDate || p.createdAt);
+    urls.push({
+      loc: `${SITE_URL}/projects/${p.slug}`,
+      lastmod,
+      changefreq: 'monthly',
+      priority: '0.8',
+    });
+  }
+
+  for (const b of blogs) {
+    if (!b || !isValidSlug(b.slug)) continue;
+    const key = `b:${b.slug}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const lastmod = toISODate(b.updatedAt || b.publishDate || b.createdAt);
+    urls.push({
+      loc: `${SITE_URL}/blog/${b.slug}`,
+      lastmod,
+      changefreq: 'monthly',
+      priority: '0.8',
+    });
+  }
+
+  const body = urls
+    .map((u) => {
+      const lastmodTag = u.lastmod ? `<lastmod>${escapeXml(u.lastmod)}</lastmod>` : '';
+      return `  <url><loc>${escapeXml(u.loc)}</loc>${lastmodTag}<changefreq>${u.changefreq}</changefreq><priority>${u.priority}</priority></url>`;
+    })
+    .join('\n');
+
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>`;
+}
+
+async function handleSitemap(req, res) {
+  try {
+    let projects = [];
+    let blogs = [];
+    try {
+      projects = await Project.find({ status: 'published' }).select('slug updatedAt publishDate createdAt').lean();
+    } catch (e) {
+      console.error('Sitemap projects query failed:', e.message);
+    }
+    try {
+      blogs = await Blog.find({ status: 'published' }).select('slug updatedAt publishDate createdAt').lean();
+    } catch (e) {
+      console.error('Sitemap blogs query failed:', e.message);
+    }
+    const xml = buildSitemapXml({ projects, blogs });
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+    res.send(xml);
+  } catch (error) {
+    console.error('Sitemap generation error:', error.message);
+    // Graceful fallback: static routes only, still valid XML, 200 not 500 to avoid breaking crawlers
+    const xml = buildSitemapXml({ projects: [], blogs: [] });
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=60');
+    res.send(xml);
+  }
+}
+
 function toCV(cv) {
   return {
     id: cv._id,
@@ -686,6 +790,10 @@ app.delete('/api/admin/blogs/:id', authMiddleware, async (req, res) => {
     res.status(500).json({ error: 'Failed to delete blog' });
   }
 });
+
+// Dynamic sitemap — public, excludes drafts/admin, uses DB lastmod when available
+app.get('/sitemap.xml', handleSitemap);
+app.get('/api/sitemap.xml', handleSitemap);
 
 if (require.main === module) {
   startServer();
