@@ -1,4 +1,5 @@
-import { useParams, useState, useEffect, useRef, Link } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import api from '../utils/api';
 import ReactMarkdown from 'react-markdown';
 import SEO from '../components/SEO';
@@ -21,22 +22,21 @@ export default function ProjectDetail() {
 
   useEffect(() => {
     const controller = new AbortController();
+    setLoading(true);
+    setError(null);
+    setProject(null);
     const fetchProject = async () => {
       try {
-        // Try slug endpoint first (public), fall back to legacy path for backwards-compat
-        let response;
-        try {
-          response = await api.get(`/projects/slug/${slug}`, { signal: controller.signal });
-        } catch (err) {
-          if (err.response?.status === 404) throw err;
-          response = await api.get(`/projects/${slug}`, { signal: controller.signal });
-        }
+        const response = await api.get(`/projects/slug/${slug}`, { signal: controller.signal });
         if (!controller.signal.aborted) {
           setProject(response.data);
           viewCountRef.current = response.data.views || 0;
         }
-      } catch {
-        if (!controller.signal.aborted) setError('Project not found');
+      } catch (err) {
+        if (controller.signal.aborted) return;
+        // 404 → not found, other errors also treat as not found but don't retry legacy id endpoint (prevents blank from auth 401 HTML)
+        if (err.name === 'CanceledError' || err.name === 'AbortError') return;
+        setError('Project not found');
       } finally {
         if (!controller.signal.aborted) setLoading(false);
       }

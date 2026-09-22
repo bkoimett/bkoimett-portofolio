@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-const rawBase = (import.meta.env.VITE_API_URL || '/api').replace(/\/+$/, '');
+let rawBase = (import.meta.env.VITE_API_URL || '/api').replace(/\/+$/, '');
+// Guard: if bundle was built with localhost but served on vercel.app, fall back to relative /api (proxied via vercel.json)
+if (rawBase.includes('localhost') && typeof window !== 'undefined' && !window.location.hostname.includes('localhost')) {
+  rawBase = '/api';
+}
 const baseURL = rawBase.endsWith('/api') ? rawBase : `${rawBase}/api`;
 
 const api = axios.create({ baseURL });
