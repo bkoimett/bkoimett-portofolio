@@ -3,15 +3,23 @@
 ## PROJECT
 
 - Portfolio website. Frontend: Vite + React (JS). Backend: Express + MongoDB.
-- Auth: custom JWT. No ORM — use the Mongoose models directly.
+- **MIGRATION IN PROGRESS (see `MIGRATION.md`)**: target is Vercel Functions + Supabase
+  (PostgreSQL + Storage + Auth). Legacy `backend/` (Express + Mongoose + GridFS) is retained
+  until each phase is verified. Do not delete it prematurely. Do NOT migrate to Next.js.
+- Auth (current): custom JWT. No ORM — use the Mongoose models directly. Phase 5 evaluates
+  Supabase Auth for the admin account.
 
 ## STRUCTURE
 
-- `backend/index.js` — Express server, all routes inline
-- `backend/models/` — Mongoose models (Project.js, Admin.js, CV.js)
-- `backend/gridfs.js` — GridFS bucket helper for CV file storage (bucket `cvs`)
-- `backend/middleware/auth.js` — JWT bearer-token middleware
-- `backend/seedAdmin.js` — Script to create initial admin user
+- `MIGRATION.md` — living audit + phase status for the Render→Supabase migration
+- `supabase/migrations/` — versioned PostgreSQL + Storage SQL (apply in order)
+- `frontend/api/` — Vercel serverless functions (Express routes migrate here, Phase 3)
+- `frontend/api/_lib/supabase.js` — shared server-side Supabase client (service role)
+- `backend/index.js` — Express server, all routes inline (legacy, until Phase 6)
+- `backend/models/` — Mongoose models (Project.js, Admin.js, CV.js, Blog.js) (legacy)
+- `backend/gridfs.js` — GridFS bucket helper for CV file storage (bucket `cvs`) (legacy)
+- `backend/middleware/auth.js` — JWT bearer-token middleware (legacy until Phase 5)
+- `backend/seedAdmin.js` — Script to create initial admin user (legacy)
 - `backend/eslint.config.js` — ESLint flat config
 - `backend/tests/` — API tests (node:test + supertest, models mocked)
 - `frontend/src/pages/` — Page components (Home, Projects, About, AdminLogin, AdminDashboard, AdminSettings, ProjectDetail, NotFound)
@@ -22,12 +30,18 @@
 
 ## ENVIRONMENT
 
-Backend (.env):
+Backend (.env, legacy until Phase 6):
 - `MONGODB_URI` — MongoDB connection string (required)
 - `JWT_SECRET` — Secret for signing JWTs (required)
 - `PORT` — Server port (default: 3001)
 - `CLIENT_URL` — Frontend origin for CORS (default: http://localhost:5173)
 - `ADMIN_USERNAME` / `ADMIN_PASSWORD` — Used by seedAdmin.js only
+
+Vercel functions (server-only secrets, set in Vercel env):
+- `SUPABASE_URL` — Supabase project URL (required once functions are deployed, Phase 3)
+- `SUPABASE_SERVICE_ROLE_KEY` — Service-role key, server-only, never bundled to browser
+- `SUPABASE_ANON_KEY` — Publishable anon key (public reads, Phase 5 auth)
+- `SUPABASE_JWT_SECRET` — Secret for verifying Supabase Auth JWTs (Phase 5)
 
 Frontend (optional .env):
 - `VITE_API_URL` — API base URL (default: '/api', uses proxy in dev)
