@@ -146,11 +146,29 @@ Supabase additions (Phase 1+): `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`,
 
 ---
 
-## 2) Data migration — PENDING
+## 2) Data migration — IN PROGRESS
 
-Migration tooling reads MongoDB → maps to `supabase/migrations` schema → idempotent upserts
-keyed on `id` (preserving Mongo `_id`). Fixtures-based test until production URI available.
-Tooling lives under `backend/migrations/`. See `Prompt.md` §Phase 2.
+### Decisions
+
+- Tooling runs from `backend/migrations/` (has Mongo access + Supabase client).
+- Idempotent: upsert keyed on `id` (preserving the Mongo `_id`), never deletes Mongo.
+- `transform.js` keeps the mappers pure and fixture-testable; `run.js` is a thin runner.
+- GridFS bytes are Phase 4; `cvs.storage_path` is reserved `current/<fileId>.pdf` now and the
+  storage step back-fills the bytes. Legacy image references (`/api/images/:id`) are reported
+  for Phase 4 rewriting. Admin bcrypt hashes migrate as-is; `auth_user_id` null until Phase 5.
+
+### Deliverables
+
+- [x] `backend/migrations/transform.js` — pure Mongo→Supabase mappers
+- [x] `backend/migrations/run.js` — idempotent runner (`--project|--blog|--cv|--admin`, `--dry-run`)
+- [x] `backend/tests/migration.test.js` — transform tests vs fixtures (28 backend tests pass)
+- [x] `backend/migrations/README.md` — procedure + required env
+- [ ] production data run — **BLOCKED on Supabase credentials** (and confirmation to touch prod Mongo)
+      Runbook: apply `supabase/migrations/*.sql`, set `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY`,
+      then `cd backend && npm run migrate:dry` → `npm run migrate`.
+
+> BLOCKED: real migration needs a live Supabase project (`SUPABASE_URL` +
+> `SUPABASE_SERVICE_ROLE_KEY`) plus your go-ahead to read from the production Atlas database.
 
 ## 3) API migration — PENDING
 
