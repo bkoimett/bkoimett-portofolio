@@ -1,15 +1,16 @@
-/* global process */
 /**
  * Vercel Serverless Function: GET /api/sitemap  → proxied as /sitemap.xml
  *
- * Generates the same dynamic sitemap as backend GET /sitemap.xml,
- * but runs on the frontend domain (https://bkoimett-portofolio.vercel.app/sitemap.xml)
- * so crawlers never need to know the backend host.
+ * Generates the same dynamic sitemap as backend GET /sitemap.xml, but runs on
+ * the frontend domain (https://bkoimett-portofolio.vercel.app/sitemap.xml) so
+ * crawlers never need to know the backend host.
  *
- * Reuses existing public APIs: GET /api/projects and GET /api/blogs (filtered to published)
- * No new dependencies, no Mongoose in this function — native fetch only.
- * If the backend is temporarily unavailable, returns a valid XML with only static routes.
+ * Reads published projects/blogs directly from Supabase (Phase 3) — no Render
+ * round-trip. If the query fails, returns a valid XML containing only the
+ * static routes so crawlers never break.
  */
+
+import { getAdminClient } from './_lib/supabase.js';
 
 const SITE_URL = 'https://bkoimett-portofolio.vercel.app';
 
@@ -83,74 +84,45 @@ function buildSitemapXml({ projects, blogs }) {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>`;
 }
 
-function resolveBackendBase() {
-  // Prefer explicit env; fallback to known Render host, then localhost for dev
-  const candidates = [
-    process.env.BACKEND_URL,
-    process.env.API_URL,
-    process.env.VITE_API_URL,
-  ].filter(Boolean);
+// Postgres rows → the { slug, updatedAt, publishDate, createdAt } shape the
+// sitemap builder consumes (only the columns it needs are selected).
+const toEntry = (row) => ({
+  slug: row.slug,
+  updatedAt: row.updated_at,
+  publishDate: row.publish_date,
+  createdAt: row.created_at,
+});
 
-  for (const raw of candidates) {
-    const base = raw.replace(/\/+$/, '').replace(/\/api$/, '');
-    if (base && !base.includes('localhost') && base.startsWith('http')) return base;
-  }
-  // If only localhost candidate exists, use it (local dev)
-  for (const raw of candidates) {
-    const base = raw.replace(/\/+$/, '').replace(/\/api$/, '');
-    if (base) return base;
-  }
-  // Known production backend (matches PRD/Render)
-  return 'https://bkoimett-portofolio.onrender.com';
-}
-
-async function fetchJson(url, timeoutMs = 4000) {
-  const controller = new AbortController();
-  const t = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const res = await fetch(url, {
-      signal: controller.signal,
-      headers: { Accept: 'application/json' },
-    });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
-  } finally {
-    clearTimeout(t);
-  }
+async function fetchPublished(type) {
+  const { data, error } = await getAdminClient()
+    .from(type)
+    .select('slug, publish_date, created_at, updated_at')
+    .eq('status', 'published');
+  if (error) return null;
+  return (data || []).map(toEntry);
 }
 
 export default async function handler(req, res) {
-  // Also allow direct /api/sitemap.xml path — same handler
   if (req.method !== 'GET' && req.method !== 'HEAD') {
     res.setHeader('Allow', 'GET, HEAD');
     return res.status(405).end('Method Not Allowed');
   }
 
-  const backendBase = resolveBackendBase();
-  let projects = null;
-  let blogs = null;
+  let projects = [];
+  let blogs = [];
+  try {
+    const [pResult, bResult] = await Promise.all([fetchPublished('projects'), fetchPublished('blogs')]);
+    if (pResult) projects = pResult;
+    if (bResult) blogs = bResult;
+  } catch {
+    projects = [];
+    blogs = [];
+  }
 
-  // Try fetching published content from backend public APIs
-  // These endpoints already filter to status: 'published' for unauthenticated callers
-  const [pRes, bRes] = await Promise.all([
-    fetchJson(`${backendBase}/api/projects`),
-    fetchJson(`${backendBase}/api/blogs`),
-  ]);
-
-  if (Array.isArray(pRes)) projects = pRes;
-  if (Array.isArray(bRes)) blogs = bRes;
-
-  // Graceful fallback: if either fetch failed, still emit valid XML with static URLs (or partial data)
-  const xml = buildSitemapXml({
-    projects: projects || [],
-    blogs: blogs || [],
-  });
+  const xml = buildSitemapXml({ projects, blogs });
 
   res.setHeader('Content-Type', 'application/xml; charset=utf-8');
   res.setHeader('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
-  // CORS not needed for sitemap but harmless
   res.setHeader('Access-Control-Allow-Origin', '*');
   if (req.method === 'HEAD') return res.status(200).end();
   return res.status(200).send(xml);

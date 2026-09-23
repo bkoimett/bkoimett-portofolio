@@ -13,8 +13,14 @@
 
 - `MIGRATION.md` — living audit + phase status for the Render→Supabase migration
 - `supabase/migrations/` — versioned PostgreSQL + Storage SQL (apply in order)
-- `frontend/api/` — Vercel serverless functions (Express routes migrate here, Phase 3)
+- `frontend/api/` — Vercel serverless functions (Express JSON routes migrated, Phase 3)
 - `frontend/api/_lib/supabase.js` — shared server-side Supabase client (service role)
+- `frontend/api/_lib/auth.js` — custom-JWT bearer verification (mirrors legacy `backend/middleware/auth.js`)
+- `frontend/api/_lib/http.js` — JSON response/error helpers + public cache header
+- `frontend/api/_lib/serializers.js` — snake_case rows → legacy camelCase + `_id`/`id` API shape
+- `frontend/api/_lib/slugs.js` — `generateSlug` + `isValidId` (accepts ObjectId and UUID)
+- `frontend/api/admin/` — `login.js`, `settings.js`, `blogs/*` (admin auth + blog CRUD)
+- `frontend/api/projects/`, `frontend/api/blogs/`, `contact.js`, `sitemap.js` — public API, Supabase-backed
 - `backend/index.js` — Express server, all routes inline (legacy, until Phase 6)
 - `backend/models/` — Mongoose models (Project.js, Admin.js, CV.js, Blog.js) (legacy)
 - `backend/gridfs.js` — GridFS bucket helper for CV file storage (bucket `cvs`) (legacy)
@@ -42,6 +48,8 @@ Vercel functions (server-only secrets, set in Vercel env):
 - `SUPABASE_SERVICE_ROLE_KEY` — Service-role key, server-only, never bundled to browser
 - `SUPABASE_ANON_KEY` — Publishable anon key (public reads, Phase 5 auth)
 - `SUPABASE_JWT_SECRET` — Secret for verifying Supabase Auth JWTs (Phase 5)
+- `JWT_SECRET` — must match the backend value (Phase 3); verifies existing admin sessions
+  until Phase 5 replaces custom JWT with Supabase Auth
 
 Frontend (optional .env):
 - `VITE_API_URL` — API base URL (default: '/api', uses proxy in dev)
