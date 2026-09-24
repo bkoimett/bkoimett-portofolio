@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import ThemeToggle from './ThemeToggle';
 
 const navItems = [
   { name: 'Home', path: '/' },
@@ -63,6 +64,7 @@ const Navbar = () => {
           </nav>
 
           <div className="flex items-center gap-5">
+            <ThemeToggle className="hidden md:inline-flex" />
             <a href="mailto:koimettb@gmail.com" className="btn btn-stroke text-sm">
               Hire Me
             </a>
@@ -104,7 +106,8 @@ const Navbar = () => {
               );
             })}
           </div>
-          <div className="mt-4 flex items-center justify-end">
+          <div className="mt-4 flex items-center justify-between">
+            <ThemeToggle />
             <a href="mailto:koimettb@gmail.com" className="btn btn-stroke text-sm">
               Hire Me
             </a>
