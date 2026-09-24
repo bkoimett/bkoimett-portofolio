@@ -1,5 +1,5 @@
 /* global process */
-// JWT verification for Vercel functions — mirrors the role of
+// JWT verification for Vercel functions – mirrors the role of
 // backend/middleware/auth.js. Custom admin tokens (JWT_SECRET) stay in use
 // until Phase 5 replaces them with Supabase Auth. Always wraps verification
 // in try/catch: malformed/expired tokens must resolve to null (→ 401), never

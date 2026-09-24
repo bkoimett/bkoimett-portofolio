@@ -5,6 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import SEO from '../components/SEO';
 import { SITE_URL } from '../utils/seo';
 import StatusBadge from '../components/primitives/StatusBadge';
+import ExpandableImage from '../components/primitives/ExpandableImage';
 
 const formatDate = (date) =>
   new Date(date).toLocaleDateString(undefined, {
@@ -80,7 +81,7 @@ export default function ProjectDetail() {
     return (
       <div className="container-page py-24">
         <div className="mx-auto max-w-[72ch] text-center">
-          <p className="file-index-sm">REF. NOT FOUND — 404</p>
+          <p className="file-index-sm">REF. NOT FOUND – 404</p>
           <h1 className="mt-3 text-heading-xl font-semibold text-ink">Not on record</h1>
           <p className="mt-3 text-body text-ink-muted">This case file does not exist. It may have been moved or never filed.</p>
           <Link to="/projects" className="btn btn-primary mt-8">Return to the index</Link>
@@ -125,7 +126,7 @@ export default function ProjectDetail() {
         </Link>
 
         <article className="mt-8">
-          {/* Symmetrical header — identical rhythm to BlogDetail */}
+          {/* Symmetrical header – identical rhythm to BlogDetail */}
           <header className="border-y border-rule py-8">
             <div className="file-index-sm flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-center md:justify-start md:text-left">
               <span>BK / PROD.</span>
@@ -155,18 +156,23 @@ export default function ProjectDetail() {
             </div>
           </header>
 
-          {/* Symmetrical figure — framed, same as BlogDetail */}
+          {/* Symmetrical figure – framed, same as BlogDetail */}
           <figure className="mt-8 border border-rule bg-paper-strong p-2">
             {imgSrc ? (
-              <img src={imgSrc} alt={project.title} className="aspect-[16/9] w-full object-cover" />
+              <ExpandableImage
+                src={imgSrc}
+                alt={project.title}
+                caption={`BK-PROD-${project.slug}`}
+                className="aspect-[16/9] w-full object-cover"
+              />
             ) : (
               <div className="flex aspect-[16/9] w-full items-center justify-center border border-dashed border-rule-strong bg-paper">
-                <span className="file-index-sm text-center">No figure on file — add title image in console</span>
+                <span className="file-index-sm text-center">No figure on file – add title image in console</span>
               </div>
             )}
             <figcaption className="flex items-center justify-between px-2 pt-2">
-              <span className="file-index-sm">FIG. BK-PROD — {project.slug}</span>
-              <span className="file-index-sm">{project.technologies?.length ? `${project.technologies.length} tools` : '—'}</span>
+              <span className="file-index-sm">FIG. BK-PROD – {project.slug}</span>
+              <span className="file-index-sm">{project.technologies?.length ? `${project.technologies.length} tools` : '–'}</span>
             </figcaption>
           </figure>
 
@@ -213,7 +219,7 @@ export default function ProjectDetail() {
           <div className="mt-8 rule-double" />
 
           <div className="mt-6 flex flex-wrap items-center justify-center gap-4 font-mono text-[12px] uppercase tracking-[0.08em] text-ink-muted md:justify-between">
-            <span>Ref. BK / PROD — {project.slug}</span>
+            <span>Ref. BK / PROD – {project.slug}</span>
             <div className="flex gap-4">
               <Link to="/blog" className="filigree">
                 Filed notes →

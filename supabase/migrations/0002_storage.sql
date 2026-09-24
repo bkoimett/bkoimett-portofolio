@@ -1,6 +1,6 @@
 -- =============================================================================
 -- 0002_storage.sql
--- Registry Office portfolio — Supabase Storage buckets + policies
+-- Registry Office portfolio – Supabase Storage buckets + policies
 --
 -- Replaces GridFS buckets:
 --   images (public title images) -> portfolio-images (public bucket)

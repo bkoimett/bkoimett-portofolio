@@ -7,9 +7,9 @@
 // run more than once. NEVER deletes MongoDB data.
 //
 // Env required (backend/.env or process):
-//   MONGODB_URI                — existing Atlas connection string
-//   SUPABASE_URL               — https://<project>.supabase.co
-//   SUPABASE_SERVICE_ROLE_KEY  — service-role key (server-only)
+//   MONGODB_URI                – existing Atlas connection string
+//   SUPABASE_URL               – https://<project>.supabase.co
+//   SUPABASE_SERVICE_ROLE_KEY  – service-role key (server-only)
 //
 // NOTE: GridFS binaries (image/CV bytes) are NOT copied here; that is Phase 4
 // (storage). `cvs.storage_path` is reserved deterministically so the storage

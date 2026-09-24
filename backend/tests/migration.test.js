@@ -56,10 +56,10 @@ describe('mapProject (Mongo → projects row)', () => {
     const row = mapProject({
       _id: objectId(),
       title: 'LandLedger',
-      slug: 'LandLedger — Title',
+      slug: 'LandLedger – Title',
       description: 'Immutable title deed verification.',
     });
-    assert.equal(row.slug, 'landledger — title');
+    assert.equal(row.slug, 'landledger – title');
     assert.equal(row.status, 'published');
     assert.equal(row.views, 0);
     assert.equal(row.read_time, '5 min read');

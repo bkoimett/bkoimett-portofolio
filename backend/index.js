@@ -277,7 +277,7 @@ app.get('/api/projects', async (req, res) => {
         jwt.verify(token, process.env.JWT_SECRET);
         isAdmin = true;
       } catch {
-        // Invalid token — treat as public visitor
+        // Invalid token – treat as public visitor
       }
     }
     const filter = isAdmin ? {} : { status: 'published' };
@@ -321,7 +321,7 @@ app.post('/api/projects/:id/view', async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Validate ObjectId format — return 400 not 500 for malformed ids
+    // Validate ObjectId format – return 400 not 500 for malformed ids
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: 'Invalid project ID' });
     }
@@ -522,7 +522,7 @@ app.delete('/api/admin/cvs/:id', authMiddleware, async (req, res) => {
     try {
       await gridfs.getBucket().delete(cv.fileId);
     } catch {
-      // Grid file already removed — nothing left to clean up
+      // Grid file already removed – nothing left to clean up
     }
 
     res.json({ message: 'CV record deleted' });
@@ -849,7 +849,7 @@ app.delete('/api/admin/blogs/:id', authMiddleware, async (req, res) => {
   }
 });
 
-// Dynamic sitemap — public, excludes drafts/admin, uses DB lastmod when available
+// Dynamic sitemap – public, excludes drafts/admin, uses DB lastmod when available
 app.get('/sitemap.xml', handleSitemap);
 app.get('/api/sitemap.xml', handleSitemap);
 

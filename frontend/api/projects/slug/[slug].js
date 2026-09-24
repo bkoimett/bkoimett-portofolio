@@ -1,4 +1,4 @@
-// GET /api/projects/slug/:slug — public single project by slug (published only).
+// GET /api/projects/slug/:slug – public single project by slug (published only).
 // Mirrors backend GET /api/projects/slug/:slug.
 import { getAdminClient } from '../../_lib/supabase.js';
 import { projectFromRow } from '../../_lib/serializers.js';

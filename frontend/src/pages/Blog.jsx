@@ -21,7 +21,7 @@ const fallbackBlogs = [
     slug: 'building-a-portfolio-registry-my-journey-with-open-source-tools',
     title: 'Building a Portfolio Registry: My Journey with Open-Source Tools',
     description:
-      'How I structured my public work as a searchable registry of projects, decisions, and lessons learned — from early scripts to the filed system you see today.',
+      'How I structured my public work as a searchable registry of projects, decisions, and lessons learned – from early scripts to the filed system you see today.',
     content: `# Building a Portfolio Registry`,
     publishDate: '2026-09-21',
     tags: ['portfolio', 'systems', 'open source', 'registry'],
@@ -45,7 +45,7 @@ const fallbackBlogs = [
 ];
 
 const formatDate = (d) => {
-  if (!d) return '—';
+  if (!d) return '–';
   const date = d instanceof Date ? d : new Date(d);
   if (Number.isNaN(date.getTime())) return String(d);
   return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
@@ -87,7 +87,7 @@ const Blog = () => {
   const blogJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Blog',
-    name: 'Filed notes — Benjamin K. Koimett',
+    name: 'Filed notes – Benjamin K. Koimett',
     description: 'Case notes on building MERN and registry-line systems by Benjamin K. Koimett.',
     url: `${SITE_URL}/blog`,
     author: { '@type': 'Person', name: 'Benjamin Kiprotich Koimett' },
@@ -104,17 +104,17 @@ const Blog = () => {
   return (
     <div className="container-page pt-14 pb-24">
       <SEO
-        title="Filed notes — MERN APIs & Registry Case Notes"
-        description="Filed notes by Benjamin K. Koimett — full-stack React/Node.js case notes on API design, offline ledgers and MERN trade-offs. Lessons from LandLedger, CareFacility and production deploys for recruiters evaluating real-world experience."
+        title="Filed notes – MERN APIs & Registry Case Notes"
+        description="Filed notes by Benjamin K. Koimett – full-stack React/Node.js case notes on API design, offline ledgers and MERN trade-offs. Lessons from LandLedger, CareFacility and production deploys for recruiters evaluating real-world experience."
         canonical="/blog"
         keywords="Benjamin Koimett blog, React Node.js blog, MERN case notes, API design, offline-first, Kenya developer blog"
         jsonLd={blogJsonLd}
       />
       <header className="border-b border-rule pb-10">
-        <p className="file-index-sm">BK / BLOG — FILED ARTICLES</p>
+        <p className="file-index-sm">BK / BLOG – FILED ARTICLES</p>
         <h1 className="mt-1 text-heading-xl font-semibold text-ink">Filed notes</h1>
         <p className="mt-3 max-w-[62ch] text-body text-ink-muted">
-          Case notes on building registry-line systems — APIs, offline ledgers, and the trade-offs
+          Case notes on building registry-line systems – APIs, offline ledgers, and the trade-offs
           between paper forms and live code. Each entry is a filed record, not a feed.
         </p>
       </header>
@@ -178,7 +178,7 @@ const Blog = () => {
                     <span className="font-mono text-[11px] text-ink-muted">{formatDate(blog.publishDate)}</span>
                   </div>
 
-                  {/* Mobile preview — framed, registry style */}
+                  {/* Mobile preview – framed, registry style */}
                   <Link to={`/blog/${blog.slug}`} className="mt-3 block md:hidden" aria-hidden="true" tabIndex={-1}>
                     <div className="border border-rule bg-paper-strong p-1.5">
                       {imgSrc ? (
@@ -189,7 +189,7 @@ const Blog = () => {
                         </div>
                       )}
                       <div className="pt-1.5 text-center">
-                        <span className="file-index-sm">{imgSrc ? 'FIG. — filed preview' : 'No figure on file'}</span>
+                        <span className="file-index-sm">{imgSrc ? 'FIG. – filed preview' : 'No figure on file'}</span>
                       </div>
                     </div>
                   </Link>
@@ -220,8 +220,8 @@ const Blog = () => {
                   </Link>
                 </div>
 
-                {/* Desktop preview — right ledger column, symmetrical with ProjectCard */}
-                <Link to={`/blog/${blog.slug}`} className="hidden md:block" aria-label={`${blog.title} — open record`}>
+                {/* Desktop preview – right ledger column, symmetrical with ProjectCard */}
+                <Link to={`/blog/${blog.slug}`} className="hidden md:block" aria-label={`${blog.title} – open record`}>
                   <div className="border border-rule bg-paper-strong p-2 transition-colors group-hover:border-registry/40">
                     {imgSrc ? (
                       <img src={imgSrc} alt="" className="aspect-[4/3] w-full object-cover" loading="lazy" />
@@ -232,7 +232,7 @@ const Blog = () => {
                     )}
                     <div className="mt-2 flex items-center justify-between">
                       <span className="file-index-sm">FIG. {String(i + 1).padStart(3, '0')}</span>
-                      <span className="file-index-sm truncate">{blog.readTime || '—'}</span>
+                      <span className="file-index-sm truncate">{blog.readTime || '–'}</span>
                     </div>
                   </div>
                 </Link>

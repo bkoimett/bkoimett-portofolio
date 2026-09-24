@@ -1,6 +1,6 @@
 -- =============================================================================
 -- 0003_views_rpc.sql
--- Registry Office portfolio — atomic view-count increments
+-- Registry Office portfolio – atomic view-count increments
 --
 -- Replaces Mongoose `findByIdAndUpdate(id, { $inc: { views: 1 } })` used by
 -- POST /api/projects/:id/view and POST /api/blogs/:id/view. A single UPDATE
@@ -9,7 +9,7 @@
 -- matching id (draft or published) and does NOT touch updated_at (the legacy
 -- schemas have manual timestamps and $inc does not modify them).
 --
--- Each function returns the NEW view count, or NULL when no row matched —
+-- Each function returns the NEW view count, or NULL when no row matched –
 -- the Vercel handler maps NULL to 404.
 -- =============================================================================
 

@@ -60,7 +60,7 @@ const BlogsTable = ({
                     </p>
                   </td>
                   <td className="py-3 pr-4 font-mono text-[12px] text-ink-muted">
-                    {blog.tags?.length ? blog.tags.join(', ') : '—'}
+                    {blog.tags?.length ? blog.tags.join(', ') : '–'}
                   </td>
                   <td className="py-3 pr-4">
                     <span

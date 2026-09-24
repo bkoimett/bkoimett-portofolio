@@ -21,12 +21,12 @@ export default function SEO({
   jsonLd,
 }) {
   useEffect(() => {
-    const fullTitle = title ? `${title} — Benjamin K. Koimett` : 'Benjamin Kiprotich Koimett — Full-Stack Engineer (React, Node.js, MERN) | Kisumu & Remote';
+    const fullTitle = title ? `${title} – Benjamin K. Koimett` : 'Benjamin Kiprotich Koimett – Full-Stack Engineer (React, Node.js, MERN) | Kisumu & Remote';
     document.title = fullTitle;
 
     const desc =
       description ||
-      'Full-stack software engineer shipping React + Node.js production systems — healthcare, land governance, agriculture. View project records and filed notes. Kisumu, Kenya — remote-ready.';
+      'Full-stack software engineer shipping React + Node.js production systems – healthcare, land governance, agriculture. View project records and filed notes. Kisumu, Kenya – remote-ready.';
     const url = canonical ? `${SITE_URL}${canonical}` : SITE_URL;
     const img = image || OG_IMAGE;
 
@@ -64,8 +64,8 @@ export default function SEO({
       'og:url': url,
       'og:type': type,
       'og:image': img,
-      'og:image:alt': title || 'Benjamin K. Koimett — portfolio cover',
-      'og:site_name': 'Benjamin K. Koimett — Record of Production',
+      'og:image:alt': title || 'Benjamin K. Koimett – portfolio cover',
+      'og:site_name': 'Benjamin K. Koimett – Record of Production',
     };
     Object.entries(ogProps).forEach(([prop, content]) => {
       upsertMeta(`meta[property="${prop}"]`, () => {

@@ -5,6 +5,7 @@ import api from '../utils/api';
 import SEO from '../components/SEO';
 import { SITE_URL } from '../utils/seo';
 import StatusBadge from '../components/primitives/StatusBadge';
+import ExpandableImage from '../components/primitives/ExpandableImage';
 
 const formatDate = (d) => {
   if (!d) return null;
@@ -87,7 +88,7 @@ const BlogDetail = () => {
             <span aria-hidden="true">←</span> Blog index
           </Link>
           <div className="mt-10 border border-rule bg-paper-strong px-6 py-10">
-            <p className="file-index-sm">REF. NOT FOUND — 404</p>
+            <p className="file-index-sm">REF. NOT FOUND – 404</p>
             <h1 className="mt-2 text-heading font-semibold text-ink">Not on record</h1>
             <p className="mt-3 text-body text-ink-muted">This filing does not exist. It may have been moved, renamed, or never filed.</p>
             <Link to="/blog" className="btn btn-primary mt-6">
@@ -137,7 +138,7 @@ const BlogDetail = () => {
         </Link>
 
         <article className="mt-8">
-          {/* Symmetrical header — same rhythm as ProjectDetail */}
+          {/* Symmetrical header – same rhythm as ProjectDetail */}
           <header className="border-y border-rule py-8">
             <div className="file-index-sm flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-center md:justify-start md:text-left">
               <span>BK / BLOG</span>
@@ -187,18 +188,23 @@ const BlogDetail = () => {
             )}
           </header>
 
-          {/* Symmetrical figure — same frame as ProjectDetail */}
+          {/* Symmetrical figure – same frame as ProjectDetail */}
           <figure className="mt-8 border border-rule bg-paper-strong p-2">
             {imgSrc ? (
-              <img src={imgSrc} alt={blog.title} className="aspect-[16/9] w-full object-cover" />
+              <ExpandableImage
+                src={imgSrc}
+                alt={blog.title}
+                caption={`BK-BLG-${blog.slug}`}
+                className="aspect-[16/9] w-full object-cover"
+              />
             ) : (
               <div className="flex aspect-[16/9] w-full items-center justify-center border border-dashed border-rule-strong bg-paper">
-                <span className="file-index-sm text-center">No figure on file — add title image in console</span>
+                <span className="file-index-sm text-center">No figure on file – add title image in console</span>
               </div>
             )}
             <figcaption className="flex items-center justify-between px-2 pt-2">
-              <span className="file-index-sm">FIG. BK-BLG — {blog.slug}</span>
-              <span className="file-index-sm">{blog.tags?.length ? `${blog.tags.length} tags` : '—'}</span>
+              <span className="file-index-sm">FIG. BK-BLG – {blog.slug}</span>
+              <span className="file-index-sm">{blog.tags?.length ? `${blog.tags.length} tags` : '–'}</span>
             </figcaption>
           </figure>
 
@@ -206,7 +212,7 @@ const BlogDetail = () => {
             <ReactMarkdown>{blog.content}</ReactMarkdown>
           </div>
 
-          {/* Symmetrical meta ledger — mirrors ProjectDetail "In the build" */}
+          {/* Symmetrical meta ledger – mirrors ProjectDetail "In the build" */}
           <div className="mt-10 border-y border-rule py-6">
             <h2 className="file-index-sm text-center uppercase tracking-[0.12em] md:text-left">Filed under</h2>
             <div className="mt-3 flex flex-wrap justify-center gap-2 md:justify-start">
@@ -232,7 +238,7 @@ const BlogDetail = () => {
           <div className="mt-8 rule-double" />
 
           <div className="mt-6 flex flex-wrap items-center justify-center gap-4 font-mono text-[12px] uppercase tracking-[0.08em] text-ink-muted md:justify-between">
-            <span>Ref. BK / BLOG — {blog.slug}</span>
+            <span>Ref. BK / BLOG – {blog.slug}</span>
             <div className="flex gap-4">
               <Link to="/projects" className="filigree">
                 Project records →

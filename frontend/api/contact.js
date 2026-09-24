@@ -1,4 +1,4 @@
-// POST /api/contact — public contact form (acknowledges without logging PII;
+// POST /api/contact – public contact form (acknowledges without logging PII;
 // no email provider wired up in the legacy backend either).
 import { sendJson, badRequest, internalError, methodNotAllowed } from './_lib/http.js';
 

@@ -1,6 +1,6 @@
 // Row-to-API serializers: map snake_case Postgres rows back to the legacy
 // Mongoose/camelCase JSON contract the frontend expects. Projects/blogs use
-// `_id`; CVs use `id` (the legacy engine's toCV() shape) — do not cross them.
+// `_id`; CVs use `id` (the legacy engine's toCV() shape) – do not cross them.
 export function projectFromRow(row) {
   return {
     _id: row.id,
@@ -42,7 +42,7 @@ export function blogFromRow(row) {
   };
 }
 
-// CV metadata shape only — the file bytes stay in GridFS until Phase 4.
+// CV metadata shape only – the file bytes stay in GridFS until Phase 4.
 export function cvFromRow(row) {
   return {
     id: row.id,

@@ -1,6 +1,6 @@
 -- =============================================================================
 -- 0001_initial_schema.sql
--- Registry Office portfolio — PostgreSQL schema for Supabase
+-- Registry Office portfolio – PostgreSQL schema for Supabase
 --
 -- Migrates the MongoDB collections (projects, blogs, cvs, admins) to Postgres.
 -- Primary keys are TEXT so legacy MongoDB ObjectIds can be preserved verbatim

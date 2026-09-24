@@ -1,4 +1,4 @@
-// POST /api/blogs/:id/view — public view-count increment.
+// POST /api/blogs/:id/view – public view-count increment.
 // Mirrors backend POST /api/blogs/:id/view via the increment_blog_view RPC.
 import { getAdminClient } from '../../_lib/supabase.js';
 import { isValidId } from '../../_lib/slugs.js';

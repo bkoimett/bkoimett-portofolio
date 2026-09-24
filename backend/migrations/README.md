@@ -6,9 +6,9 @@ URLs and the frontend `_id` contract keep working).
 
 ## Files
 
-- `transform.js` — pure, side-effect-free mappers (Mongo doc → Supabase row).
+- `transform.js` – pure, side-effect-free mappers (Mongo doc → Supabase row).
   Unit-tested against representative fixtures in `backend/tests/migration.test.js`.
-- `run.js` — the runner. Connects to Mongo, transforms, upserts (idempotent),
+- `run.js` – the runner. Connects to Mongo, transforms, upserts (idempotent),
   reports legacy `/api/images/:id` references for Phase 4 rewriting.
 
 ## Requirements

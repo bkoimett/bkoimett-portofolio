@@ -277,7 +277,7 @@ const BlogFormDrawer = ({ isOpen, onClose, blogId, initialData, onSaved }) => {
                     </div>
                   </div>
                 ) : (
-                  <p className="file-index-sm mt-1">JPEG/PNG/WebP ≤5MB — stored in GridFS, served at /api/images/:id</p>
+                  <p className="file-index-sm mt-1">JPEG/PNG/WebP ≤5MB – stored in GridFS, served at /api/images/:id</p>
                 )}
               </div>
 

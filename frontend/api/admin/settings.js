@@ -1,4 +1,4 @@
-// PUT /api/admin/settings — update admin username/password (admin only).
+// PUT /api/admin/settings – update admin username/password (admin only).
 // Mirrors backend PUT /api/admin/settings validation and messages.
 import bcrypt from 'bcryptjs';
 import { getAdminClient } from '../_lib/supabase.js';

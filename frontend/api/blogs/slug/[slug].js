@@ -1,4 +1,4 @@
-// GET /api/blogs/slug/:slug — public single blog by slug (published only).
+// GET /api/blogs/slug/:slug – public single blog by slug (published only).
 // Mirrors backend GET /api/blogs/slug/:slug.
 import { getAdminClient } from '../../_lib/supabase.js';
 import { blogFromRow } from '../../_lib/serializers.js';

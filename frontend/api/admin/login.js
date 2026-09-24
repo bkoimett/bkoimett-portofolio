@@ -1,5 +1,5 @@
 /* global process */
-// POST /api/admin/login — admin sign-in (custom JWT until Phase 5).
+// POST /api/admin/login – admin sign-in (custom JWT until Phase 5).
 // Mirrors backend POST /api/admin/login: same "Invalid credentials" for both
 // unknown username and bad password (never reveal which), bcrypt check, 7d token.
 import bcrypt from 'bcryptjs';

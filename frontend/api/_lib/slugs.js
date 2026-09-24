@@ -12,7 +12,7 @@ export function generateSlug(title) {
 }
 
 // Accepts legacy Mongo ObjectIds (24 hex) and the UUID strings used for new
-// Postgres rows — both are valid `text` primary keys.
+// Postgres rows – both are valid `text` primary keys.
 const OBJECT_ID = /^[0-9a-f]{24}$/i;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 

@@ -146,7 +146,7 @@ export default function AdminDashboard() {
       onSelect={setActiveTab}
       onLogout={handleLogout}
     >
-      <SEO title="Console — Registry" noindex />
+      <SEO title="Console – Registry" noindex />
       {activeTab !== 'settings' && (error || success) && (
         <div className="mb-6 flex flex-col gap-2">
           {error && (
@@ -191,7 +191,7 @@ export default function AdminDashboard() {
           {activeTab === 'dashboard' && (
             <section aria-labelledby="system-overview">
               <header className="border-b border-rule pb-6">
-                <p className="file-index-sm">CONSOLE — BK / SYS.</p>
+                <p className="file-index-sm">CONSOLE – BK / SYS.</p>
                 <h2
                   id="system-overview"
                   className="mt-1 text-heading font-semibold text-ink"
@@ -260,7 +260,7 @@ export default function AdminDashboard() {
             <section aria-labelledby="records-index">
               <header className="flex flex-wrap items-end justify-between gap-4 border-b border-rule pb-6">
                 <div>
-                  <p className="file-index-sm">REGISTRY — BK / PROD.</p>
+                  <p className="file-index-sm">REGISTRY – BK / PROD.</p>
                   <h2
                     id="records-index"
                     className="mt-1 text-heading font-semibold text-ink"
@@ -289,7 +289,7 @@ export default function AdminDashboard() {
             <section aria-labelledby="blog-records">
               <header className="flex flex-wrap items-end justify-between gap-4 border-b border-rule pb-6">
                 <div>
-                  <p className="file-index-sm">REGISTRY — BK / BLOG</p>
+                  <p className="file-index-sm">REGISTRY – BK / BLOG</p>
                   <h2
                     id="blog-records"
                     className="mt-1 text-heading font-semibold text-ink"

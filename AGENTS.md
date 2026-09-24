@@ -23,6 +23,10 @@
 - `frontend/api/projects/`, `frontend/api/blogs/`, `contact.js`, `sitemap.js` — public API, Supabase-backed
 - `backend/index.js` — Express server, all routes inline (legacy, until Phase 6)
 - `backend/models/` — Mongoose models (Project.js, Admin.js, CV.js, Blog.js) (legacy)
+- `backend/migrations/importRepos.js` — idempotent GitHub-repo importer for the MongoDB `projects`
+  collection (upsert by slug, strips em dashes, `--dry-run` and `--skip-existing` supported;
+  records file: `backend/migrations/github-repos.json`)
+- `backend/migrations/github-repos.json` — curated repo records (29) consumed by `importRepos.js`
 - `backend/gridfs.js` — GridFS bucket helper for CV file storage (bucket `cvs`) (legacy)
 - `backend/middleware/auth.js` — JWT bearer-token middleware (legacy until Phase 5)
 - `backend/seedAdmin.js` — Script to create initial admin user (legacy)
@@ -97,6 +101,8 @@ Frontend (optional .env):
 ## UI DESIGN
 
 - Always follow the UI design system when creating or reviewing components or pages
+- No em dashes (U+2014) anywhere in authored code or content; use an en dash (U+2013) or hyphen.
+  Imported content is also sanitized (see `backend/migrations/importRepos.js`)
 - Design System: @DESIGN.md
 - Keep this file and @DESIGN.md in sync with the actual codebase — update them as part of any change that alters stack, structure, or conventions, don't let them drift
 
@@ -106,9 +112,13 @@ Design language: Registry Office. See `@DESIGN.md` for tokens and conventions.
 
 ### Frontend — public components
 `Layout`, `Navbar`, `ThemeToggle`, `layout/Footer`, `layout/ScrollToTop`, `layout/NotFound`,
-`ProtectedRoute`, `primitives/Container`, `primitives/Section`, `primitives/SectionHeading`,
-`primitives/Button`, `primitives/Card`, `primitives/StatusBadge`, `primitives/StatCard`,
-`primitives/ProjectCard`, `primitives/SystemMap`, `primitives/StatNumber` (`SystemMap`: survey plat of filed systems with status tokens; `StatNumber`: count-up ledger numerals)
+`CookieConsent`, `WhatsAppButton`, `ProtectedRoute`, `primitives/Container`, `primitives/Section`,
+`primitives/SectionHeading`, `primitives/Button`, `primitives/Card`, `primitives/StatusBadge`,
+`primitives/StatCard`, `primitives/ProjectCard`, `primitives/SystemMap`, `primitives/StatNumber`,
+`primitives/ExpandableImage` (`SystemMap`: survey plat of filed systems with status tokens;
+`StatNumber`: count-up ledger numerals; `CookieConsent`: bottom notice bar, accept/reject remembered
+in localStorage, footer reopens; `WhatsAppButton`: fixed bottom-right wa.me link; `ExpandableImage`:
+click a figure to view it full-size in an overlay — Esc/backdrop/close button)
 
 ### Frontend — admin components
 `components/admin/AdminLayout`, `components/admin/Sidebar`, `components/admin/ProjectsTable`,

@@ -72,7 +72,7 @@ function mapBlog(doc) {
 }
 
 // maps a Mongo CV document to a `cvs` row.
-// The GridFS binary is NOT copied here — it is migrated in Phase 4 (storage).
+// The GridFS binary is NOT copied here – it is migrated in Phase 4 (storage).
 // `storage_path` is reserved at a deterministic path keyed by the source GridFS
 // fileId so the Phase 4 file-copy step can populate the bytes without a second
 // metadata pass.

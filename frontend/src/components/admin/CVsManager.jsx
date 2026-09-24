@@ -2,14 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import api from '../../utils/api';
 
 const formatSize = (bytes) => {
-  if (!bytes && bytes !== 0) return '—';
+  if (!bytes && bytes !== 0) return '–';
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
 
 const formatDate = (value) => {
-  if (!value) return '—';
+  if (!value) return '–';
   const date = new Date(value);
   return date.toLocaleDateString(undefined, {
     year: 'numeric',
@@ -113,7 +113,7 @@ const CVsManager = () => {
   return (
     <section aria-labelledby="cv-records">
       <header className="border-b border-rule pb-6">
-        <p className="file-index-sm">REGISTRY — BK / CV</p>
+        <p className="file-index-sm">REGISTRY – BK / CV</p>
         <h2
           id="cv-records"
           className="mt-1 text-heading font-semibold text-ink"

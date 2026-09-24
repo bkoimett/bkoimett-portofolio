@@ -1,4 +1,4 @@
-// GET /api/blogs — public blog listing (published only, newest first).
+// GET /api/blogs – public blog listing (published only, newest first).
 // Mirrors backend GET /api/blogs. Admin blog CRUD lives in /api/admin/blogs.
 import { getAdminClient } from '../_lib/supabase.js';
 import { blogFromRow } from '../_lib/serializers.js';

@@ -19,7 +19,7 @@ const fallbackProjects = [
   {
     _id: '2',
     slug: 'landledger',
-    title: 'LandLedger — blockchain title deed verification',
+    title: 'LandLedger – blockchain title deed verification',
     description: 'Immutable title deed verification platform preventing land fraud across East Africa.',
     category: 'Blockchain',
     image: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=600&auto=format',
@@ -39,7 +39,7 @@ const fallbackProjects = [
   {
     _id: '4',
     slug: 'agrisync',
-    title: 'AgriSync — offline-first farming PWA',
+    title: 'AgriSync – offline-first farming PWA',
     description: 'Offline-first farming PWA for low-connectivity regions with FAO data integration.',
     category: 'PWA',
     image: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=600&auto=format',
@@ -47,7 +47,7 @@ const fallbackProjects = [
   },
 ];
 
-const categories = ['all', 'Web Dev', 'Blockchain', 'PWA'];
+const preferredCategories = ['Web Dev', 'Blockchain', 'PWA', 'Backend', 'Dev Tooling', 'Hackathon'];
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);
@@ -76,6 +76,13 @@ const Projects = () => {
     return () => controller.abort();
   }, []);
 
+  const knownCategories = new Set(projects.map((p) => p.category).filter(Boolean));
+  const categories = [
+    'all',
+    ...preferredCategories.filter((c) => knownCategories.has(c)),
+    ...[...knownCategories].filter((c) => !preferredCategories.includes(c)),
+  ];
+
   const filteredProjects =
     filter === 'all'
       ? projects
@@ -84,8 +91,8 @@ const Projects = () => {
   const projectsJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    name: 'Project records — Benjamin K. Koimett',
-    description: 'Production MERN and full-stack project records shipped by Benjamin K. Koimett — React, Node.js, MongoDB, Express.',
+    name: 'Project records – Benjamin K. Koimett',
+    description: 'Production MERN and full-stack project records shipped by Benjamin K. Koimett – React, Node.js, MongoDB, Express.',
     url: `${SITE_URL}/projects`,
     mainEntity: {
       '@type': 'ItemList',
@@ -101,15 +108,15 @@ const Projects = () => {
   return (
     <>
       <SEO
-        title="Project records — MERN & Full-Stack Case Files"
-        description="Browse production project records by Benjamin K. Koimett — CareFacility healthcare platform, LandLedger blockchain verification, Kijiji and AgriSync. Full-stack React/Node.js, TypeScript, Golang. Each case file with live demo and source."
+        title="Project records – MERN & Full-Stack Case Files"
+        description="Browse production project records by Benjamin K. Koimett – CareFacility healthcare platform, LandLedger blockchain verification, Kijiji and AgriSync. Full-stack React/Node.js, TypeScript, Golang. Each case file with live demo and source."
         canonical="/projects"
         keywords="Benjamin Koimett projects, React Node.js portfolio, MERN projects, CareFacility, LandLedger, Kisumu developer"
         jsonLd={projectsJsonLd}
       />
       <section className="container-page pt-14 pb-24">
         <header className="border-b border-rule pb-10">
-          <p className="file-index-sm">BK / PROD. — FULL INDEX</p>
+          <p className="file-index-sm">BK / PROD. – FULL INDEX</p>
           <h1 className="mt-1 text-heading-xl font-semibold text-ink">
             Project records
           </h1>

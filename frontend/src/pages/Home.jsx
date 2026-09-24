@@ -25,7 +25,7 @@ const fallbackProjects = [
   {
     _id: '2',
     slug: 'landledger',
-    title: 'LandLedger — blockchain title deed verification',
+    title: 'LandLedger – blockchain title deed verification',
     description: 'Immutable title deed verification platform preventing land fraud across East Africa.',
     category: 'Blockchain',
     technologies: ['TypeScript', 'Golang', 'Solana', 'Smart Contracts'],
@@ -95,8 +95,8 @@ const Home = () => {
   return (
     <>
       <SEO
-        title="Full-Stack Engineer — React, Node.js, MERN"
-        description="Benjamin K. Koimett — full-stack software engineer (React, Node.js, MongoDB, Express) in Kisumu, Kenya. Shipping MERN production systems for healthcare, agriculture and land governance. Remote-ready — browse project records, blog case notes and CV."
+        title="Full-Stack Engineer – React, Node.js, MERN"
+        description="Benjamin K. Koimett – full-stack software engineer (React, Node.js, MongoDB, Express) in Kisumu, Kenya. Shipping MERN production systems for healthcare, agriculture and land governance. Remote-ready – browse project records, blog case notes and CV."
         canonical="/"
         keywords="Benjamin Koimett, full-stack engineer, React developer, Node.js, MERN, MongoDB Express, Kisumu Kenya remote, healthcare platform"
         jsonLd={homeJsonLd}
@@ -128,7 +128,7 @@ const Home = () => {
           </p>
 
           <p className="mt-4 max-w-[62ch] text-body text-ink-muted animate-rise animate-rise-delay">
-            I take projects from first commit to live deployment — building the
+            I take projects from first commit to live deployment – building the
             frontend, the backend, and the infrastructure between them. Based
             in Kisumu, Kenya. Remote-ready.
           </p>
@@ -189,7 +189,7 @@ const Home = () => {
       {/* System map */}
       <section className="container-page mt-24">
         <header>
-          <p className="file-index-sm">BK / NETWORK — PLAT OF FILED SYSTEMS</p>
+          <p className="file-index-sm">BK / NETWORK – PLAT OF FILED SYSTEMS</p>
           <h2 className="mt-1 text-heading-xl font-semibold text-ink">
             System map
           </h2>
@@ -210,7 +210,7 @@ const Home = () => {
       {/* Production records */}
       <section className="container-page mt-24">
         <header>
-          <p className="file-index-sm">BK / PROD. — RECENTLY FILED</p>
+          <p className="file-index-sm">BK / PROD. – RECENTLY FILED</p>
           <h2 className="mt-1 text-heading-xl font-semibold text-ink">
             Production records
           </h2>

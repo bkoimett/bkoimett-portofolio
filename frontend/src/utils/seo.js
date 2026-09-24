@@ -1,8 +1,8 @@
 export const SITE_URL = 'https://bkoimett-portofolio.vercel.app';
-export const SITE_NAME = 'Benjamin K. Koimett — Record of Production';
+export const SITE_NAME = 'Benjamin K. Koimett – Record of Production';
 export const SITE_AUTHOR = 'Benjamin Kiprotich Koimett';
 export const SITE_DESCRIPTION =
-  'Full-stack software engineer (React, Node.js, MongoDB, Express) shipping production systems in healthcare, agriculture, land governance and Web3. Based in Kisumu, Kenya — remote-ready. Explore project records and filed blog notes.';
+  'Full-stack software engineer (React, Node.js, MongoDB, Express) shipping production systems in healthcare, agriculture, land governance and Web3. Based in Kisumu, Kenya – remote-ready. Explore project records and filed blog notes.';
 export const SITE_KEYWORDS =
   'Benjamin Koimett, Benjamin Kiprotich Koimett, full-stack engineer, MERN stack, React developer, Node.js developer, MongoDB, Express, TypeScript, Golang, Kenya developer, Kisumu, remote developer, healthcare platform, LandLedger';
 export const OG_IMAGE = `${SITE_URL}/og-cover.png`;

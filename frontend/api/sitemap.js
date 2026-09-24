@@ -5,7 +5,7 @@
  * the frontend domain (https://bkoimett-portofolio.vercel.app/sitemap.xml) so
  * crawlers never need to know the backend host.
  *
- * Reads published projects/blogs directly from Supabase (Phase 3) — no Render
+ * Reads published projects/blogs directly from Supabase (Phase 3) – no Render
  * round-trip. If the query fails, returns a valid XML containing only the
  * static routes so crawlers never break.
  */

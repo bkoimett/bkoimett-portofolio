@@ -1,4 +1,4 @@
-// POST /api/projects/:id/view — public view-count increment.
+// POST /api/projects/:id/view – public view-count increment.
 // Mirrors backend POST /api/projects/:id/view via the increment_project_view
 // RPC (atomic UPDATE; returns NULL when the id does not exist → 404).
 import { getAdminClient } from '../../_lib/supabase.js';

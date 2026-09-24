@@ -5,7 +5,7 @@
 /* Import Tailwind */
 @import "tailwindcss";
 
-/* Registry theme tokens — resolved at runtime so :root / .dark stay distinct */
+/* Registry theme tokens – resolved at runtime so :root / .dark stay distinct */
 @theme inline {
   --font-serif: 'Newsreader', 'Times New Roman', serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -119,7 +119,7 @@ body {
    Components
    ============================================================ */
 @layer components {
-  /* Page container — registry form width, generous gutters */
+  /* Page container – registry form width, generous gutters */
   .container-page {
     @apply mx-auto w-full px-gutter;
     max-width: var(--spacing-container-max);
@@ -143,7 +143,7 @@ body {
     border-color: var(--rule);
   }
 
-  /* Double rule — ledger section divider */
+  /* Double rule – ledger section divider */
   .rule-double {
     border-top: 3px double var(--rule-strong);
   }
@@ -188,7 +188,7 @@ body {
     border-color: var(--registry);
   }
 
-  /* Registry stamp — used once, sparingly */
+  /* Registry stamp – used once, sparingly */
   .stamp {
     display: inline-block;
     border: 2px solid var(--stamp);
@@ -203,7 +203,7 @@ body {
     transform: rotate(-2deg);
   }
 
-  /* Index / metadata voice — mono numerals and references */
+  /* Index / metadata voice – mono numerals and references */
   .file-index {
     font-family: var(--font-mono);
     font-size: 0.8125rem;
@@ -220,7 +220,7 @@ body {
     color: var(--ink-muted);
   }
 
-  /* Ledger row — information-carrying rule set */
+  /* Ledger row – information-carrying rule set */
   .ledger-row {
     border-bottom: 1px solid var(--rule);
     padding: 1rem 0;
@@ -356,7 +356,7 @@ body {
 }
 
 /* ============================================================
-   Motion — a single orchestrated entrance on the masthead only
+   Motion – a single orchestrated entrance on the masthead only
    ============================================================ */
 @keyframes rise {
   from {

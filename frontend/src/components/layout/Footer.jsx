@@ -82,6 +82,13 @@ const Footer = () => {
             Reg. {profile.email} · EST. 2022
           </p>
           <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new Event('open-cookie-consent'))}
+              className="inline-flex items-center border border-rule/0 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-ink-muted/45 hover:border-rule-strong hover:text-ink transition-colors"
+            >
+              Cookie preferences
+            </button>
             <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-muted">
               © {new Date().getFullYear()} {profile.name}
             </p>

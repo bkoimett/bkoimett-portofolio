@@ -1,4 +1,4 @@
-// PUT /api/admin/blogs/:id + DELETE /api/admin/blogs/:id — admin only.
+// PUT /api/admin/blogs/:id + DELETE /api/admin/blogs/:id – admin only.
 import { getAdminClient } from '../../_lib/supabase.js';
 import { verifyAdminToken } from '../../_lib/auth.js';
 import { generateSlug } from '../../_lib/slugs.js';

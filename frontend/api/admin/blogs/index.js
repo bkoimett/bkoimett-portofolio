@@ -1,4 +1,4 @@
-// GET /api/admin/blogs + POST /api/admin/blogs — admin-only blog listing
+// GET /api/admin/blogs + POST /api/admin/blogs – admin-only blog listing
 // (includes drafts) and creation. Mirrors backend routes.
 import { randomUUID } from 'node:crypto';
 import { getAdminClient } from '../../_lib/supabase.js';

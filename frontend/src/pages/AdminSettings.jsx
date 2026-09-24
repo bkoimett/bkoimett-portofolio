@@ -66,7 +66,7 @@ const AdminSettings = () => {
   return (
     <section aria-labelledby="console-settings">
       <header className="border-b border-rule pb-6">
-        <p className="file-index-sm">CONSOLE — BK / CONFIG</p>
+        <p className="file-index-sm">CONSOLE – BK / CONFIG</p>
         <h2
           id="console-settings"
           className="mt-1 text-heading font-semibold text-ink"
