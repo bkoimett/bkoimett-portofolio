@@ -60,7 +60,7 @@ export default function ProjectDetail() {
     if (project?._id && viewCountRef.current !== project._id) {
       viewCountRef.current = project._id;
       const ctrl = new AbortController();
-      api.post(`/projects/${project._id}/view`, {}, { signal: ctrl.signal }).catch(() => {});
+      api.post(`/projects/${project._id}`, {}, { signal: ctrl.signal }).catch(() => {});
       return () => ctrl.abort();
     }
   }, [project]);

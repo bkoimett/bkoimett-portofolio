@@ -1,9 +1,11 @@
 // GET /api/projects/:id + PUT /api/projects/:id + DELETE /api/projects/:id
 // All admin-only, mirroring backend routes. UPDATE/PATCH/DELETE are dispatched
-// here; the compact create/list live in projects/index.js.
+// here; the compact create/list live in projects/index.js. POST /api/projects/:id
+// is the public view-count increment (previously a separate view.js function;
+// folded here to stay under the Vercel Hobby 12-function cap).
 import { getAdminClient } from '../_lib/supabase.js';
 import { verifyAdminToken } from '../_lib/auth.js';
-import { generateSlug } from '../_lib/slugs.js';
+import { generateSlug, isValidId } from '../_lib/slugs.js';
 import { projectFromRow } from '../_lib/serializers.js';
 import { sendJson, badRequest, notFound, unauthorized, internalError, methodNotAllowed } from '../_lib/http.js';
 
@@ -28,9 +30,23 @@ const FIELD_MAP = {
 
 export default async function handler(req, res) {
   if (req.method === 'GET') return handleGet(req, res);
+  if (req.method === 'POST') return handleViewIncrement(req, res);
   if (req.method === 'PUT') return handlePut(req, res);
   if (req.method === 'DELETE') return handleDelete(req, res);
   return methodNotAllowed(res);
+}
+
+async function handleViewIncrement(req, res) {
+  try {
+    const { id } = req.query;
+    if (!isValidId(id)) return badRequest(res, 'Invalid project ID');
+    const { data, error } = await getAdminClient().rpc('increment_project_view', { p_id: id });
+    if (error) return internalError(res, 'Failed to increment view count');
+    if (data === null || data === undefined) return notFound(res, 'Project not found');
+    return sendJson(res, 200, { views: data });
+  } catch {
+    return internalError(res, 'Failed to increment view count');
+  }
 }
 
 async function handleGet(req, res) {

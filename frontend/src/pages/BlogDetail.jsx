@@ -60,7 +60,7 @@ const BlogDetail = () => {
     if (blog?._id && viewedRef.current !== blog._id) {
       viewedRef.current = blog._id;
       const controller = new AbortController();
-      api.post(`/blogs/${blog._id}/view`, {}, { signal: controller.signal }).catch(() => {});
+      api.post(`/blogs/slug/${blog.slug}`, { id: blog._id }, { signal: controller.signal }).catch(() => {});
       return () => controller.abort();
     }
   }, [blog]);
