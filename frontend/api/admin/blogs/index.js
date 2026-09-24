@@ -19,6 +19,7 @@ async function handleList(req, res) {
     const { data, error } = await getAdminClient()
       .from('blogs')
       .select('*')
+      .order('rank', { ascending: false })
       .order('publish_date', { ascending: false });
     if (error) return internalError(res, 'Failed to fetch blogs');
     return sendJson(res, 200, (data || []).map(blogFromRow));
@@ -31,7 +32,7 @@ async function handleCreate(req, res) {
   try {
     if (!verifyAdminToken(req)) return unauthorized(res, 'Invalid token');
 
-    const { title, slug, description, content, image, tags, readTime, publishDate, status } =
+    const { title, slug, description, content, image, tags, readTime, publishDate, status, rank } =
       req.body || {};
 
     if (!title || !description || !content) {
@@ -61,6 +62,7 @@ async function handleCreate(req, res) {
         read_time: readTime || '5 min read',
         publish_date: publishDate || new Date().toISOString(),
         status: status || 'draft',
+        rank: Number.isFinite(Number(rank)) ? Math.max(0, Math.trunc(Number(rank))) : 0,
       })
       .select()
       .single();

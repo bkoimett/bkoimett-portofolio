@@ -1,9 +1,11 @@
 import React from 'react';
+import StarRank from './StarRank';
 
 const ProjectsTable = ({
   projects,
   onEdit,
   onDelete,
+  onRank,
   confirmDeleteId,
   setConfirmDeleteId,
 }) => {
@@ -22,6 +24,9 @@ const ProjectsTable = ({
               Division
             </th>
             <th className="pb-2 pr-4 font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-ink-muted">
+              Rank
+            </th>
+            <th className="pb-2 pr-4 font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-ink-muted">
               Status
             </th>
             <th className="pb-2 pr-4 font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-ink-muted text-right">
@@ -36,7 +41,7 @@ const ProjectsTable = ({
           {projects.length === 0 ? (
             <tr>
               <td
-                colSpan="6"
+                colSpan="7"
                 className="py-6 font-mono text-[13px] text-ink-muted"
               >
                 No records on file. File the first project record to begin.
@@ -61,6 +66,12 @@ const ProjectsTable = ({
                   </td>
                   <td className="py-3 pr-4 font-mono text-[12px] text-ink-muted">
                     {project.category}
+                  </td>
+                  <td className="py-3 pr-4">
+                    <StarRank
+                      value={project.rank || 0}
+                      onChange={(rank) => onRank(project._id, rank)}
+                    />
                   </td>
                   <td className="py-3 pr-4">
                     <span

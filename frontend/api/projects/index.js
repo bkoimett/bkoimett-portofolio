@@ -22,7 +22,13 @@ async function handleList(req, res) {
   try {
     const admin = verifyAdminToken(req);
     const client = getAdminClient();
-    let query = client.from('projects').select('*').order('created_at', { ascending: true });
+    // Manual star rank wins; equal ranks fall back to oldest-first, matching
+    // the legacy ordering so unranked portfolios stay stable.
+    let query = client
+      .from('projects')
+      .select('*')
+      .order('rank', { ascending: false, nullsFirst: false })
+      .order('created_at', { ascending: true });
     if (!admin) query = query.eq('status', 'published');
     const { data, error } = await query;
     if (error) return internalError(res, 'Failed to fetch projects');
@@ -51,6 +57,7 @@ async function handleCreate(req, res) {
       tags,
       readTime,
       status,
+      rank,
     } = req.body || {};
 
     if (!title || !description) {
@@ -85,6 +92,7 @@ async function handleCreate(req, res) {
         tags: tags || [],
         read_time: readTime || '5 min read',
         status: status || 'draft',
+        rank: Number.isFinite(rank) ? Math.max(0, Math.trunc(rank)) : 0,
       })
       .select()
       .single();

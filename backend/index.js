@@ -281,7 +281,8 @@ app.get('/api/projects', async (req, res) => {
       }
     }
     const filter = isAdmin ? {} : { status: 'published' };
-    const projects = await Project.find(filter);
+    // Manual star rank wins; equal ranks fall back to oldest-first.
+    const projects = await Project.find(filter, null, { sort: { rank: -1, createdAt: 1 } });
     res.json(projects);
   } catch {
     res.status(500).json({ error: 'Failed to fetch projects' });
@@ -595,7 +596,8 @@ app.post('/api/projects', authMiddleware, async (req, res) => {
       publishDate, 
       tags, 
       readTime, 
-      status 
+      status,
+      rank
     } = req.body;
 
     if (!title || !description) {
@@ -627,7 +629,8 @@ app.post('/api/projects', authMiddleware, async (req, res) => {
       publishDate: publishDate || new Date(),
       tags: tags || [],
       readTime: readTime || '5 min read',
-      status: status || 'draft'
+      status: status || 'draft',
+      rank: Number.isFinite(rank) ? Math.max(0, Math.trunc(rank)) : 0
     });
 
     const savedProject = await newProject.save();
@@ -645,6 +648,12 @@ app.put('/api/projects/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const updateData = { ...req.body, updatedAt: new Date() };
+
+    if (updateData.rank !== undefined) {
+      updateData.rank = Number.isFinite(Number(updateData.rank))
+        ? Math.max(0, Math.trunc(Number(updateData.rank)))
+        : 0;
+    }
 
     if (updateData.title && !updateData.slug) {
       updateData.slug = generateSlug(updateData.title);
@@ -699,7 +708,7 @@ app.delete('/api/projects/:id', authMiddleware, async (req, res) => {
 // GET - All published blogs for public blog page.
 app.get('/api/blogs', async (req, res) => {
   try {
-    const blogs = await Blog.find({ status: 'published' }).sort({ publishDate: -1 });
+    const blogs = await Blog.find({ status: 'published' }, null, { sort: { rank: -1, publishDate: -1 } });
     res.json(blogs);
   } catch {
     res.status(500).json({ error: 'Failed to fetch blogs' });
@@ -750,7 +759,7 @@ app.post('/api/blogs/:id/view', async (req, res) => {
 // GET - All blogs (admin only, includes drafts).
 app.get('/api/admin/blogs', authMiddleware, async (req, res) => {
   try {
-    const blogs = await Blog.find().sort({ publishDate: -1 });
+    const blogs = await Blog.find({}, null, { sort: { rank: -1, publishDate: -1 } });
     res.json(blogs);
   } catch {
     res.status(500).json({ error: 'Failed to fetch blogs' });
@@ -760,7 +769,7 @@ app.get('/api/admin/blogs', authMiddleware, async (req, res) => {
 // POST - Create new blog (admin only).
 app.post('/api/admin/blogs', authMiddleware, async (req, res) => {
   try {
-    const { title, slug, description, content, image, tags, readTime, publishDate, status } = req.body;
+    const { title, slug, description, content, image, tags, readTime, publishDate, status, rank } = req.body;
 
     if (!title || !description || !content) {
       return res.status(400).json({ error: 'title, description, and content are required' });
@@ -783,6 +792,7 @@ app.post('/api/admin/blogs', authMiddleware, async (req, res) => {
       readTime: readTime || '5 min read',
       publishDate: publishDate || new Date(),
       status: status || 'draft',
+      rank: Number.isFinite(rank) ? Math.max(0, Math.trunc(rank)) : 0,
     });
 
     const savedBlog = await newBlog.save();
@@ -800,6 +810,12 @@ app.put('/api/admin/blogs/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const updateData = { ...req.body, updatedAt: new Date() };
+
+    if (updateData.rank !== undefined) {
+      updateData.rank = Number.isFinite(Number(updateData.rank))
+        ? Math.max(0, Math.trunc(Number(updateData.rank)))
+        : 0;
+    }
 
     if (updateData.title && !updateData.slug) {
       updateData.slug = generateSlug(updateData.title);

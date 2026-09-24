@@ -169,6 +169,7 @@ Rendered via `react-markdown` inside `.markdown-body`: serif body, square list m
 - **Sidebar:** index of Dashboard / Projects / CVs / Settings + session stamp + log out.
 - **Metrics:** ledger fact rows, not cards.
 - **Tables:** hairline registry tables, mono column heads, two-step inline delete confirm.
+- **Ranking:** `components/admin/StarRank` (five stars; click to set, click the active star to clear). The projects and blogs tables carry a Rank column and both form drawers the same control. Higher rank sorts first on the landing page, project index and blog index; ties fall back to the previous order (oldest-first for projects, newest-first for posts). Backed by a `rank` integer (default 0) on the record.
 - **Forms:** `ProjectFormDrawer` (right-side filing form), `AdminSettings` (username / password / derived config — never raw secrets).
 - **CV records:** PDFs stored in GridFS (bucket `cvs`); metadata in the `CV` model. Exactly one record is `active` and is the only one served publicly (`/api/cv`, `/api/cv/download`). Uploads are PDF-only, ≤ 10MB, via the shared API client. Public `Download CV` (`btn-stroke`) / `Share CV` (`btn-ghost`) buttons render only when an active CV exists.
 - **API paths:** always `/projects` / `/admin/*` (client baseURL already includes `/api`).

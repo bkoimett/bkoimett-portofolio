@@ -1,6 +1,5 @@
 import React from 'react';
 import Sidebar from './Sidebar';
-import ThemeToggle from '../ThemeToggle';
 
 const AdminLayout = ({ active, onSelect, onLogout, children }) => {
   return (
@@ -14,7 +13,6 @@ const AdminLayout = ({ active, onSelect, onLogout, children }) => {
             <span className="file-index-sm hidden sm:inline">// ADMIN</span>
           </div>
           <div className="flex items-center gap-5">
-            <ThemeToggle />
             <a
               href="/"
               className="filigree text-[14px] font-medium"

@@ -15,6 +15,7 @@ const FIELD_MAP = {
   readTime: 'read_time',
   publishDate: 'publish_date',
   status: 'status',
+  rank: 'rank',
 };
 
 export default async function handler(req, res) {
@@ -44,7 +45,11 @@ async function handlePut(req, res) {
     const patch = { updated_at: new Date().toISOString() };
     if (slug) patch.slug = slug;
     for (const [camel, column] of Object.entries(FIELD_MAP)) {
-      if (camel !== 'slug' && body[camel] !== undefined) patch[column] = body[camel];
+      if (camel === 'slug' || body[camel] === undefined) continue;
+      patch[column] =
+        camel === 'rank'
+          ? Math.max(0, Math.trunc(Number(body.rank)) || 0)
+          : body[camel];
     }
 
     const { data: row, error } = await client

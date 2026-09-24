@@ -21,6 +21,8 @@
 - `frontend/api/_lib/slugs.js` — `generateSlug` + `isValidId` (accepts ObjectId and UUID)
 - `frontend/api/admin/` — `login.js`, `settings.js`, `blogs/*` (admin auth + blog CRUD)
 - `frontend/api/projects/`, `frontend/api/blogs/`, `contact.js`, `sitemap.js` — public API, Supabase-backed
+  (project listings ordered `rank` desc, then `created_at` asc; blog listings `rank` desc, then
+  `publish_date` desc)
 - `backend/index.js` — Express server, all routes inline (legacy, until Phase 6)
 - `backend/models/` — Mongoose models (Project.js, Admin.js, CV.js, Blog.js) (legacy)
 - `backend/migrations/importRepos.js` — idempotent GitHub-repo importer for the MongoDB `projects`
@@ -34,7 +36,7 @@
 - `backend/tests/` — API tests (node:test + supertest, models mocked)
 - `frontend/src/pages/` — Page components (Home, Projects, About, AdminLogin, AdminDashboard, AdminSettings, ProjectDetail, NotFound)
 - `frontend/src/components/` — Shared primitives (Layout, Container, Section, SectionHeading, Button, Card, StatusBadge, StatCard, ProjectCard, Footer, ScrollToTop, NotFound, ProtectedRoute, ThemeToggle)
-- `frontend/src/components/admin/` — Admin components (AdminLayout, Sidebar, CVsManager, TelemetryChart, ProjectsTable, ProjectFormDrawer)
+- `frontend/src/components/admin/` — Admin components (AdminLayout, Sidebar, CVsManager, TelemetryChart, ProjectsTable, ProjectFormDrawer, StarRank)
 - `frontend/src/context/` — AuthContext.jsx, ThemeContext.jsx
 - `frontend/src/utils/` — api.js, auth.js, cv.js
 
@@ -91,6 +93,10 @@ Frontend (optional .env):
 
 - All frontend requests go through the single shared API client (not ad-hoc axios/fetch calls) — do not duplicate base-URL logic
 - MongoDB documents use `_id`, not `id` — never assume `.id` exists on API responses
+- Project listings (public and admin) order by `rank` desc, then `created_at` asc. `rank` is the
+  admin console's 0–5 star value (0 = unranked); APIs clamp it to a non-negative integer
+- Blog listings (public and admin) order by `rank` desc, then `publish_date` desc, with the same
+  0–5 star `rank` clamp
 
 ## TESTING
 
@@ -122,7 +128,9 @@ click a figure to view it full-size in an overlay — Esc/backdrop/close button)
 
 ### Frontend — admin components
 `components/admin/AdminLayout`, `components/admin/Sidebar`, `components/admin/ProjectsTable`,
-`components/admin/ProjectFormDrawer`, `components/admin/CVsManager`, `components/admin/TelemetryChart`
+`components/admin/ProjectFormDrawer`, `components/admin/StarRank`, `components/admin/CVsManager`,
+`components/admin/TelemetryChart` (`StarRank`: five-star rank control for projects and blogs; click
+to set, click the active star to clear; drives listing order)
 
 ### Frontend — data/context/utils
 `data/profile.js`, `data/stats.js`, `data/techStack.js`, `context/AuthContext.jsx` (+ `context/authContext.js`),

@@ -1,4 +1,4 @@
-// GET /api/blogs – public blog listing (published only, newest first).
+// GET /api/blogs – public blog listing (published only, ranked first).
 // Mirrors backend GET /api/blogs. Admin blog CRUD lives in /api/admin/blogs.
 import { getAdminClient } from '../_lib/supabase.js';
 import { blogFromRow } from '../_lib/serializers.js';
@@ -12,6 +12,7 @@ export default async function handler(req, res) {
       .from('blogs')
       .select('*')
       .eq('status', 'published')
+      .order('rank', { ascending: false })
       .order('publish_date', { ascending: false });
 
     if (error) return internalError(res, 'Failed to fetch blogs');

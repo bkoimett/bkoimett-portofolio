@@ -95,6 +95,28 @@ export default function AdminDashboard() {
     setConfirmDeleteId(null);
   };
 
+  const handleRank = async (id, rank) => {
+    try {
+      await api.put(`/projects/${id}`, { rank });
+      setSuccess(rank ? `Record ranked ${rank} of 5` : 'Rank cleared');
+      setError('');
+      await loadProjects();
+    } catch {
+      setError('Failed to save ranking');
+    }
+  };
+
+  const handleRankBlog = async (id, rank) => {
+    try {
+      await api.put(`/admin/blogs/${id}`, { rank });
+      setSuccess(rank ? `Post ranked ${rank} of 5` : 'Rank cleared');
+      setError('');
+      await loadBlogs();
+    } catch {
+      setError('Failed to save ranking');
+    }
+  };
+
   const openNewBlogForm = () => {
     setEditingBlogId(null);
     setEditingBlog(null);
@@ -278,6 +300,7 @@ export default function AdminDashboard() {
                   projects={projects}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
+                  onRank={handleRank}
                   confirmDeleteId={confirmDeleteId}
                   setConfirmDeleteId={setConfirmDeleteId}
                 />
@@ -307,6 +330,7 @@ export default function AdminDashboard() {
                   blogs={blogs}
                   onEdit={handleEditBlog}
                   onDelete={handleDeleteBlog}
+                  onRank={handleRankBlog}
                   confirmDeleteId={confirmBlogDeleteId}
                   setConfirmDeleteId={setConfirmBlogDeleteId}
                 />

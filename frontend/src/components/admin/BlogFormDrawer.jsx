@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../utils/api';
+import StarRank from './StarRank';
 
 const emptyForm = {
   title: '',
@@ -10,6 +11,7 @@ const emptyForm = {
   tags: [],
   readTime: '5 min read',
   status: 'draft',
+  rank: 0,
 };
 
 const BlogFormDrawer = ({ isOpen, onClose, blogId, initialData, onSaved }) => {
@@ -34,6 +36,7 @@ const BlogFormDrawer = ({ isOpen, onClose, blogId, initialData, onSaved }) => {
         tags: initialData.tags || [],
         readTime: initialData.readTime || '5 min read',
         status: initialData.status || 'draft',
+        rank: initialData.rank || 0,
       });
     } else {
       setFormData(emptyForm);
@@ -246,6 +249,21 @@ const BlogFormDrawer = ({ isOpen, onClose, blogId, initialData, onSaved }) => {
                   <option value="draft">Draft</option>
                   <option value="published">Published</option>
                 </select>
+              </div>
+              <div className="sm:col-span-2">
+                <span className="mb-1 block font-mono text-[12px] uppercase tracking-[0.08em] text-ink-muted">
+                  Rank
+                </span>
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border border-rule bg-paper-strong px-3 py-2.5">
+                  <StarRank
+                    value={formData.rank || 0}
+                    onChange={(rank) => setFormData((prev) => ({ ...prev, rank }))}
+                    size="md"
+                  />
+                  <span className="file-index-sm">
+                    Higher rank surfaces this record first on the blog index.
+                  </span>
+                </div>
               </div>
               <div className="sm:col-span-2">
                 <label className="mb-1 block font-mono text-[12px] uppercase tracking-[0.08em] text-ink-muted" htmlFor="f-image">

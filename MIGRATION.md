@@ -30,11 +30,13 @@ Render from the public path entirely.
 
 **projects** — `title`, `slug` (unique), `description`, `category`, `image` (external URL
 or `/api/images/:id`), `technologies[]`, `github`, `demo`, `highlights[]`, `content`,
-`publishDate`, `tags[]`, `readTime`, `status` (`draft`|`published`), `views`,
+`publishDate`, `tags[]`, `readTime`, `status` (`draft`|`published`), `views`, `rank`
+(0–5 manual star; public/admin listings order `rank` desc then `createdAt` asc),
 `createdAt`, `updatedAt`.
 
 **blogs** — `title`, `slug` (unique), `description`, `content` (required), `image`, `tags[]`,
-`readTime`, `publishDate`, `status` (`draft`|`published`), `views`, `createdAt`,
+`readTime`, `publishDate`, `status` (`draft`|`published`), `views`, `rank`
+(0–5 manual star; public/admin listings order `rank` desc then `publishDate` desc), `createdAt`,
 `updatedAt`.
 
 **cvs** — `label`, `fileName`, `contentType`, `size`, `fileId` (GridFS ObjectId),
@@ -131,6 +133,9 @@ Supabase additions (Phase 1+): `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`,
 
 - [x] `supabase/migrations/0001_initial_schema.sql` — tables, indexes, constraints, RLS
 - [x] `supabase/migrations/0002_storage.sql` — buckets + storage policies
+- [x] `supabase/migrations/0003_views_rpc.sql` — atomic view counters
+- [x] `supabase/migrations/0004_projects_rank.sql` — `projects.rank` star ranking (admin console)
+- [x] `supabase/migrations/0005_blogs_rank.sql` — `blogs.rank` star ranking (admin console)
 - [x] `frontend/api/_lib/supabase.js` — server-side client abstraction
 - [x] `@supabase/supabase-js` added to frontend (Vercel functions) and backend (migration tooling)
       — backend install lands with Phase 2 tooling

@@ -19,6 +19,7 @@ export function projectFromRow(row) {
     readTime: row.read_time,
     status: row.status,
     views: row.views,
+    rank: row.rank ?? 0,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -37,6 +38,7 @@ export function blogFromRow(row) {
     publishDate: row.publish_date,
     status: row.status,
     views: row.views,
+    rank: row.rank ?? 0,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };

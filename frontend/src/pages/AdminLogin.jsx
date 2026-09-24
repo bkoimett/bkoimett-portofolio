@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import SEO from '../components/SEO';
 import { useAuth } from '../context/authContext';
-import ThemeToggle from '../components/ThemeToggle';
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -56,7 +55,6 @@ export default function AdminLogin() {
             Registry Console
             <span className="file-index-sm hidden sm:inline">// SIGN IN</span>
           </Link>
-          <ThemeToggle />
         </div>
       </header>
 
