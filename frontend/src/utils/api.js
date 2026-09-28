@@ -7,6 +7,11 @@ if (rawBase.includes('localhost') && typeof window !== 'undefined' && !window.lo
 }
 const baseURL = rawBase.endsWith('/api') ? rawBase : `${rawBase}/api`;
 
+/* The origin that serves /api paths such as images and uploaded files. Kept
+   here so media URLs resolve exactly the way requests do, including the
+   localhost guard above. */
+export const mediaOrigin = baseURL.endsWith('/api') ? baseURL.slice(0, -4) : baseURL;
+
 const api = axios.create({ baseURL });
 
 api.interceptors.request.use((config) => {

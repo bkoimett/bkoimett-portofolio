@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
+import { SkeletonBar, SkeletonTableRows } from '../components/primitives/Skeleton';
 import SEO from '../components/SEO';
 import { useAuth } from '../context/authContext';
 import AdminLayout from '../components/admin/AdminLayout';
@@ -207,7 +208,21 @@ export default function AdminDashboard() {
       </nav>
 
       {loading ? (
-        <p className="file-index-sm py-16">Opening the console…</p>
+        <div className="py-8">
+          <p className="file-index-sm">Opening the console</p>
+          <div className="mt-6 grid grid-cols-1 gap-x-10 sm:grid-cols-3">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="ledger-row">
+                <SkeletonBar w="120px" h={10} />
+                <SkeletonBar w="96px" h={34} className="mt-3" />
+                <SkeletonBar w="140px" h={10} className="mt-3" />
+              </div>
+            ))}
+          </div>
+          <div className="mt-10">
+            <SkeletonTableRows rows={6} label="Pulling the register" />
+          </div>
+        </div>
       ) : (
         <>
           {activeTab === 'dashboard' && (

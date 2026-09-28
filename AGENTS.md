@@ -34,11 +34,11 @@
 - `backend/seedAdmin.js` — Script to create initial admin user (legacy)
 - `backend/eslint.config.js` — ESLint flat config
 - `backend/tests/` — API tests (node:test + supertest, models mocked)
-- `frontend/src/pages/` — Page components (Home, Projects, About, AdminLogin, AdminDashboard, AdminSettings, ProjectDetail, NotFound)
-- `frontend/src/components/` — Shared primitives (Layout, Container, Section, SectionHeading, Button, Card, StatusBadge, StatCard, ProjectCard, Footer, ScrollToTop, NotFound, ProtectedRoute, ThemeToggle)
+- `frontend/src/pages/` — Page components (Home, Projects, ProjectDetail, Blog, BlogDetail, About, AdminLogin, AdminDashboard, AdminSettings, NotFound)
+- `frontend/src/components/` — Shared primitives (Layout, Container, Section, SectionHeading, Button, Card, StatusBadge, StatCard, ProjectCard, Footer, ScrollToTop, NotFound, ProtectedRoute, ThemeToggle, Skeleton, SchematicPlate, RecordFigure, CaseNotes, RichText)
 - `frontend/src/components/admin/` — Admin components (AdminLayout, Sidebar, CVsManager, TelemetryChart, ProjectsTable, ProjectFormDrawer, StarRank)
 - `frontend/src/context/` — AuthContext.jsx, ThemeContext.jsx
-- `frontend/src/utils/` — api.js, auth.js, cv.js
+- `frontend/src/utils/` — api.js, auth.js, cv.js, images.js, plates.js, richText.js
 
 ## ENVIRONMENT
 
@@ -97,6 +97,12 @@ Frontend (optional .env):
   admin console's 0–5 star value (0 = unranked); APIs clamp it to a non-negative integer
 - Blog listings (public and admin) order by `rank` desc, then `publish_date` desc, with the same
   0–5 star `rank` clamp
+- View counts are incremented with `POST /projects/:id/view` and `POST /blogs/:id/view` — the
+  Express route shape. `vercel.json` rewrites that shape onto the Vercel `[id]` functions, so do
+  not call `POST /projects/:id` (it 404s on Express and silently never counts)
+- Media paths (`/api/images/...`) must be resolved through `utils/images.js` `resolveImage`, which
+  reuses the API client's origin including its localhost guard, so images resolve the same way
+  requests do. Never build an API origin by hand in a component
 
 ## TESTING
 
@@ -121,10 +127,15 @@ Design language: Registry Office. See `@DESIGN.md` for tokens and conventions.
 `CookieConsent`, `WhatsAppButton`, `ProtectedRoute`, `primitives/Container`, `primitives/Section`,
 `primitives/SectionHeading`, `primitives/Button`, `primitives/Card`, `primitives/StatusBadge`,
 `primitives/StatCard`, `primitives/ProjectCard`, `primitives/SystemMap`, `primitives/StatNumber`,
-`primitives/ExpandableImage` (`SystemMap`: survey plat of filed systems with status tokens;
-`StatNumber`: count-up ledger numerals; `CookieConsent`: bottom notice bar, accept/reject remembered
-in localStorage, footer reopens; `WhatsAppButton`: fixed bottom-right wa.me link; `ExpandableImage`:
-click a figure to view it full-size in an overlay — Esc/backdrop/close button)
+`primitives/ExpandableImage`, `primitives/Skeleton`, `primitives/SchematicPlate`,
+`primitives/RecordFigure`, `primitives/CaseNotes`, `primitives/RichText` (`SystemMap`: survey plat
+of filed systems with status tokens; `StatNumber`: count-up ledger numerals; `CookieConsent`: bottom
+notice bar, accept/reject remembered in localStorage, footer reopens; `WhatsAppButton`: fixed
+bottom-right wa.me link; `ExpandableImage`: click a figure to view it full-size in an overlay —
+Esc/backdrop/close button; `Skeleton`: one placeholder per waiting shape, announced with
+role=status; `SchematicPlate`: drawn survey plate for a record with no photograph, shape derived
+from its stack; `RecordFigure`: a record's own image, else a plate, never nothing; `CaseNotes`:
+standfirst + ruled sections; `RichText`: console-authored copy as filed text, no markdown dep)
 
 ### Frontend — admin components
 `components/admin/AdminLayout`, `components/admin/Sidebar`, `components/admin/ProjectsTable`,
@@ -133,16 +144,22 @@ click a figure to view it full-size in an overlay — Esc/backdrop/close button)
 to set, click the active star to clear; drives listing order)
 
 ### Frontend — data/context/utils
-`data/profile.js`, `data/stats.js`, `data/techStack.js`, `context/AuthContext.jsx` (+ `context/authContext.js`),
-`context/ThemeContext.jsx` (+ `context/themeContext.js`), `utils/api.js`, `utils/auth.js`, `utils/cv.js`
+`data/profile.js`, `data/stats.js`, `data/techStack.js`, `data/caseNotes.js` (authored public copy,
+one entry per project slug), `data/fallbackRecords.js` (API-failure fallback for public pages),
+`context/AuthContext.jsx` (+ `context/authContext.js`), `context/ThemeContext.jsx` (+
+`context/themeContext.js`), `utils/api.js`, `utils/auth.js`, `utils/cv.js`, `utils/images.js`
+(`resolveImage`), `utils/plates.js` (stack to plate shape), `utils/richText.js` (console copy parser
++ `isConsoleCopy` boilerplate check)
 
 ### Frontend — pages
 `App.jsx`, `index.css`, `index.html`, `pages/Home.jsx`, `pages/Projects.jsx`,
-`pages/ProjectDetail.jsx`, `pages/About.jsx`, `pages/AdminLogin.jsx`,
+`pages/ProjectDetail.jsx`, `pages/Blog.jsx`, `pages/BlogDetail.jsx`, `pages/About.jsx`,
+`pages/AdminLogin.jsx`,
 `pages/AdminDashboard.jsx`, `pages/AdminSettings.jsx`
 
 Removed during redesign: `data/terminalCommands.js`, `lib/telemetry.js`, `src/styles/*`,
-Material Symbols icon font (no icon fonts anywhere on the site).
+Material Symbols icon font (no icon fonts anywhere on the site), `utils/richText.jsx` and the
+`react-markdown` rendering path on public pages (`.markdown-body` became `.rich-text`).
 
 ### Modified — backend
 `models/Project.js`, `index.js`, `gridfs.js`, `models/CV.js`, `tests/api.test.js`

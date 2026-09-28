@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import RecordFigure from './RecordFigure';
 
-const ProjectCard = ({ project, regNo, className = '', showImage = true }) => {
+const ProjectCard = ({ project, regNo, className = '', showFigure = true }) => {
   const number = regNo || '––';
 
   return (
@@ -11,37 +12,34 @@ const ProjectCard = ({ project, regNo, className = '', showImage = true }) => {
           <span className="file-index-sm">{number}</span>
         </div>
 
-        <div
-          className={
-            showImage
-              ? 'order-last mt-4 md:order-none md:col-span-8'
-              : 'md:col-span-10'
-          }
-        >
+        <div className={showFigure ? 'order-last mt-4 md:order-none md:col-span-8' : 'md:col-span-10'}>
           <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-            <h3 className="text-title-sm text-ink font-semibold">
+            <h3 className="text-title-sm font-semibold text-ink">
               <Link
                 to={`/projects/${project.slug}`}
-                className="group-hover:text-registry transition-colors"
+                className="transition-colors group-hover:text-registry"
               >
                 {project.title}
               </Link>
             </h3>
-            <span className="file-index-sm uppercase tracking-[0.08em]">
-              {project.category}
-            </span>
+            {project.category && (
+              <span className="file-index-sm uppercase tracking-[0.08em]">{project.category}</span>
+            )}
           </div>
 
-          <p className="mt-1.5 max-w-[68ch] text-body-sm text-ink-muted">
-            {project.description}
-          </p>
+          <p className="mt-1.5 max-w-[68ch] text-body-sm text-ink-muted">{project.description}</p>
 
           <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2">
-            <div className="flex flex-wrap gap-x-3 gap-y-1 font-mono text-[13px] text-ink-muted">
-              {project.technologies?.map((tech) => (
-                <span key={tech}>{tech}</span>
-              ))}
-            </div>
+            {project.technologies?.length > 0 && (
+              <div className="flex flex-wrap gap-x-3 gap-y-1 font-mono text-[13px] text-ink-muted">
+                {project.technologies.slice(0, 5).map((tech) => (
+                  <span key={tech}>{tech}</span>
+                ))}
+                {project.technologies.length > 5 && (
+                  <span className="text-ink-muted/70">+{project.technologies.length - 5}</span>
+                )}
+              </div>
+            )}
             <span aria-hidden="true" className="hidden text-rule-strong md:inline">
               │
             </span>
@@ -66,24 +64,22 @@ const ProjectCard = ({ project, regNo, className = '', showImage = true }) => {
                   Live
                 </a>
               )}
-              <Link
-                className="filigree text-[14px] font-medium"
-                to={`/projects/${project.slug}`}
-              >
-                Record
+              <Link className="filigree text-[14px] font-medium" to={`/projects/${project.slug}`}>
+                Case file
               </Link>
             </div>
           </div>
         </div>
 
-        {showImage && project.image && (
+        {showFigure && (
           <div className="mt-4 md:col-span-2 md:mt-0">
-            <img
-              src={project.image}
-              alt=""
-              loading="lazy"
-              className="aspect-[4/3] w-full border border-rule object-cover"
-            />
+            <Link to={`/projects/${project.slug}`} tabIndex={-1} aria-hidden="true">
+              <RecordFigure
+                project={project}
+                compact
+                imageClassName="aspect-[4/3] w-full border border-rule object-cover"
+              />
+            </Link>
           </div>
         )}
       </div>

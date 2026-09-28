@@ -220,12 +220,14 @@ so proxying the 10MB CV upload through a function would be futile before Storage
 - [x] `bcryptjs` + `jsonwebtoken` in `frontend/package.json` (with lockfile)
 - [x] Auth: POST `/api/admin/login` → `api/admin/login.js`; PUT `/api/admin/settings` → `api/admin/settings.js`
 - [x] Projects: `api/projects/index.js` (admin-aware GET + POST create), `api/projects/[id].js`
-      (GET/PUT/DELETE, JWT), `api/projects/slug/[slug].js` (public),
-      `api/projects/[id]/view.js` (public POST)
+      (GET/PUT/DELETE/POST-view, JWT), `api/projects/slug/[slug].js` (public)
 - [x] Blogs: `api/blogs/index.js` (public), `api/blogs/slug/[slug].js` (public),
-      `api/blogs/[id]/view.js` (public POST), `api/admin/blogs/index.js` (GET list + POST create),
-      `api/admin/blogs/[id].js` (PUT/DELETE)
-- [x] `api/contact.js` — no-op ack (parity with legacy)
+      `api/admin/blogs/index.js` (GET list + POST create), `api/admin/blogs/[id].js` (PUT/DELETE)
+- [x] `vercel.json` rewrites `POST /api/projects/:id/view` and `POST /api/blogs/:id/view` onto the
+      existing `[id]` functions, so the public view-count contract matches Express without adding
+      functions (Hobby cap is 12; the set is deliberately at 10)
+- [ ] `api/contact.js` — no-op ack (parity with legacy). **Still missing from the tree**; the
+      `/api/*` rewrite to Render covers it, so it is a Phase 3 completion item, not a regression
 - [x] `api/sitemap.js` now reads published slugs/dates directly from Supabase — Render
       dependency removed from the sitemap path
 - [x] Frontend `npm run lint` + `npm run build` green

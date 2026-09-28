@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import api from '../../utils/api';
+import { SkeletonBar } from '../primitives/Skeleton';
 
 const formatSize = (bytes) => {
   if (!bytes && bytes !== 0) return '–';
@@ -233,11 +234,17 @@ const CVsManager = () => {
           <tbody>
             {loading ? (
               <tr>
-                <td
-                  colSpan="6"
-                  className="py-6 font-mono text-[13px] text-ink-muted"
-                >
-                  Opening the CV files…
+                <td colSpan="6" className="py-5">
+                  <span className="sr-only">Pulling the filed CVs</span>
+                  <div aria-hidden="true" className="space-y-3">
+                    {[0, 1, 2].map((i) => (
+                      <div key={i} className="flex items-center gap-6">
+                        <SkeletonBar w="38%" h={13} />
+                        <SkeletonBar w="22%" h={13} />
+                        <SkeletonBar w="14%" h={13} />
+                      </div>
+                    ))}
+                  </div>
                 </td>
               </tr>
             ) : cvs.length === 0 ? (

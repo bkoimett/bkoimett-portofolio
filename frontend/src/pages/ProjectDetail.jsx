@@ -1,94 +1,100 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../utils/api';
-import ReactMarkdown from 'react-markdown';
 import SEO from '../components/SEO';
 import { SITE_URL } from '../utils/seo';
-import StatusBadge from '../components/primitives/StatusBadge';
-import ExpandableImage from '../components/primitives/ExpandableImage';
+import RecordFigure from '../components/primitives/RecordFigure';
+import { resolveImage } from '../utils/images';
+import CaseNotes from '../components/primitives/CaseNotes';
+import { SkeletonSheet } from '../components/primitives/Skeleton';
 
-const formatDate = (date) =>
-  new Date(date).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
+const formatDate = (date) => {
+  const parsed = new Date(date);
+  if (Number.isNaN(parsed.getTime())) return null;
+  return parsed.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+};
 
-function resolveImage(src) {
-  if (!src) return null;
-  if (/^https?:\/\//.test(src)) return src;
-  if (src.startsWith('/api/')) {
-    const base = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '').replace(/\/api$/, '');
-    if (base && base.startsWith('http')) return `${base}${src}`;
-    return src;
+/* BK-026-041 – a stable reference number derived from the record's own slug,
+   so the same case file is numbered the same way everywhere it appears. */
+const referenceNo = (slug = '') => {
+  let h = 2166136261;
+  for (let i = 0; i < slug.length; i += 1) {
+    h ^= slug.charCodeAt(i);
+    h = Math.imul(h, 16777619) >>> 0;
   }
-  return src;
-}
+  return `BK-026-${String((h % 900) + 100)}`;
+};
+
+const availability = (project) => {
+  if (project.demo) return { label: 'Live deployment', value: 'In service' };
+  if (project.github) return { label: 'Source', value: 'Filed' };
+  return { label: 'Availability', value: 'File only' };
+};
 
 export default function ProjectDetail() {
   const { slug } = useParams();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const viewCountRef = useRef(0);
+  const viewedRef = useRef(null);
 
   useEffect(() => {
     const controller = new AbortController();
     setLoading(true);
     setError(null);
     setProject(null);
+
     const fetchProject = async () => {
       try {
         const response = await api.get(`/projects/slug/${slug}`, { signal: controller.signal });
-        if (!controller.signal.aborted) {
-          setProject(response.data);
-          viewCountRef.current = response.data.views || 0;
-        }
-      } catch (err) {
         if (controller.signal.aborted) return;
-        if (err.name === 'CanceledError' || err.name === 'AbortError') return;
-        setError('Project not found');
+        setProject(response.data);
+      } catch (err) {
+        if (controller.signal.aborted || err.name === 'CanceledError' || err.name === 'AbortError') return;
+        setError('This case file is not in the index.');
       } finally {
         if (!controller.signal.aborted) setLoading(false);
       }
     };
+
     fetchProject();
     return () => controller.abort();
   }, [slug]);
 
   useEffect(() => {
-    if (project?._id && viewCountRef.current !== project._id) {
-      viewCountRef.current = project._id;
-      const ctrl = new AbortController();
-      api.post(`/projects/${project._id}`, {}, { signal: ctrl.signal }).catch(() => {});
-      return () => ctrl.abort();
+    if (project?._id && viewedRef.current !== project._id) {
+      viewedRef.current = project._id;
+      const controller = new AbortController();
+      api.post(`/projects/${project._id}/view`, {}, { signal: controller.signal }).catch(() => {});
+      return () => controller.abort();
     }
+    return undefined;
   }, [project]);
 
-  if (loading) {
-    return (
-      <div className="container-page py-24">
-        <div className="mx-auto max-w-[72ch]">
-          <p className="file-index-sm">Opening the file…</p>
-          <div className="mt-6 h-8 w-2/3 animate-pulse bg-paper-strong" />
-          <div className="mt-4 h-4 w-full animate-pulse bg-paper-strong" />
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <SkeletonSheet label="Opening the case file" />;
 
   if (error || !project) {
     return (
       <div className="container-page py-24">
-        <div className="mx-auto max-w-[72ch] text-center">
-          <p className="file-index-sm">REF. NOT FOUND – 404</p>
-          <h1 className="mt-3 text-heading-xl font-semibold text-ink">Not on record</h1>
-          <p className="mt-3 text-body text-ink-muted">This case file does not exist. It may have been moved or never filed.</p>
-          <Link to="/projects" className="btn btn-primary mt-8">Return to the index</Link>
+        <div className="mx-auto max-w-[62ch]">
+          <p className="file-index-sm">Ref. 404 – not in the index</p>
+          <h1 className="mt-2 text-heading-xl font-semibold text-ink">Not on record</h1>
+          <p className="mt-3 text-body text-ink-muted">
+            No case file answers to this reference. It may have been renamed, or the
+            record may never have been filed. The index below lists everything that has.
+          </p>
+          <Link to="/projects" className="btn btn-primary mt-8">
+            Open the project index
+          </Link>
         </div>
       </div>
     );
   }
+
+  const imgSrc = resolveImage(project.image);
+  const filed = formatDate(project.publishDate);
+  const regNo = referenceNo(project.slug);
+  const status = availability(project);
 
   const projectJsonLd = {
     '@context': 'https://schema.org',
@@ -96,17 +102,15 @@ export default function ProjectDetail() {
     name: project.title,
     description: project.description,
     url: `${SITE_URL}/projects/${project.slug}`,
-    image: resolveImage(project.image) || `${SITE_URL}/og-cover.png`,
+    image: imgSrc || `${SITE_URL}/og-cover.png`,
     author: { '@type': 'Person', name: 'Benjamin Kiprotich Koimett' },
     applicationCategory: project.category || 'WebApplication',
     operatingSystem: 'Web',
     keywords: (project.technologies || []).join(', '),
   };
 
-  const imgSrc = resolveImage(project.image);
-
   return (
-    <div className="container-page py-14">
+    <div className="container-page pt-10 pb-24">
       <SEO
         title={project.title}
         description={project.description}
@@ -120,77 +124,45 @@ export default function ProjectDetail() {
       <div className="mx-auto max-w-[72ch]">
         <Link
           to="/projects"
-          className="inline-flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.1em] text-ink-muted hover:text-registry"
+          className="filigree font-mono text-[12px] uppercase tracking-[0.1em] text-ink-muted"
         >
           <span aria-hidden="true">←</span> Project index
         </Link>
 
         <article className="mt-8">
-          {/* Symmetrical header – identical rhythm to BlogDetail */}
-          <header className="border-y border-rule py-8">
-            <div className="file-index-sm flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-center md:justify-start md:text-left">
-              <span>BK / PROD.</span>
-              <span className="hidden h-3 w-px bg-rule-strong md:block" aria-hidden="true" />
-              <span>{project.views != null ? `${project.views} views` : 'FILE OPEN'}</span>
-              {project.publishDate && (
-                <>
-                  <span className="hidden h-3 w-px bg-rule-strong md:block" aria-hidden="true" />
-                  <span>FILED {formatDate(project.publishDate)}</span>
-                </>
-              )}
-              {project.category && (
-                <>
-                  <span className="hidden h-3 w-px bg-rule-strong md:block" aria-hidden="true" />
-                  <span>DIV. {project.category}</span>
-                </>
-              )}
-            </div>
+          <header>
+            <p className="file-index-sm">
+              {regNo}
+              {project.category && <> · {project.category}</>}
+              {filed && <> · Filed {filed}</>}
+            </p>
 
-            <h1 className="mt-4 text-center text-heading-xl font-semibold leading-tight text-ink md:text-left">{project.title}</h1>
-            <p className="mx-auto mt-3 max-w-[62ch] text-center text-body text-ink-muted md:mx-0 md:text-left">{project.description}</p>
-
-            <div className="mt-5 flex flex-wrap items-center justify-center gap-2 md:justify-start">
-              <StatusBadge>{project.views ? `${project.views} views` : '0 views'}</StatusBadge>
-              {project.readTime && <StatusBadge>{project.readTime}</StatusBadge>}
-              {project.category && <StatusBadge>{project.category}</StatusBadge>}
-            </div>
+            <h1 className="mt-3 text-heading-xl font-semibold leading-[1.08] text-ink">
+              {project.title}
+            </h1>
+            <p className="mt-4 max-w-[62ch] text-body text-ink-muted">{project.description}</p>
           </header>
 
-          {/* Symmetrical figure – framed, same as BlogDetail */}
-          <figure className="mt-8 border border-rule bg-paper-strong p-2">
-            {imgSrc ? (
-              <ExpandableImage
-                src={imgSrc}
-                alt={project.title}
-                caption={`BK-PROD-${project.slug}`}
-                className="aspect-[16/9] w-full object-cover"
-              />
-            ) : (
-              <div className="flex aspect-[16/9] w-full items-center justify-center border border-dashed border-rule-strong bg-paper">
-                <span className="file-index-sm text-center">No figure on file – add title image in console</span>
-              </div>
-            )}
-            <figcaption className="flex items-center justify-between px-2 pt-2">
-              <span className="file-index-sm">FIG. BK-PROD – {project.slug}</span>
-              <span className="file-index-sm">{project.technologies?.length ? `${project.technologies.length} tools` : '–'}</span>
-            </figcaption>
+          <figure className="mt-8">
+            <RecordFigure
+              project={project}
+              figureNo={regNo}
+              expandable
+              imageClassName="aspect-[16/9] w-full border border-rule object-cover"
+            />
           </figure>
 
-          {project.content ? (
-            <div className="markdown-body mt-8">
-              <ReactMarkdown>{project.content}</ReactMarkdown>
-            </div>
-          ) : (
-            <p className="mt-8 text-body text-ink-muted">{project.description}</p>
-          )}
+          <CaseNotes project={project} />
 
-          {/* Symmetrical meta ledger */}
           {project.technologies?.length > 0 && (
-            <div className="mt-10 border-y border-rule py-6">
-              <h2 className="file-index-sm text-center uppercase tracking-[0.12em] md:text-left">In the build</h2>
-              <div className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-1.5 font-mono text-[13px] text-ink md:justify-start">
+            <div className="mt-10">
+              <h2 className="file-index-sm border-b border-rule pb-2">Built with</h2>
+              <div className="mt-3 flex flex-wrap gap-2">
                 {project.technologies.map((tech) => (
-                  <span key={tech} className="border border-rule px-2.5 py-1">
+                  <span
+                    key={tech}
+                    className="border border-rule px-2.5 py-1 font-mono text-[12px] text-ink-muted"
+                  >
                     {tech}
                   </span>
                 ))}
@@ -198,36 +170,65 @@ export default function ProjectDetail() {
             </div>
           )}
 
-          <div className="mt-8 flex flex-col gap-4 border-t border-rule pt-6 sm:flex-row sm:items-center sm:justify-between">
-            <Link to="/projects" className="btn btn-stroke">
-              ← Back to index
-            </Link>
-            <div className="flex flex-wrap items-center justify-center gap-3 sm:justify-end">
-              {project.github && (
-                <a href={project.github} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
-                  Source
-                </a>
-              )}
-              {project.demo && (
-                <a href={project.demo} target="_blank" rel="noopener noreferrer" className="btn btn-stroke">
-                  Live deployment
-                </a>
-              )}
+          <div className="mt-10 border-y border-rule py-6">
+            <h2 className="file-index-sm">Record</h2>
+            <div className="record-grid mt-2">
+              <div className="record-cell">
+                <p className="file-index-sm">Reference</p>
+                <p className="mt-0.5 font-mono text-[13px] text-ink">{regNo}</p>
+              </div>
+              <div className="record-cell">
+                <p className="file-index-sm">{status.label}</p>
+                <p className="mt-0.5 font-mono text-[13px] text-ink">{status.value}</p>
+              </div>
+              <div className="record-cell">
+                <p className="file-index-sm">Division</p>
+                <p className="mt-0.5 font-mono text-[13px] text-ink">{project.category || 'General'}</p>
+              </div>
+              <div className="record-cell">
+                <p className="file-index-sm">Tools on file</p>
+                <p className="mt-0.5 font-mono text-[13px] text-ink">
+                  {String(project.technologies?.length || 0).padStart(2, '0')}
+                </p>
+              </div>
+              <div className="record-cell">
+                <p className="file-index-sm">Filed</p>
+                <p className="mt-0.5 font-mono text-[13px] text-ink">{filed || 'Not dated'}</p>
+              </div>
+              <div className="record-cell">
+                <p className="file-index-sm">Reads</p>
+                <p className="mt-0.5 font-mono text-[13px] text-ink">
+                  {project.views != null ? String(project.views) : '0'}
+                </p>
+              </div>
             </div>
           </div>
 
-          <div className="mt-8 rule-double" />
-
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-4 font-mono text-[12px] uppercase tracking-[0.08em] text-ink-muted md:justify-between">
-            <span>Ref. BK / PROD – {project.slug}</span>
-            <div className="flex gap-4">
-              <Link to="/blog" className="filigree">
-                Filed notes →
-              </Link>
-              <span className="text-rule-strong">·</span>
-              <Link to="/about" className="filigree">
-                Personnel →
-              </Link>
+          <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <Link to="/projects" className="btn btn-stroke">
+              <span aria-hidden="true">←</span> Back to the index
+            </Link>
+            <div className="flex flex-wrap gap-3">
+              {project.github && (
+                <a
+                  href={project.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-primary"
+                >
+                  Read the source
+                </a>
+              )}
+              {project.demo && (
+                <a
+                  href={project.demo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-stroke"
+                >
+                  Open the deployment
+                </a>
+              )}
             </div>
           </div>
         </article>
