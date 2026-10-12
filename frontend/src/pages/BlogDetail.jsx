@@ -1,10 +1,10 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import ReactMarkdown from 'react-markdown';
 import api from '../utils/api';
 import SEO from '../components/SEO';
 import { SITE_URL } from '../utils/seo';
 import StatusBadge from '../components/primitives/StatusBadge';
+import RichText from '../components/primitives/RichText';
 
 const formatDate = (d) => {
   if (!d) return null;
@@ -208,8 +208,8 @@ const BlogDetail = () => {
             </figcaption>
           </figure>
 
-          <div className="markdown-body mt-8">
-            <ReactMarkdown>{blog.content}</ReactMarkdown>
+          <div className="rich-text mt-8">
+            <RichText text={blog.content} />
           </div>
 
           {/* Symmetrical meta ledger — mirrors ProjectDetail "In the build" */}

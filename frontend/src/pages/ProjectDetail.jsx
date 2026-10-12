@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../utils/api';
-import ReactMarkdown from 'react-markdown';
 import SEO from '../components/SEO';
 import { SITE_URL } from '../utils/seo';
 import StatusBadge from '../components/primitives/StatusBadge';
+import RichText from '../components/primitives/RichText';
 
 const formatDate = (d) => {
   if (!d) return '—';
@@ -177,8 +177,8 @@ export default function ProjectDetail() {
           </figure>
 
           {project.content ? (
-            <div className="markdown-body mt-8">
-              <ReactMarkdown>{project.content}</ReactMarkdown>
+            <div className="rich-text mt-8">
+              <RichText text={project.content} />
             </div>
           ) : (
             <p className="mt-8 text-body text-ink-muted">{project.description}</p>
