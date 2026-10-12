@@ -108,7 +108,7 @@ Button copy names the action, sentence case: "Project records", "File new record
 | `layout/Footer` | Registry document footer (filing lines, record index, correspondence). Reads profile from `data/profile.js`. |
 | `components/Navbar` | Masthead — no icons, text nav, `bk / 026` monogram, shared `ThemeToggle`. |
 | `components/ThemeToggle` | Shared day/night toggle (mono text + glyph), used by Navbar and admin. |
-| `primitives/ProjectCard` | Case-file row: reg no., title, division, description, tech index, Source/Live/Record links, optional framed photo. |
+| `primitives/ProjectCard` | Case-file row: reg no., title, division, description, tech index, Source/Live/Record links, and a figure via `RecordFigure`. |
 | `primitives/StatCard` | Ruled fact row: hedge numeral + mono label. |
 | `primitives/SectionHeading` | Reference line (optional) + serif heading + short rule. |
 | `primitives/Button` | `primary` / `stroke` / `ghost` × `sm` / `md` / `lg`. |
@@ -116,7 +116,15 @@ Button copy names the action, sentence case: "Project records", "File new record
 | `primitives/StatusBadge` | Mono bordered tag (views, read time, status). |
 | `primitives/SystemMap` | Surveyor's plat of filed systems — 2×2 parcels on a hairline survey grid, status tokens (live = registry fill, source = hollow, file = muted), link to each case file. No red; the page's single stamp stays in the masthead. |
 | `primitives/StatNumber` | Counting hedge numeral: ticks up once on first scroll into view (ease-out, rAF), static if reduced-motion, static for non-numeric values (e.g. `24/7`). |
+| `primitives/ExpandableImage` | Click a project/blog figure to view it full-size in an overlay (paper backdrop, Esc / backdrop / close button, focus returns to the trigger). |
+| `primitives/SchematicPlate` | Drawn survey plate (inline SVG, no bitmap) for a record with no photograph: graph-paper ground, corner ticks, one diagonal hatch, a header row (`Pl. NN · shape`), a hairline legend, and a "Schematic · not a screenshot" stamp. Shape is chosen from the record's stack by `utils/plates.js` (`flow`, `chain`, `offline`, `store`, `agent`); `compact` swaps the header + legend for a two-cell mat. The plate is deliberately not a screenshot, so it never pretends to be a photograph of the app. |
+| `primitives/RecordFigure` | The figure rule: a record's own photograph if it has one, otherwise `SchematicPlate`. There is no third state, so no record is ever figureless. Image paths come from `utils/images.js` (`resolveImage`), which shares the API client's origin so media resolves the same way requests do. |
+| `primitives/CaseNotes` | The case file body: standfirst + 2–3 ruled sections (optional prose paragraphs, optional list). Copy typed into the console wins when it is not importer boilerplate (`isConsoleCopy`); otherwise the authored note in `data/caseNotes.js` is used; otherwise the record says so and points at the source. |
+| `primitives/RichText` | Renders console-authored content as filed copy (headings, lists, tables, code, blockquote rules) without a markdown dependency. Use for text typed into the console; use `CaseNotes` for authored public copy. |
+| `primitives/Skeleton` | Loading placeholders, one per shape: `SkeletonSheet` (page), `SkeletonRow` / `SkeletonIndex` (index rows), `SkeletonNoteRow` / `SkeletonNoteIndex` (notes), `SkeletonPlot` (system map), `SkeletonBar`, `SkeletonTableRows` (console). A skeleton is a block + ruled lines in the real layout's proportions, so nothing jumps when data lands. |
 | `primitives/Container` / `Section` | Layout primitives. |
+| `CookieConsent` | Fixed bottom notice bar (paper-strong, hairline top rule, mono index, Accept / Reject). Choice remembered in localStorage; footer "Cookie preferences" reopens. |
+| `WhatsAppButton` | Fixed bottom-right square button with inline-SVG WhatsApp glyph, `wa.me` link with prefilled greeting. z-order sits below the cookie bar. |
 | `utils/cv.js` | CV helpers: public download URL, share URL (+ clipboard copy), active-CV check. |
 
 ---
@@ -143,6 +151,18 @@ Button copy names the action, sentence case: "Project records", "File new record
 
 One orchestrated entrance per page, on the home masthead only (`.animate-rise`, 0.65s). All other motion answers a user action (menu open, drawer slide, hover colour change, hedge numerals ticking after the masthead entrance has settled). `prefers-reduced-motion: reduce` disables transitions and animation.
 
+Loading is the one exception: a skeleton is a static record sheet, with a single restrained sweep (`.skeleton` gradient, `--sheen`) crossing it once. The sweep repeats every ~2.4s and stops under `prefers-reduced-motion: reduce`. It is the only looping animation on the site and it never appears on a page that has data.
+
+---
+
+## Loading states
+
+A page that waits on the API must show a placeholder shaped like the thing it is waiting for, not a spinner and not an empty section. Three rules:
+
+1. **Shape from the destination.** `SkeletonSheet` for a single record, `SkeletonRow` / `SkeletonIndex` for an index, `SkeletonPlot` for the system map, `SkeletonTableRows` for console tables.
+2. **Announce, don't fill.** The waiting region carries `role="status"` and `aria-busy="true"` with a short label ("Pulling project records"), and a `.sr-only` live line for the console.
+3. **Every fetch resolves to content.** If the API fails, a public page renders `data/fallbackRecords.js` (Home, project index, blog index) rather than an error or a blank list; single-record pages render their not-found record.
+
 ---
 
 ## Focus & Accessibility
@@ -154,9 +174,16 @@ One orchestrated entrance per page, on the home masthead only (`.animate-rise`, 
 
 ---
 
-## Markdown (filed-document copy)
+## Filed copy (no markdown on public pages)
 
-Rendered via `react-markdown` inside `.markdown-body`: serif body, square list markers, mono inline code on `paper-strong`, `3px double` horizontal/blockquote rules, hairline tables with `paper-strong` heads.
+Public copy is authored as data or as JSX, not as markdown strings. Two paths, and they do not overlap:
+
+- **Authored public copy** — `data/caseNotes.js` holds one entry per record slug: a `standfirst` and 2–3 `sections` (prose `body` and/or a `list`). Rendered by `CaseNotes` as a standfirst plus ruled sub-headings. Registered slugs are checked against `backend/migrations/github-repos.json`; a slug in the database but not in the notes is a gap to fill, not a record to hide.
+- **Console copy** — content typed into the admin console is rendered by `RichText` (`.rich-text`): headings, lists, tables, code, blockquote rules. A small parser in `utils/richText.js` handles the markdown subset, so old console text keeps working and the reader never sees markdown source.
+
+`isConsoleCopy` in `utils/richText.js` recognises the importer's boilerplate ("Imported directly from the GitHub repository", "Add title image in console") so filler from a repo import is never published. Copy written in the console takes precedence over the authored note, because it is the record's own words.
+
+Project detail renders the figure, brief, case notes, tool index and a key/value record sheet (`.record-grid` / `.record-cell`: reference, availability, division, tools on file, filed date, reads).
 
 ---
 
@@ -166,6 +193,7 @@ Rendered via `react-markdown` inside `.markdown-body`: serif body, square list m
 - **Sidebar:** index of Dashboard / Projects / CVs / Settings + session stamp + log out.
 - **Metrics:** ledger fact rows, not cards.
 - **Tables:** hairline registry tables, mono column heads, two-step inline delete confirm.
+- **Ranking:** `components/admin/StarRank` (five stars; click to set, click the active star to clear). The projects and blogs tables carry a Rank column and both form drawers the same control. Higher rank sorts first on the landing page, project index and blog index; ties fall back to the previous order (oldest-first for projects, newest-first for posts). Backed by a `rank` integer (default 0) on the record.
 - **Forms:** `ProjectFormDrawer` (right-side filing form), `AdminSettings` (username / password / derived config — never raw secrets).
 - **CV records:** PDFs stored in GridFS (bucket `cvs`); metadata in the `CV` model. Exactly one record is `active` and is the only one served publicly (`/api/cv`, `/api/cv/download`). Uploads are PDF-only, ≤ 10MB, via the shared API client. Public `Download CV` (`btn-stroke`) / `Share CV` (`btn-ghost`) buttons render only when an active CV exists.
 - **API paths:** always `/projects` / `/admin/*` (client baseURL already includes `/api`).

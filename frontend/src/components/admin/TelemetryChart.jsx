@@ -15,7 +15,7 @@ const TelemetryChart = ({ projects }) => {
   return (
     <figure>
       <figcaption className="mb-4">
-        <p className="file-index-sm">CONSOLE — BK / TELEMETRY</p>
+        <p className="file-index-sm">CONSOLE – BK / TELEMETRY</p>
         <h3 className="mt-1 text-title font-semibold text-ink">
           Portfolio views by record
         </h3>

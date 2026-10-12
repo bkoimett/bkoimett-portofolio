@@ -7,31 +7,11 @@ import { cvDownloadUrl, fetchActiveCv, copyCvLink } from '../utils/cv';
 import ProjectCard from '../components/primitives/ProjectCard';
 import StatNumber from '../components/primitives/StatNumber';
 import SystemMap from '../components/primitives/SystemMap';
+import { SkeletonIndex, SkeletonPlot } from '../components/primitives/Skeleton';
 import { stats } from '../data/stats';
 import { techStack } from '../data/techStack';
 import { profile } from '../data/profile';
-
-const fallbackProjects = [
-  {
-    _id: '1',
-    slug: 'carefacility-platform',
-    title: 'CareFacility Platform',
-    description: 'Full-stack healthcare management system serving The Serenity Place rehabilitation center.',
-    category: 'Web Dev',
-    technologies: ['React', 'Node.js', 'MongoDB', 'PostgreSQL', 'TypeScript'],
-    github: 'https://github.com/bkoimett/carefacility',
-    demo: 'https://theserenityplace.vercel.app',
-  },
-  {
-    _id: '2',
-    slug: 'landledger',
-    title: 'LandLedger — blockchain title deed verification',
-    description: 'Immutable title deed verification platform preventing land fraud across East Africa.',
-    category: 'Blockchain',
-    technologies: ['TypeScript', 'Golang', 'Solana', 'Smart Contracts'],
-    github: 'https://github.com/bkoimett/land-ledge',
-  },
-];
+import { fallbackProjects } from '../data/fallbackRecords';
 
 const Home = () => {
   const [projects, setProjects] = useState([]);
@@ -42,12 +22,14 @@ const Home = () => {
 
   useEffect(() => {
     const controller = new AbortController();
-    fetchActiveCv({ signal: controller.signal }).then((activeCv) => {
-      if (!controller.signal.aborted) {
-        setCv(activeCv);
-        setCvLoading(false);
-      }
-    });
+    fetchActiveCv({ signal: controller.signal })
+      .then((activeCv) => {
+        if (!controller.signal.aborted) setCv(activeCv);
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!controller.signal.aborted) setCvLoading(false);
+      });
     return () => controller.abort();
   }, []);
 
@@ -64,7 +46,7 @@ const Home = () => {
         const response = await api.get('/projects', {
           signal: controller.signal,
         });
-        setProjects(response.data);
+        setProjects(Array.isArray(response.data) ? response.data : []);
       } catch (error) {
         if (error.name !== 'CanceledError' && error.name !== 'AbortError') {
           setProjects(fallbackProjects);
@@ -95,8 +77,8 @@ const Home = () => {
   return (
     <>
       <SEO
-        title="Full-Stack Engineer — React, Node.js, MERN"
-        description="Benjamin K. Koimett — full-stack software engineer (React, Node.js, MongoDB, Express) in Kisumu, Kenya. Shipping MERN production systems for healthcare, agriculture and land governance. Remote-ready — browse project records, blog case notes and CV."
+        title="Full-Stack Engineer – React, Node.js, MERN"
+        description="Benjamin K. Koimett – full-stack software engineer (React, Node.js, MongoDB, Express) in Kisumu, Kenya. Shipping MERN production systems for healthcare, agriculture and land governance. Remote-ready – browse project records, blog case notes and CV."
         canonical="/"
         keywords="Benjamin Koimett, full-stack engineer, React developer, Node.js, MERN, MongoDB Express, Kisumu Kenya remote, healthcare platform"
         jsonLd={homeJsonLd}
@@ -128,7 +110,7 @@ const Home = () => {
           </p>
 
           <p className="mt-4 max-w-[62ch] text-body text-ink-muted animate-rise animate-rise-delay">
-            I take projects from first commit to live deployment — building the
+            I take projects from first commit to live deployment – building the
             frontend, the backend, and the infrastructure between them. Based
             in Kisumu, Kenya. Remote-ready.
           </p>
@@ -189,7 +171,7 @@ const Home = () => {
       {/* System map */}
       <section className="container-page mt-24">
         <header>
-          <p className="file-index-sm">BK / NETWORK — PLAT OF FILED SYSTEMS</p>
+          <p className="file-index-sm">BK / NETWORK – PLAT OF FILED SYSTEMS</p>
           <h2 className="mt-1 text-heading-xl font-semibold text-ink">
             System map
           </h2>
@@ -199,18 +181,14 @@ const Home = () => {
         </header>
 
         <div className="mt-8">
-          {loaded ? (
-            <SystemMap projects={projects} />
-          ) : (
-            <p className="file-index-sm py-6">Plotting records…</p>
-          )}
+          {loaded ? <SystemMap projects={projects} /> : <SkeletonPlot />}
         </div>
       </section>
 
       {/* Production records */}
       <section className="container-page mt-24">
         <header>
-          <p className="file-index-sm">BK / PROD. — RECENTLY FILED</p>
+          <p className="file-index-sm">BK / PROD. – RECENTLY FILED</p>
           <h2 className="mt-1 text-heading-xl font-semibold text-ink">
             Production records
           </h2>
@@ -224,13 +202,13 @@ const Home = () => {
           {loaded ? (
             projects.slice(0, 4).map((project, i) => (
               <ProjectCard
-                key={project._id}
+                key={project._id || project.slug}
                 project={project}
                 regNo={`BK-${String(i + 1).padStart(3, '0')}`}
               />
             ))
           ) : (
-            <p className="file-index-sm py-6">Loading records…</p>
+            <SkeletonIndex rows={4} label="Pulling recent records" />
           )}
         </div>
 

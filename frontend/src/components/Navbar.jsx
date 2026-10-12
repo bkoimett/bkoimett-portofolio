@@ -35,7 +35,7 @@ const Navbar = () => {
           <Link
             to="/"
             className="flex items-baseline gap-2 font-serif text-lg font-semibold text-ink"
-            aria-label="Benjamin K. Koimett — home"
+            aria-label="Benjamin K. Koimett – home"
           >
             Benjamin K. Koimett
             <span className="hidden font-mono text-[11px] font-normal uppercase tracking-[0.14em] text-ink-muted sm:inline">

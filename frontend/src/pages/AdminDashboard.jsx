@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
+import { SkeletonBar, SkeletonTableRows } from '../components/primitives/Skeleton';
 import SEO from '../components/SEO';
 import { useAuth } from '../context/authContext';
 import AdminLayout from '../components/admin/AdminLayout';
@@ -95,6 +96,28 @@ export default function AdminDashboard() {
     setConfirmDeleteId(null);
   };
 
+  const handleRank = async (id, rank) => {
+    try {
+      await api.put(`/projects/${id}`, { rank });
+      setSuccess(rank ? `Record ranked ${rank} of 5` : 'Rank cleared');
+      setError('');
+      await loadProjects();
+    } catch {
+      setError('Failed to save ranking');
+    }
+  };
+
+  const handleRankBlog = async (id, rank) => {
+    try {
+      await api.put(`/admin/blogs/${id}`, { rank });
+      setSuccess(rank ? `Post ranked ${rank} of 5` : 'Rank cleared');
+      setError('');
+      await loadBlogs();
+    } catch {
+      setError('Failed to save ranking');
+    }
+  };
+
   const openNewBlogForm = () => {
     setEditingBlogId(null);
     setEditingBlog(null);
@@ -146,7 +169,7 @@ export default function AdminDashboard() {
       onSelect={setActiveTab}
       onLogout={handleLogout}
     >
-      <SEO title="Console — Registry" noindex />
+      <SEO title="Console – Registry" noindex />
       {activeTab !== 'settings' && (error || success) && (
         <div className="mb-6 flex flex-col gap-2">
           {error && (
@@ -185,13 +208,27 @@ export default function AdminDashboard() {
       </nav>
 
       {loading ? (
-        <p className="file-index-sm py-16">Opening the console…</p>
+        <div className="py-8">
+          <p className="file-index-sm">Opening the console</p>
+          <div className="mt-6 grid grid-cols-1 gap-x-10 sm:grid-cols-3">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="ledger-row">
+                <SkeletonBar w="120px" h={10} />
+                <SkeletonBar w="96px" h={34} className="mt-3" />
+                <SkeletonBar w="140px" h={10} className="mt-3" />
+              </div>
+            ))}
+          </div>
+          <div className="mt-10">
+            <SkeletonTableRows rows={6} label="Pulling the register" />
+          </div>
+        </div>
       ) : (
         <>
           {activeTab === 'dashboard' && (
             <section aria-labelledby="system-overview">
               <header className="border-b border-rule pb-6">
-                <p className="file-index-sm">CONSOLE — BK / SYS.</p>
+                <p className="file-index-sm">CONSOLE – BK / SYS.</p>
                 <h2
                   id="system-overview"
                   className="mt-1 text-heading font-semibold text-ink"
@@ -260,7 +297,7 @@ export default function AdminDashboard() {
             <section aria-labelledby="records-index">
               <header className="flex flex-wrap items-end justify-between gap-4 border-b border-rule pb-6">
                 <div>
-                  <p className="file-index-sm">REGISTRY — BK / PROD.</p>
+                  <p className="file-index-sm">REGISTRY – BK / PROD.</p>
                   <h2
                     id="records-index"
                     className="mt-1 text-heading font-semibold text-ink"
@@ -278,6 +315,7 @@ export default function AdminDashboard() {
                   projects={projects}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
+                  onRank={handleRank}
                   confirmDeleteId={confirmDeleteId}
                   setConfirmDeleteId={setConfirmDeleteId}
                 />
@@ -289,7 +327,7 @@ export default function AdminDashboard() {
             <section aria-labelledby="blog-records">
               <header className="flex flex-wrap items-end justify-between gap-4 border-b border-rule pb-6">
                 <div>
-                  <p className="file-index-sm">REGISTRY — BK / BLOG</p>
+                  <p className="file-index-sm">REGISTRY – BK / BLOG</p>
                   <h2
                     id="blog-records"
                     className="mt-1 text-heading font-semibold text-ink"
@@ -307,6 +345,7 @@ export default function AdminDashboard() {
                   blogs={blogs}
                   onEdit={handleEditBlog}
                   onDelete={handleDeleteBlog}
+                  onRank={handleRankBlog}
                   confirmDeleteId={confirmBlogDeleteId}
                   setConfirmDeleteId={setConfirmBlogDeleteId}
                 />

@@ -10,7 +10,7 @@ const roles = [
   {
     role: 'Software Engineer',
     org: 'Zone01 Kisumu',
-    period: 'Jan 2026 — Present',
+    period: 'Jan 2026 – Present',
     current: true,
     notes: [
       'Shipping full-stack applications with React, Vite, and Golang in a peer-driven 42 Network environment.',
@@ -21,7 +21,7 @@ const roles = [
   {
     role: 'Junior Frontend Developer',
     org: 'Occulus Technologies Ltd',
-    period: 'May 2025 — Dec 2025',
+    period: 'May 2025 – Dec 2025',
     current: false,
     notes: [
       'Built reusable React components and responsive layouts using Tailwind CSS across 5 client projects.',
@@ -32,7 +32,7 @@ const roles = [
   {
     role: 'Manager',
     org: 'The Serenity Place Treatment Centre',
-    period: 'Jan 2022 — Apr 2025',
+    period: 'Jan 2022 – Apr 2025',
     current: false,
     notes: [
       'Led operations for a rehabilitation facility, managing 30+ staff and 50+ residents.',
@@ -61,7 +61,7 @@ const About = () => {
     '@type': 'ProfilePage',
     mainEntity: {
       ...personJsonLd,
-      description: 'Personnel record — Benjamin K. Koimett, full-stack engineer (React, Node.js, MERN), employment ledger and technical index.',
+      description: 'Personnel record – Benjamin K. Koimett, full-stack engineer (React, Node.js, MERN), employment ledger and technical index.',
     },
     url: `${SITE_URL}/about`,
   };
@@ -69,8 +69,8 @@ const About = () => {
   return (
     <>
       <SEO
-        title="Personnel record — Employment ledger & Technical index"
-        description="Personnel record of Benjamin K. Koimett — full-stack React/Node.js engineer in Kisumu, Kenya. Employment ledger (Zone01, Occulus, Serenity Place) and technical index (MERN, Golang, Solana). Available remote."
+        title="Personnel record – Employment ledger & Technical index"
+        description="Personnel record of Benjamin K. Koimett – full-stack React/Node.js engineer in Kisumu, Kenya. Employment ledger (Zone01, Occulus, Serenity Place) and technical index (MERN, Golang, Solana). Available remote."
         canonical="/about"
         keywords="Benjamin Koimett about, employment ledger, MERN stack, Zone01 Kisumu, Kenya full-stack engineer"
         jsonLd={aboutJsonLd}
@@ -79,14 +79,14 @@ const About = () => {
       <section className="container-page pt-14">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-12">
           <div className="md:col-span-7">
-            <p className="file-index-sm">BK / ATTACHMENT 01 — PERSONNEL RECORD</p>
+            <p className="file-index-sm">BK / ATTACHMENT 01 – PERSONNEL RECORD</p>
             <h1 className="mt-1 text-heading-xl font-semibold text-ink">
               The record of Benjamin K. Koimett
             </h1>
             <p className="mt-5 max-w-[58ch] text-body text-ink">
               Full-stack engineer shipping production applications across
-              frontend, backend, and DevOps. I own projects end-to-end — from
-              design through deployment — for live products serving real users
+              frontend, backend, and DevOps. I own projects end-to-end – from
+              design through deployment – for live products serving real users
               in healthcare, agriculture, land governance, and Web3.
             </p>
             <p className="mt-4 max-w-[58ch] text-body text-ink-muted">
@@ -153,7 +153,7 @@ const About = () => {
                       className="flex gap-3 text-[15px] leading-relaxed text-ink-muted"
                     >
                       <span aria-hidden="true" className="font-mono text-ink-muted">
-                        —
+                        –
                       </span>
                       {note}
                     </li>

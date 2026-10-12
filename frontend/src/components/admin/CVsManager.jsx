@@ -1,15 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import api from '../../utils/api';
+import { SkeletonBar } from '../primitives/Skeleton';
 
 const formatSize = (bytes) => {
-  if (!bytes && bytes !== 0) return '—';
+  if (!bytes && bytes !== 0) return '–';
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
 
 const formatDate = (value) => {
-  if (!value) return '—';
+  if (!value) return '–';
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return '—';
   const year = date.getFullYear();
@@ -116,7 +117,7 @@ const CVsManager = () => {
   return (
     <section aria-labelledby="cv-records">
       <header className="border-b border-rule pb-6">
-        <p className="file-index-sm">REGISTRY — BK / CV</p>
+        <p className="file-index-sm">REGISTRY – BK / CV</p>
         <h2
           id="cv-records"
           className="mt-1 text-heading font-semibold text-ink"
@@ -236,11 +237,17 @@ const CVsManager = () => {
           <tbody>
             {loading ? (
               <tr>
-                <td
-                  colSpan="6"
-                  className="py-6 font-mono text-[13px] text-ink-muted"
-                >
-                  Opening the CV files…
+                <td colSpan="6" className="py-5">
+                  <span className="sr-only">Pulling the filed CVs</span>
+                  <div aria-hidden="true" className="space-y-3">
+                    {[0, 1, 2].map((i) => (
+                      <div key={i} className="flex items-center gap-6">
+                        <SkeletonBar w="38%" h={13} />
+                        <SkeletonBar w="22%" h={13} />
+                        <SkeletonBar w="14%" h={13} />
+                      </div>
+                    ))}
+                  </div>
                 </td>
               </tr>
             ) : cvs.length === 0 ? (
