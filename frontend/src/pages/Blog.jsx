@@ -48,7 +48,13 @@ const formatDate = (d) => {
   if (!d) return '—';
   const date = d instanceof Date ? d : new Date(d);
   if (Number.isNaN(date.getTime())) return String(d);
-  return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  const year = date.getFullYear();
+  if (year < 1900 || year > 2100) return String(d);
+  try {
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  } catch (error) {
+    return String(d);
+  }
 };
 
 const Blog = () => {

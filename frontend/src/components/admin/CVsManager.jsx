@@ -11,11 +11,14 @@ const formatSize = (bytes) => {
 const formatDate = (value) => {
   if (!value) return '—';
   const date = new Date(value);
-  return date.toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
+  if (Number.isNaN(date.getTime())) return '—';
+  const year = date.getFullYear();
+  if (year < 1900 || year > 2100) return '—';
+  try {
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  } catch (error) {
+    return '—';
+  }
 };
 
 const CVsManager = () => {

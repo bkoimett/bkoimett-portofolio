@@ -6,12 +6,18 @@ import SEO from '../components/SEO';
 import { SITE_URL } from '../utils/seo';
 import StatusBadge from '../components/primitives/StatusBadge';
 
-const formatDate = (date) =>
-  new Date(date).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
+const formatDate = (d) => {
+  if (!d) return '—';
+  const date = new Date(d);
+  if (Number.isNaN(date.getTime())) return '—';
+  const year = date.getFullYear();
+  if (year < 1900 || year > 2100) return '—';
+  try {
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  } catch (error) {
+    return '—';
+  }
+};
 
 function resolveImage(src) {
   if (!src) return null;

@@ -10,7 +10,13 @@ const formatDate = (d) => {
   if (!d) return null;
   const date = new Date(d);
   if (Number.isNaN(date.getTime())) return null;
-  return date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+  const year = date.getFullYear();
+  if (year < 1900 || year > 2100) return null;
+  try {
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  } catch (error) {
+    return null;
+  }
 };
 
 function resolveImage(src) {
